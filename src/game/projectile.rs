@@ -39,7 +39,11 @@ pub fn shoot_projectile(
 }
 
 pub fn move_projectile(
-    mut projectile_query: Query<&Transform, With<PlayerProjectile>>,
-    ) {
-
+    mut projectile_query: Query<&mut Transform, With<PlayerProjectile>>,
+    time: Res<Time>,
+) {
+    for mut transform in projectile_query.iter_mut() {
+        // Move upwards
+        transform.translation.y += PROJECTILE_SPEED * PROJECTILE_ACCELERATION * time.delta_seconds();
+    }
 }

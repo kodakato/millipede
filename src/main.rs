@@ -1,13 +1,24 @@
-use bevy::prelude::*;
+use bevy::{
+    prelude::*,
+    window::{WindowMode}
+};
 
 mod constants;
 mod debug;
 mod game;
 
 fn main() {
+    let window_plugin = WindowPlugin {
+        primary_window: Some(Window {
+            title: "Millipede".into(),
+            resolution: (480., 640.).into(),
+            ..default()
+        }),
+        ..default()
+    };
     App::new()
         .init_state::<AppState>()
-        .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()))
+        .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()).set(window_plugin))
         .add_plugins(debug::DebugPlugin)
         .add_plugins(game::GamePlugin)
         .add_systems(Update, (enter_game).run_if(in_state(AppState::MainMenu)))
