@@ -10,4 +10,3 @@ impl Plugin for DebugPlugin {
         }
     }
 }
-

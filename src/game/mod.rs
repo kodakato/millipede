@@ -1,16 +1,22 @@
-use bevy::prelude::*;
 use crate::AppState;
+use bevy::prelude::*;
 
 pub struct GamePlugin;
 
-pub mod player;
 pub mod camera;
+pub mod player;
+pub mod projectile;
 
-use player::*;
 use camera::*;
+use player::*;
+use projectile::*;
 
 impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnEnter(AppState::InGame), (spawn_player, spawn_game_camera));
+        app.add_systems(OnEnter(AppState::InGame), (spawn_player, spawn_game_camera))
+            .add_systems(
+                Update,
+                ((move_player, shoot_projectile)).run_if(in_state(AppState::InGame)),
+            );
     }
 }
