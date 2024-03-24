@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use bevy::{prelude::*, window::PrimaryWindow};
 
 use super::player::Player;
 use crate::constants::*;
@@ -46,5 +46,18 @@ pub fn move_projectile(
         // Move upwards
         transform.translation.y +=
             PROJECTILE_SPEED * PROJECTILE_ACCELERATION * time.delta_seconds();
+    }
+}
+
+pub fn despawn_projectile(mut commands: Commands, projectile_query: Query<(Entity, &Transform), With<PlayerProjectile>>, window_query: Query<&Window, With<PrimaryWindow>>) {
+    // Get window height
+    let window = window_query.get_single().unwrap();
+    let max_height = window.height() - PLAYER_SIZE;
+    for (entity, transform) in projectile_query.iter() {
+        // Check if hit ceiling
+        if transform.translation.y >= max_height {
+            // Despawn it
+            commands.entity(entity).despawn();
+        }
     }
 }

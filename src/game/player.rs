@@ -43,14 +43,34 @@ pub fn move_player(
 }
 
 pub fn confine_player_movement(
-    mut player_query: Query<&Transform, With<Player>>,
+    mut player_query: Query<&mut Transform, With<Player>>,
     window_query: Query<&Window, With<PrimaryWindow>>,
 ) {
     if let Ok(mut player_transform) = player_query.get_single_mut() {
         let window = window_query.get_single().unwrap();
 
         let half_player_size = PLAYER_SIZE / 2.0;
+        let x_min = 0.0 + half_player_size;
+        let x_max = window.width() - half_player_size;
+        let y_min = 0.0 + half_player_size;
+        let y_max = TOP_BOUND - half_player_size;
         
-        
+        let mut translation = player_transform.translation;
+
+        // Bound x
+        if translation.x < x_min {
+            translation.x = x_min;
+        } else if translation.x > x_max {
+            translation.x = x_max;
+        }
+
+        // Bound y
+        if translation.y < y_min {
+            translation.y = y_min;
+        } else if translation.y > y_max {
+            translation.y = y_max;
+        }
+
+        player_transform.translation = translation;
     }
 }

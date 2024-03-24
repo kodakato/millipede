@@ -9,7 +9,9 @@ pub const RIGHT: KeyCode = KeyCode::KeyD;
 pub const UP: KeyCode = KeyCode::KeyW;
 pub const DOWN: KeyCode = KeyCode::KeyS;
 
-pub const PLAYER_SPEED: f32 = 100.0;
+pub const PLAYER_SPEED: f32 = 300.0;
 pub const PLAYER_SIZE: f32 = 16.0;
 pub const PROJECTILE_SPEED: f32 = 700.0;
 pub const PROJECTILE_ACCELERATION: f32 = 2.0;
+
+pub const TOP_BOUND: f32 = 100.0;
