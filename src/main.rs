@@ -1,7 +1,4 @@
-use bevy::{
-    prelude::*,
-    window::{WindowMode}
-};
+use bevy::prelude::*;
 
 mod constants;
 mod debug;
@@ -18,7 +15,11 @@ fn main() {
     };
     App::new()
         .init_state::<AppState>()
-        .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()).set(window_plugin))
+        .add_plugins(
+            DefaultPlugins
+                .set(ImagePlugin::default_nearest())
+                .set(window_plugin),
+        )
         .add_plugins(debug::DebugPlugin)
         .add_plugins(game::GamePlugin)
         .add_systems(Update, (enter_game).run_if(in_state(AppState::MainMenu)))

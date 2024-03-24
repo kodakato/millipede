@@ -44,6 +44,7 @@ pub fn move_projectile(
 ) {
     for mut transform in projectile_query.iter_mut() {
         // Move upwards
-        transform.translation.y += PROJECTILE_SPEED * PROJECTILE_ACCELERATION * time.delta_seconds();
+        transform.translation.y +=
+            PROJECTILE_SPEED * PROJECTILE_ACCELERATION * time.delta_seconds();
     }
 }
