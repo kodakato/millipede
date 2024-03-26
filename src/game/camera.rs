@@ -1,9 +1,12 @@
-use bevy::{prelude::*, window::PrimaryWindow, render::camera::ScalingMode};
+use bevy::{prelude::*, render::camera::ScalingMode, window::PrimaryWindow};
 
 #[derive(Component)]
 pub struct GameCamera;
 
-pub fn spawn_game_camera(mut commands: Commands, window_query: Query<&Window, With<PrimaryWindow>>) {
+pub fn spawn_game_camera(
+    mut commands: Commands,
+    window_query: Query<&Window, With<PrimaryWindow>>,
+) {
     let window = window_query.get_single().unwrap();
 
     commands.spawn((

@@ -6,7 +6,11 @@ use crate::constants::*;
 #[derive(Component)]
 pub struct Player;
 
-pub fn spawn_player(mut commands: Commands, asset_server: Res<AssetServer>, window_query: Query<&Window, With<PrimaryWindow>>) {
+pub fn spawn_player(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    window_query: Query<&Window, With<PrimaryWindow>>,
+) {
     let window = window_query.get_single().unwrap();
     let player_model = asset_server.load("snake.png");
     // Spawn Player
@@ -54,7 +58,7 @@ pub fn confine_player_movement(
         let x_max = window.width() - half_player_size;
         let y_min = 0.0 + half_player_size;
         let y_max = TOP_BOUND - half_player_size;
-        
+
         let mut translation = player_transform.translation;
 
         // Bound x

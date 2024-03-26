@@ -9,6 +9,7 @@ fn main() {
         primary_window: Some(Window {
             title: "Millipede".into(),
             resolution: (480., 640.).into(),
+            resizable: false,
             ..default()
         }),
         ..default()

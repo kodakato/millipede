@@ -1,6 +1,7 @@
 use bevy::{prelude::*, window::PrimaryWindow};
 
 use super::player::Player;
+use super::shroom::Mushroom;
 use crate::constants::*;
 
 #[derive(Component)]
@@ -49,7 +50,11 @@ pub fn move_projectile(
     }
 }
 
-pub fn despawn_projectile(mut commands: Commands, projectile_query: Query<(Entity, &Transform), With<PlayerProjectile>>, window_query: Query<&Window, With<PrimaryWindow>>) {
+pub fn despawn_projectile(
+    mut commands: Commands,
+    projectile_query: Query<(Entity, &Transform), With<PlayerProjectile>>,
+    window_query: Query<&Window, With<PrimaryWindow>>,
+) {
     // Get window height
     let window = window_query.get_single().unwrap();
     let max_height = window.height() - PLAYER_SIZE;
@@ -58,6 +63,27 @@ pub fn despawn_projectile(mut commands: Commands, projectile_query: Query<(Entit
         if transform.translation.y >= max_height {
             // Despawn it
             commands.entity(entity).despawn();
+        }
+    }
+}
+
+pub fn projectile_hits_shroom(
+    mut commands: Commands,
+    projectile_query: Query<(Entity, &Transform), With<PlayerProjectile>>,
+    mushroom_query: Query<(Entity, &Transform), With<Mushroom>>,
+) {
+    if let Ok((projectile_entity, projectile_transform)) = projectile_query.get_single() {
+        for (mushroom_entity, mushroom_transform) in mushroom_query.iter() {
+            let projectile_radius = PROJECTILE_SIZE / 2.0;
+            let mushroom_radius = MUSHROOM_SIZE / 2.0;
+
+            let distance = projectile_transform
+                .translation
+                .distance(mushroom_transform.translation);
+            if distance < projectile_radius + mushroom_radius {
+                commands.entity(projectile_entity).despawn();
+                commands.entity(mushroom_entity).despawn();
+            }
         }
     }
 }
