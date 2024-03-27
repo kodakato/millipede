@@ -95,6 +95,7 @@ pub fn projectile_hits_segment(
     projectile_query: Query<(Entity, &Transform), With<PlayerProjectile>>,
     segment_query: Query<(Entity, &Transform), With<Segment>>,
     mut event_writer: EventWriter<DespawnSegment>,
+    asset_server: Res<AssetServer>,
 ) {
     if let Ok((projectile_entity, projectile_transform)) = projectile_query.get_single() {
         for (segment_entity, segment_transform) in segment_query.iter() {
@@ -106,6 +107,18 @@ pub fn projectile_hits_segment(
                 .distance(segment_transform.translation);
             if distance < projectile_radius + segment_radius {
                 event_writer.send(DespawnSegment(segment_entity));
+                let shroom_texture = asset_server.load("shroom.png");
+                // Spawn mushroom in place
+                commands.spawn((
+                    SpriteBundle {
+                        texture: shroom_texture,
+                        transform: segment_transform.clone(),
+                        ..default()
+                    },
+                    Mushroom,
+                    Name::from("Mushroom"),
+                ));
+
                 commands.entity(projectile_entity).despawn();
                 commands.entity(segment_entity).despawn();
                 break;

@@ -162,7 +162,7 @@ pub fn collide_with_shroom(
                     direction.x = -direction.x;
 
                     // Bounce backwards slightly
-                    segment_transform.translation.x += direction.x * 6.0;
+                    segment_transform.translation.x += direction.x * 12.0;
 
                 }
             }
