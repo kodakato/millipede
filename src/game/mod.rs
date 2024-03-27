@@ -1,6 +1,5 @@
-use crate::AppState;
+use crate::{AppState, GameState};
 use bevy::{prelude::*, utils::HashMap};
-
 
 pub struct GamePlugin;
 
@@ -31,16 +30,46 @@ impl Plugin for GamePlugin {
         .add_systems(
             Update,
             ((
-                move_player,
-                shoot_projectile,
-                move_projectile,
-                confine_player_movement,
-                despawn_projectile,
-                projectile_hits_shroom,
-                segment_movement,
-                update_positions,
-            ))
+                (move_player, shoot_projectile, confine_player_movement)
+                    .in_set(GameplaySet::Player),
+                (
+                    move_projectile,
+                    despawn_projectile,
+                    projectile_hits_shroom,
+                    projectile_hits_segment,
+                )
+                    .in_set(GameplaySet::Projectile),
+                (
+                    update_segment_parents,
+                    update_positions,
+                    segment_movement,
+                    change_direction,
+                    collide_with_shroom,
+                )
+                    .chain()
+                    .in_set(GameplaySet::Enemies),
+            ),)
+                .run_if(in_state(GameState::Running))
                 .run_if(in_state(AppState::InGame)),
-        ).insert_resource(SegmentPositions(HashMap::new()));
+        )
+        .insert_resource(SegmentPositions(HashMap::new()))
+        .configure_sets(
+            Update,
+            (
+                GameplaySet::Player.before(GameplaySet::Projectile),
+                GameplaySet::Projectile.before(GameplaySet::Enemies),
+                GameplaySet::Enemies,
+            ),
+        ).add_event::<DespawnSegment>();
     }
+}
+
+#[derive(SystemSet, Debug, Clone, PartialEq, Eq, Hash)]
+pub struct InputSet;
+
+#[derive(SystemSet, Debug, Clone, PartialEq, Eq, Hash)]
+pub enum GameplaySet {
+    Player,
+    Enemies,
+    Projectile,
 }

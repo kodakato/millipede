@@ -1,5 +1,6 @@
 use bevy::{prelude::*, window::PrimaryWindow};
 
+use super::millipede::{Segment, SegmentPositions, DespawnSegment};
 use super::player::Player;
 use super::shroom::Mushroom;
 use crate::constants::*;
@@ -83,6 +84,31 @@ pub fn projectile_hits_shroom(
             if distance < projectile_radius + mushroom_radius {
                 commands.entity(projectile_entity).despawn();
                 commands.entity(mushroom_entity).despawn();
+                break;
+            }
+        }
+    }
+}
+
+pub fn projectile_hits_segment(
+    mut commands: Commands,
+    projectile_query: Query<(Entity, &Transform), With<PlayerProjectile>>,
+    segment_query: Query<(Entity, &Transform), With<Segment>>,
+    mut event_writer: EventWriter<DespawnSegment>,
+) {
+    if let Ok((projectile_entity, projectile_transform)) = projectile_query.get_single() {
+        for (segment_entity, segment_transform) in segment_query.iter() {
+            let projectile_radius = PROJECTILE_SIZE / 2.0;
+            let segment_radius = SEGMENT_SIZE / 2.0;
+
+            let distance = projectile_transform
+                .translation
+                .distance(segment_transform.translation);
+            if distance < projectile_radius + segment_radius {
+                event_writer.send(DespawnSegment(segment_entity));
+                commands.entity(projectile_entity).despawn();
+                commands.entity(segment_entity).despawn();
+                break;
             }
         }
     }
