@@ -29,7 +29,7 @@ pub const SPAWN_MARGIN: f32 = 20.0;
 
 /// Millipede
 pub const NUM_OF_SEGMENTS: u8 = 35;
-pub const MILLIPEDE_SPEED: f32 = 300.0;
+pub const MILLIPEDE_SPEED: f32 = 400.0;
 pub const SEGMENT_SIZE: f32 = 16.0;
 pub const SEGMENT_SPACING: f32 = 15.0;
 pub const DROP_AMOUNT: f32 = 10.0;

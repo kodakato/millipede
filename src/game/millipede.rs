@@ -39,9 +39,20 @@ pub fn spawn_millipede(
 ) {
     let window = window_query.get_single().unwrap();
     let millipede_texture = asset_server.load("millipede.png");
-    let mut parent_entity: Option<Entity> = None;
+    let mut parent_entity: Option<Entity> = Some(commands
+            .spawn((
+                SpriteBundle {
+                    texture: millipede_texture.clone(),
+                    transform: Transform::from_xyz(window.width() / 2.0, window.height(), 0.0),
+                    ..default()
+                },
+                Name::from("MillipedeSegment"),
+                Segment::Head{ direction: Vec3::new(1.0, 0.0, 0.0)},
+            ))
+            .id());
 
-    for _ in 0..NUM_OF_SEGMENTS {
+
+    for _ in 1..NUM_OF_SEGMENTS {
         let entity: Entity = commands
             .spawn((
                 SpriteBundle {
