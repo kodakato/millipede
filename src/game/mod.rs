@@ -4,12 +4,14 @@ use bevy::{prelude::*, utils::HashMap};
 pub struct GamePlugin;
 
 pub mod camera;
+pub mod explosion;
 pub mod millipede;
 pub mod player;
 pub mod projectile;
 pub mod shroom;
 
 use camera::*;
+use explosion::*;
 use millipede::*;
 use player::*;
 use projectile::*;
@@ -37,6 +39,7 @@ impl Plugin for GamePlugin {
                     despawn_projectile,
                     projectile_hits_shroom,
                     projectile_hits_segment,
+                    despawn_explosions,
                 )
                     .in_set(GameplaySet::Projectile),
                 (
@@ -60,7 +63,8 @@ impl Plugin for GamePlugin {
                 GameplaySet::Projectile.before(GameplaySet::Enemies),
                 GameplaySet::Enemies,
             ),
-        ).add_event::<DespawnSegment>();
+        )
+        .add_event::<DespawnSegment>();
     }
 }
 

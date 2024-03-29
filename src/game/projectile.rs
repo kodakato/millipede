@@ -1,8 +1,12 @@
 use bevy::{prelude::*, window::PrimaryWindow};
 
-use super::millipede::{Segment, SegmentPositions, DespawnSegment};
-use super::player::Player;
-use super::shroom::Mushroom;
+use super::{
+    explosion::ExplosionBundle,
+    millipede::{DespawnSegment, Segment},
+    player::Player,
+    shroom::Mushroom,
+};
+
 use crate::constants::*;
 
 #[derive(Component)]
@@ -107,6 +111,10 @@ pub fn projectile_hits_segment(
                 .distance(segment_transform.translation);
             if distance < projectile_radius + segment_radius {
                 event_writer.send(DespawnSegment(segment_entity));
+
+                // Spawn explosion
+                commands.spawn(ExplosionBundle::default());
+
                 let shroom_texture = asset_server.load("shroom.png");
                 // Spawn mushroom in place
                 commands.spawn((
