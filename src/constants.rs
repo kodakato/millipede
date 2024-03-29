@@ -35,4 +35,5 @@ pub const SEGMENT_SPACING: f32 = 13.0;
 pub const DROP_AMOUNT: f32 = 10.0;
 
 // Explosions
-pub const EXPLOSION_DURATION: f32 = 1.0;
+pub const EXPLOSION_DURATION: f32 = 0.1;
+pub const EXPLOSION_SIZE: f32 = 22.0;

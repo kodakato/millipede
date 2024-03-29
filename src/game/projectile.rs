@@ -112,8 +112,13 @@ pub fn projectile_hits_segment(
             if distance < projectile_radius + segment_radius {
                 event_writer.send(DespawnSegment(segment_entity));
 
+                let explosion_texture = asset_server.load("explosion.png");
                 // Spawn explosion
-                commands.spawn(ExplosionBundle::default());
+                commands.spawn(
+                    ExplosionBundle::default()
+                        .with_texture(explosion_texture)
+                        .with_transform(segment_transform),
+                );
 
                 let shroom_texture = asset_server.load("shroom.png");
                 // Spawn mushroom in place
