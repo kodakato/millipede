@@ -54,6 +54,7 @@ pub enum AppState {
     #[default]
     MainMenu,
     InGame,
+    GameOver,
 }
 
 #[derive(States, Debug, Clone, Eq, PartialEq, Hash, Default)]

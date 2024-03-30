@@ -1,8 +1,8 @@
 use bevy::utils::HashMap;
 use bevy::{prelude::*, window::PrimaryWindow};
 
-use crate::constants::*;
-use super::shroom::Mushroom;
+use super::{explosion::ExplosionBundle, player::Player, shroom::Mushroom};
+use crate::{constants::*, AppState};
 
 pub struct Body {
     parent: Option<Entity>,
@@ -39,7 +39,8 @@ pub fn spawn_millipede(
 ) {
     let window = window_query.get_single().unwrap();
     let millipede_texture = asset_server.load("millipede.png");
-    let mut parent_entity: Option<Entity> = Some(commands
+    let mut parent_entity: Option<Entity> = Some(
+        commands
             .spawn((
                 SpriteBundle {
                     texture: millipede_texture.clone(),
@@ -47,10 +48,12 @@ pub fn spawn_millipede(
                     ..default()
                 },
                 Name::from("MillipedeSegment"),
-                Segment::Head{ direction: Vec3::new(1.0, 0.0, 0.0)},
+                Segment::Head {
+                    direction: Vec3::new(1.0, 0.0, 0.0),
+                },
             ))
-            .id());
-
+            .id(),
+    );
 
     for _ in 1..NUM_OF_SEGMENTS {
         let entity: Entity = commands
@@ -148,7 +151,9 @@ pub fn update_segment_parents(
         for mut segment in segment_query.iter_mut() {
             if let Segment::Body { parent } = *segment {
                 if parent == Some(dead_segment.0) {
-                    *segment = Segment::Head { direction: Vec3::new(1.0, 0.0, 0.0)};
+                    *segment = Segment::Head {
+                        direction: Vec3::new(1.0, 0.0, 0.0),
+                    };
                 }
             }
         }
@@ -158,24 +163,53 @@ pub fn update_segment_parents(
 pub fn collide_with_shroom(
     mut segment_query: Query<(&mut Transform, &mut Segment), Without<Mushroom>>,
     shroom_query: Query<&Transform, With<Mushroom>>,
-    ) {
+) {
     let shroom_radius = MUSHROOM_SIZE / 3.0;
     let segment_radius = SEGMENT_SIZE / 3.0;
     for (mut segment_transform, mut segment) in segment_query.iter_mut() {
-        if let Segment::Head {ref mut direction } = *segment {
+        if let Segment::Head { ref mut direction } = *segment {
             for shroom_transform in shroom_query.iter() {
-                let distance = shroom_transform.translation.distance(segment_transform.translation);
+                let distance = shroom_transform
+                    .translation
+                    .distance(segment_transform.translation);
                 if distance < shroom_radius + segment_radius {
                     // Move down
                     segment_transform.translation.y -= DROP_AMOUNT;
-                    
+
                     // Reverse direction
                     direction.x = -direction.x;
 
                     // Bounce backwards slightly
                     segment_transform.translation.x += direction.x * 12.0;
-
                 }
+            }
+        }
+    }
+}
+
+pub fn segment_hits_player(
+    mut commands: Commands,
+    player_q: Query<(Entity, &Transform), With<Player>>,
+    segment_q: Query<&Transform, With<Segment>>,
+    mut next_state: ResMut<NextState<AppState>>,
+    asset_server: Res<AssetServer>,
+) {
+    let player_radius = PLAYER_SIZE / 2.0;
+    let segment_radius = SEGMENT_SIZE / 2.0;
+    if let Ok((player_entity, player_transform)) = player_q.get_single() {
+        for segment_transform in segment_q.iter() {
+            let distance = player_transform
+                .translation
+                .distance(segment_transform.translation);
+            if distance < player_radius + segment_radius {
+                let explosion_texture = asset_server.load("explosion.png");
+                commands.spawn(
+                    ExplosionBundle::default()
+                        .with_texture(explosion_texture)
+                        .with_transform(segment_transform),
+                );
+                commands.entity(player_entity).despawn();
+                next_state.set(AppState::GameOver);
             }
         }
     }

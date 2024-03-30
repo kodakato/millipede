@@ -49,6 +49,7 @@ impl Plugin for GamePlugin {
                     segment_movement,
                     change_direction,
                     collide_with_shroom,
+                    segment_hits_player,
                 )
                     .chain()
                     .in_set(GameplaySet::Enemies),

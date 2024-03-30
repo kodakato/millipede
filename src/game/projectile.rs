@@ -30,8 +30,7 @@ pub fn shoot_projectile(
     }
     if let Ok(player_transform) = player_query.get_single() {
         let projectile_texture = asset_server.load("stinger.png");
-        let mut projectile_transform = *player_transform;
-        projectile_transform.translation += Vec3::new(0.0, 6.0, 0.0);
+        let projectile_transform = *player_transform;
         commands.spawn((
             Name::from("Player Projectile"),
             PlayerProjectile,

@@ -15,8 +15,8 @@ pub const PLAYER_SPEED: f32 = 250.0;
 pub const PLAYER_SIZE: f32 = 16.0;
 
 /// Projectile
-pub const PROJECTILE_SPEED: f32 = 700.0;
-pub const PROJECTILE_ACCELERATION: f32 = 2.0;
+pub const PROJECTILE_SPEED: f32 = 1000.0;
+pub const PROJECTILE_ACCELERATION: f32 = 1.0;
 pub const PROJECTILE_SIZE: f32 = 10.0;
 
 // Map
@@ -28,8 +28,8 @@ pub const MUSHROOM_MAX_AMOUNT: u8 = 80;
 pub const SPAWN_MARGIN: f32 = 20.0;
 
 /// Millipede
-pub const NUM_OF_SEGMENTS: u8 = 35;
-pub const MILLIPEDE_SPEED: f32 = 350.0;
+pub const NUM_OF_SEGMENTS: u8 = 15;
+pub const MILLIPEDE_SPEED: f32 = 300.0;
 pub const SEGMENT_SIZE: f32 = 16.0;
 pub const SEGMENT_SPACING: f32 = 13.0;
 pub const DROP_AMOUNT: f32 = 10.0;
