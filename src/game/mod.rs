@@ -41,7 +41,8 @@ impl Plugin for GamePlugin {
                     projectile_hits_segment,
                     despawn_explosions,
                 )
-                    .in_set(GameplaySet::Projectile),
+                    .in_set(GameplaySet::Projectile)
+                    .chain(),
                 (
                     update_segment_parents,
                     update_positions,

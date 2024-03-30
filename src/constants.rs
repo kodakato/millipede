@@ -17,7 +17,7 @@ pub const PLAYER_SIZE: f32 = 16.0;
 /// Projectile
 pub const PROJECTILE_SPEED: f32 = 700.0;
 pub const PROJECTILE_ACCELERATION: f32 = 2.0;
-pub const PROJECTILE_SIZE: f32 = 8.0;
+pub const PROJECTILE_SIZE: f32 = 10.0;
 
 // Map
 pub const TOP_BOUND: f32 = 100.0;

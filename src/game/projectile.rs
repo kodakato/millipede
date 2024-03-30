@@ -88,7 +88,7 @@ pub fn projectile_hits_shroom(
             if distance < projectile_radius + mushroom_radius {
                 commands.entity(projectile_entity).despawn();
                 commands.entity(mushroom_entity).despawn();
-                break;
+                return;
             }
         }
     }
@@ -133,8 +133,7 @@ pub fn projectile_hits_segment(
                 ));
 
                 commands.entity(projectile_entity).despawn();
-                commands.entity(segment_entity).despawn();
-                break;
+                return;
             }
         }
     }
