@@ -28,6 +28,7 @@ pub const MUSHROOM_SIZE: f32 = 8.0;
 pub const MUSHROOM_MAX_AMOUNT: u8 = 100;
 pub const MUSHROOM_MIN_AMOUNT: u8 = 70;
 pub const SPAWN_MARGIN: f32 = 20.0;
+pub const MUSHROOM_HEALTH: i8 = 3;
 
 /// Millipede
 pub const NUM_OF_SEGMENTS: u8 = 10;

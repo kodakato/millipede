@@ -42,6 +42,7 @@ impl Plugin for GamePlugin {
                     projectile_hits_shroom,
                     projectile_hits_segment,
                     despawn_explosions,
+                    despawn_mushroom,
                 )
                     .in_set(GameplaySet::Projectile)
                     .chain(),

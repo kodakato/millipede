@@ -4,7 +4,7 @@ use super::{
     explosion::ExplosionBundle,
     millipede::{DespawnSegment, Segment},
     player::Player,
-    shroom::{Mushroom, ShroomAmount},
+    shroom::{Health, Mushroom, ShroomAmount},
 };
 
 use crate::constants::*;
@@ -74,11 +74,10 @@ pub fn despawn_projectile(
 pub fn projectile_hits_shroom(
     mut commands: Commands,
     projectile_query: Query<(Entity, &Transform), With<PlayerProjectile>>,
-    mushroom_query: Query<(Entity, &Transform), With<Mushroom>>,
-    mut shroom_amount: ResMut<ShroomAmount>,
+    mut mushroom_query: Query<(&mut Health, &Transform), With<Mushroom>>,
 ) {
     if let Ok((projectile_entity, projectile_transform)) = projectile_query.get_single() {
-        for (mushroom_entity, mushroom_transform) in mushroom_query.iter() {
+        for (mut mushroom_health, mushroom_transform) in mushroom_query.iter_mut() {
             let projectile_radius = PROJECTILE_SIZE / 2.0;
             let mushroom_radius = MUSHROOM_SIZE / 2.0;
 
@@ -87,9 +86,8 @@ pub fn projectile_hits_shroom(
                 .distance(mushroom_transform.translation);
             if distance < projectile_radius + mushroom_radius {
                 commands.entity(projectile_entity).despawn();
-                commands.entity(mushroom_entity).despawn();
-                shroom_amount.0 -= 1;
-                return;
+                mushroom_health.0 -= 1;
+                break;
             }
         }
     }
@@ -101,6 +99,7 @@ pub fn projectile_hits_segment(
     segment_query: Query<(Entity, &Transform), With<Segment>>,
     mut event_writer: EventWriter<DespawnSegment>,
     asset_server: Res<AssetServer>,
+    mut shroom_amount: ResMut<ShroomAmount>,
 ) {
     if let Ok((projectile_entity, projectile_transform)) = projectile_query.get_single() {
         for (segment_entity, segment_transform) in segment_query.iter() {
@@ -121,17 +120,12 @@ pub fn projectile_hits_segment(
                         .with_transform(segment_transform),
                 );
 
-                let shroom_texture = asset_server.load("shroom.png");
-                // Spawn mushroom in place
-                commands.spawn((
-                    SpriteBundle {
-                        texture: shroom_texture,
-                        transform: segment_transform.clone(),
-                        ..default()
-                    },
-                    Mushroom,
-                    Name::from("Mushroom"),
-                ));
+                let (x, y) = (
+                    segment_transform.translation.x,
+                    segment_transform.translation.y,
+                );
+
+                commands.spawn(Mushroom::bundle(x, y, &asset_server, &mut shroom_amount));
 
                 commands.entity(projectile_entity).despawn();
                 commands.entity(segment_entity).despawn();

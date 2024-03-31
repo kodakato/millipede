@@ -69,28 +69,20 @@ pub fn beetle_spawn_shroom(
     asset_server: Res<AssetServer>,
 ) {
     if let Ok(beetle_transform) = beetle_q.get_single() {
-        // Check if below the lower barrier
+        // Check if below boundary
         if beetle_transform.translation.y < TOP_BOUND {
             return;
         }
 
         // Generate a random num, and spawn if hit
         let num = rand::thread_rng().gen_range(1..=100);
-        if num < BEETLE_SPAWN_RATE {
-            let x = beetle_transform.translation.x;
-            let y = beetle_transform.translation.y;
-
-            let shroom_texture = asset_server.load("shroom.png");
-            commands.spawn((
-                SpriteBundle {
-                    texture: shroom_texture,
-                    transform: Transform::from_xyz(x, y, 0.0),
-                    ..default()
-                },
-                Mushroom,
-                Name::from("Mushroom"),
-            ));
-            shroom_amount.0 += 1;
+        if num >= BEETLE_SPAWN_RATE {
+            return;
         }
+
+        let x = beetle_transform.translation.x;
+        let y = beetle_transform.translation.y;
+
+        commands.spawn(Mushroom::bundle(x, y, &asset_server, &mut shroom_amount));
     }
 }
