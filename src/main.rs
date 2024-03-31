@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use bevy::{app::AppExit, prelude::*};
 
 mod constants;
 mod debug;
@@ -26,6 +26,7 @@ fn main() {
         .add_plugins(game::GamePlugin)
         .add_systems(Update, (enter_game).run_if(in_state(AppState::MainMenu)))
         .add_systems(Update, (toggle_pause).run_if(in_state(AppState::InGame)))
+        .add_systems(Update, quit_game)
         .run();
 }
 
@@ -47,6 +48,13 @@ fn toggle_pause(
             GameState::Paused => next_state.set(GameState::Running),
         }
     }
+}
+
+fn quit_game(input: Res<ButtonInput<KeyCode>>, mut exit: EventWriter<AppExit>) {
+    if !input.pressed(constants::QUIT_KEY) {
+        return;
+    }
+    exit.send(AppExit);
 }
 
 #[derive(States, Debug, Clone, Eq, PartialEq, Hash, Default)]

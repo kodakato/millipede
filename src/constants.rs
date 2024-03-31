@@ -2,6 +2,7 @@ use bevy::prelude::*;
 
 /// App Controls
 pub const MENU_KEY: KeyCode = KeyCode::Escape;
+pub const QUIT_KEY: KeyCode = KeyCode::KeyQ;
 
 /// Player Controls
 pub const SHOOT_KEY: KeyCode = KeyCode::Space;
