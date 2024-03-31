@@ -4,7 +4,7 @@ use super::{
     explosion::ExplosionBundle,
     millipede::{DespawnSegment, Segment},
     player::Player,
-    shroom::Mushroom,
+    shroom::{Mushroom, ShroomAmount},
 };
 
 use crate::constants::*;
@@ -75,6 +75,7 @@ pub fn projectile_hits_shroom(
     mut commands: Commands,
     projectile_query: Query<(Entity, &Transform), With<PlayerProjectile>>,
     mushroom_query: Query<(Entity, &Transform), With<Mushroom>>,
+    mut shroom_amount: ResMut<ShroomAmount>,
 ) {
     if let Ok((projectile_entity, projectile_transform)) = projectile_query.get_single() {
         for (mushroom_entity, mushroom_transform) in mushroom_query.iter() {
@@ -87,6 +88,7 @@ pub fn projectile_hits_shroom(
             if distance < projectile_radius + mushroom_radius {
                 commands.entity(projectile_entity).despawn();
                 commands.entity(mushroom_entity).despawn();
+                shroom_amount.0 -= 1;
                 return;
             }
         }
@@ -132,6 +134,7 @@ pub fn projectile_hits_segment(
                 ));
 
                 commands.entity(projectile_entity).despawn();
+                commands.entity(segment_entity).despawn();
                 return;
             }
         }

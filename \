@@ -7,13 +7,13 @@ use crate::constants::*;
 pub struct Mushroom;
 
 #[derive(Resource)]
-pub struct ShroomAmount(pub u8);
+pub struct ShroomAmount(u8);
 
 pub fn spawn_shroom_field(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     window_query: Query<&Window, With<PrimaryWindow>>,
-    mut shroom_amount: ResMut<ShroomAmount>,
+    shroom_amount: ResMut<ShroomAmount>,
 ) {
     let window = window_query.get_single().unwrap();
 

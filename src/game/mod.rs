@@ -3,6 +3,7 @@ use bevy::{prelude::*, utils::HashMap};
 
 pub struct GamePlugin;
 
+pub mod beetle;
 pub mod camera;
 pub mod explosion;
 pub mod millipede;
@@ -10,6 +11,7 @@ pub mod player;
 pub mod projectile;
 pub mod shroom;
 
+use beetle::*;
 use camera::*;
 use explosion::*;
 use millipede::*;
@@ -44,20 +46,30 @@ impl Plugin for GamePlugin {
                     .in_set(GameplaySet::Projectile)
                     .chain(),
                 (
-                    update_segment_parents,
-                    update_positions,
-                    segment_movement,
-                    change_direction,
-                    collide_with_shroom,
-                    segment_hits_player,
+                    (
+                        spawn_beetle,
+                        move_beetle,
+                        beetle_spawn_shroom,
+                        despawn_beetle,
+                    )
+                        .chain(),
+                    (
+                        update_segment_parents,
+                        update_positions,
+                        segment_movement,
+                        change_direction,
+                        collide_with_shroom,
+                        segment_hits_player,
+                    )
+                        .chain(),
                 )
-                    .chain()
                     .in_set(GameplaySet::Enemies),
             ),)
                 .run_if(in_state(GameState::Running))
                 .run_if(in_state(AppState::InGame)),
         )
         .insert_resource(SegmentPositions(HashMap::new()))
+        .insert_resource(ShroomAmount(0))
         .configure_sets(
             Update,
             (
