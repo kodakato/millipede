@@ -12,6 +12,10 @@ pub fn spawn_game_camera(
     commands.spawn((
         Camera2dBundle {
             transform: Transform::from_xyz(window.width() / 2.0, window.height() / 2.0, 0.0),
+            camera: Camera {
+                clear_color: ClearColorConfig::Custom(Color::BLACK),
+                ..default()
+            },
             ..default()
         },
         GameCamera,

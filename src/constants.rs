@@ -43,10 +43,14 @@ pub const EXPLOSION_SIZE: f32 = 22.0;
 
 // Beetle
 pub const BEETLE_SPEED: f32 = 500.0;
-pub const BEETLE_SPAWN_RATE: u8 = 15;
+pub const BEETLE_SPAWN_RATE: u8 = 5;
 
 // Scoring
 pub const MUSHROOM_REWARD: u32 = 1;
 pub const SEGMENT_REWARD: u32 = 10;
 pub const HEAD_REWARD: u32 = 100;
 pub const BEETLE_REWARD: u32 = 15;
+
+// UI
+pub const TEXT_COLOR: Color = Color::rgb(110.0/ 255.0, 255.0 / 255.0, 248.0 / 255.0);
+pub const TEXT_TRANSPARENCY: f32 = 0.7;
