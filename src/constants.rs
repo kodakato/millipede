@@ -24,7 +24,7 @@ pub const PROJECTILE_SIZE: f32 = 10.0;
 pub const TOP_BOUND: f32 = 100.0;
 
 /// Mushrooms
-pub const MUSHROOM_SIZE: f32 = 8.0;
+pub const MUSHROOM_SIZE: f32 = 11.0;
 pub const MUSHROOM_MAX_AMOUNT: u8 = 100;
 pub const MUSHROOM_MIN_AMOUNT: u8 = 70;
 pub const SPAWN_MARGIN: f32 = 20.0;
@@ -44,3 +44,9 @@ pub const EXPLOSION_SIZE: f32 = 22.0;
 // Beetle
 pub const BEETLE_SPEED: f32 = 500.0;
 pub const BEETLE_SPAWN_RATE: u8 = 15;
+
+// Scoring
+pub const MUSHROOM_REWARD: u32 = 1;
+pub const SEGMENT_REWARD: u32 = 10;
+pub const HEAD_REWARD: u32 = 100;
+pub const BEETLE_REWARD: u32 = 15;

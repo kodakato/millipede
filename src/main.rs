@@ -3,6 +3,8 @@ use bevy::{app::AppExit, prelude::*};
 mod constants;
 mod debug;
 mod game;
+mod ui;
+mod camera;
 
 fn main() {
     let window_plugin = WindowPlugin {
@@ -27,6 +29,11 @@ fn main() {
         .add_systems(Update, (enter_game).run_if(in_state(AppState::MainMenu)))
         .add_systems(Update, (toggle_pause).run_if(in_state(AppState::InGame)))
         .add_systems(Update, quit_game)
+        .add_systems(Startup, (camera::spawn_game_camera).chain())
+        .add_systems(OnEnter(AppState::MainMenu), ui::spawn_main_menu)
+        .add_systems(OnExit(AppState::MainMenu), ui::despawn_main_menu)
+        .add_systems(OnEnter(AppState::InGame), ui::build_game_ui)
+        .insert_resource(Score(0))
         .run();
 }
 
@@ -71,3 +78,6 @@ pub enum GameState {
     Running,
     Paused,
 }
+
+#[derive(Resource)]
+pub struct Score(pub u32);

@@ -5,9 +5,11 @@ use super::{
     millipede::{DespawnSegment, Segment},
     player::Player,
     shroom::{Health, Mushroom, ShroomAmount},
+    beetle::Beetle,
 };
 
 use crate::constants::*;
+use crate::Score;
 
 #[derive(Component)]
 pub struct PlayerProjectile;
@@ -75,6 +77,7 @@ pub fn projectile_hits_shroom(
     mut commands: Commands,
     projectile_query: Query<(Entity, &Transform), With<PlayerProjectile>>,
     mut mushroom_query: Query<(&mut Health, &Transform), With<Mushroom>>,
+    mut score: ResMut<Score>,
 ) {
     if let Ok((projectile_entity, projectile_transform)) = projectile_query.get_single() {
         for (mut mushroom_health, mushroom_transform) in mushroom_query.iter_mut() {
@@ -86,6 +89,9 @@ pub fn projectile_hits_shroom(
                 .distance(mushroom_transform.translation);
             if distance < projectile_radius + mushroom_radius {
                 commands.entity(projectile_entity).despawn();
+                if mushroom_health.0 - 1 == 0 {
+                    score.0 += MUSHROOM_REWARD;
+                }
                 mushroom_health.0 -= 1;
                 break;
             }
@@ -96,13 +102,14 @@ pub fn projectile_hits_shroom(
 pub fn projectile_hits_segment(
     mut commands: Commands,
     projectile_query: Query<(Entity, &Transform), With<PlayerProjectile>>,
-    segment_query: Query<(Entity, &Transform), With<Segment>>,
+    segment_query: Query<(Entity, &Transform, &Segment)>,
     mut event_writer: EventWriter<DespawnSegment>,
     asset_server: Res<AssetServer>,
     mut shroom_amount: ResMut<ShroomAmount>,
+    mut score: ResMut<Score>,
 ) {
     if let Ok((projectile_entity, projectile_transform)) = projectile_query.get_single() {
-        for (segment_entity, segment_transform) in segment_query.iter() {
+        for (segment_entity, segment_transform, segment) in segment_query.iter() {
             let projectile_radius = PROJECTILE_SIZE / 2.0;
             let segment_radius = SEGMENT_SIZE / 2.0;
 
@@ -129,6 +136,55 @@ pub fn projectile_hits_segment(
 
                 commands.entity(projectile_entity).despawn();
                 commands.entity(segment_entity).despawn();
+
+                // Add to score
+                match segment {
+                    Segment::Head { direction: _ }=> {
+                        score.0 += HEAD_REWARD;
+                    },
+                    Segment::Body { parent: _ } => {
+                        score.0 += SEGMENT_REWARD;
+                    }
+                }
+
+                return;
+            }
+        }
+    }
+}
+
+pub fn projectile_hits_beetle(
+    mut commands: Commands,
+    projectile_query: Query<(Entity, &Transform), With<PlayerProjectile>>,
+    beetle_query: Query<(Entity, &Transform), With<Beetle>>,
+    asset_server: Res<AssetServer>,
+    mut score: ResMut<Score>,
+) {
+    if let Ok((projectile_entity, projectile_transform)) = projectile_query.get_single() {
+        for (beetle_entity, beetle_transform) in beetle_query.iter() {
+            let projectile_radius = PROJECTILE_SIZE / 2.0;
+            let segment_radius = SEGMENT_SIZE / 2.0;
+
+            let distance = projectile_transform
+                .translation
+                .distance(beetle_transform.translation);
+            if distance < projectile_radius + segment_radius {
+                
+                let explosion_texture = asset_server.load("explosion.png");
+                // Spawn explosion
+                commands.spawn(
+                    ExplosionBundle::default()
+                        .with_texture(explosion_texture)
+                        .with_transform(beetle_transform),
+                );
+
+
+                commands.entity(projectile_entity).despawn();
+                commands.entity(beetle_entity).despawn();
+
+                // Add to score
+                score.0 += BEETLE_REWARD;
+
                 return;
             }
         }

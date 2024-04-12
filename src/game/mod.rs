@@ -4,7 +4,6 @@ use bevy::{prelude::*, utils::HashMap};
 pub struct GamePlugin;
 
 pub mod beetle;
-pub mod camera;
 pub mod explosion;
 pub mod millipede;
 pub mod player;
@@ -12,19 +11,18 @@ pub mod projectile;
 pub mod shroom;
 
 use beetle::*;
-use camera::*;
 use explosion::*;
 use millipede::*;
 use player::*;
 use projectile::*;
 use shroom::*;
+use crate::ui::*;
 
 impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             OnEnter(AppState::InGame),
             (
-                spawn_game_camera,
                 spawn_player,
                 spawn_shroom_field,
                 spawn_millipede,
@@ -38,9 +36,10 @@ impl Plugin for GamePlugin {
                     .in_set(GameplaySet::Player),
                 (
                     move_projectile,
-                    despawn_projectile,
-                    projectile_hits_shroom,
                     projectile_hits_segment,
+                    projectile_hits_beetle,
+                    projectile_hits_shroom,
+                    despawn_projectile,
                     despawn_explosions,
                     despawn_mushroom,
                 )
@@ -65,6 +64,12 @@ impl Plugin for GamePlugin {
                         .chain(),
                 )
                     .in_set(GameplaySet::Enemies),
+                (
+                    (
+                        update_game_ui
+                    )
+               )
+                    .in_set(GameplaySet::Ui)
             ),)
                 .run_if(in_state(GameState::Running))
                 .run_if(in_state(AppState::InGame)),
@@ -91,4 +96,5 @@ pub enum GameplaySet {
     Player,
     Enemies,
     Projectile,
+    Ui
 }
