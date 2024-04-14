@@ -1,5 +1,5 @@
 use crate::{AppState, GameState};
-use bevy::{prelude::*, utils::HashMap};
+use bevy::{prelude::*, utils::HashMap, window::PrimaryWindow};
 
 pub struct GamePlugin;
 
@@ -10,6 +10,7 @@ pub mod millipede;
 pub mod player;
 pub mod projectile;
 pub mod shroom;
+pub mod assets;
 
 use crate::{constants::*, ui::*};
 use beetle::*;
@@ -19,6 +20,7 @@ use millipede::*;
 use player::*;
 use projectile::*;
 use shroom::*;
+use assets::*;
 
 impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
@@ -80,6 +82,7 @@ impl Plugin for GamePlugin {
         .insert_resource(Score(0))
         .insert_resource(Level(0))
         .insert_resource(DownTimer(Timer::from_seconds(DOWNTIMER, TimerMode::Once)))
+        .init_resource::<GameAssets>()
         .configure_sets(
             Update,
             (
@@ -113,3 +116,7 @@ pub enum LevelState {
 
 #[derive(Resource)]
 pub struct Score(pub u32);
+
+#[derive(Component)]
+pub struct Health(pub i8);
+

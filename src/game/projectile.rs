@@ -1,15 +1,4 @@
-use bevy::{prelude::*, window::PrimaryWindow};
-
-use super::{
-    beetle::Beetle,
-    explosion::ExplosionBundle,
-    millipede::{DespawnSegment, Segment},
-    player::Player,
-    shroom::{Health, Mushroom, ShroomAmount},
-    Score,
-};
-
-use crate::constants::*;
+use super::*;
 
 #[derive(Component)]
 pub struct PlayerProjectile;
@@ -105,6 +94,7 @@ pub fn projectile_hits_segment(
     segment_query: Query<(Entity, &Transform, &Segment)>,
     mut event_writer: EventWriter<DespawnSegment>,
     asset_server: Res<AssetServer>,
+    game_assets: Res<GameAssets>,
     mut shroom_amount: ResMut<ShroomAmount>,
     mut score: ResMut<Score>,
 ) {
@@ -127,12 +117,7 @@ pub fn projectile_hits_segment(
                         .with_transform(segment_transform),
                 );
 
-                let (x, y) = (
-                    segment_transform.translation.x,
-                    segment_transform.translation.y,
-                );
-
-                commands.spawn(Mushroom::bundle(x, y, &asset_server, &mut shroom_amount));
+                Mushroom::spawn(segment_transform, &mut commands, &game_assets, &mut shroom_amount);
 
                 commands.entity(projectile_entity).despawn();
                 commands.entity(segment_entity).despawn();

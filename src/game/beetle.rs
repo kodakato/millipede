@@ -1,11 +1,7 @@
 // The beetle is responsible for spawning more shrooms
 // if the current amount of shrooms goes below the threshold
 
-use super::shroom::{Mushroom, ShroomAmount};
-use crate::constants::{
-    BEETLE_SPAWN_RATE, BEETLE_SPEED, MUSHROOM_MIN_AMOUNT, SPAWN_MARGIN, TOP_BOUND,
-};
-use bevy::{prelude::*, window::PrimaryWindow};
+use super::*;
 use rand::*;
 
 #[derive(Component)]
@@ -33,7 +29,7 @@ pub fn spawn_beetle(
     let x = rand::thread_rng().gen_range(0.0 + SPAWN_MARGIN..window.width() - SPAWN_MARGIN);
     let y = window.height();
 
-    let beetle_texture = asset_server.load("explosion.png");
+    let beetle_texture = asset_server.load("textures/explosion.png");
 
     // Spawn the beetle
     commands.spawn((
@@ -66,7 +62,7 @@ pub fn beetle_spawn_shroom(
     beetle_q: Query<&Transform, With<Beetle>>,
     mut commands: Commands,
     mut shroom_amount: ResMut<ShroomAmount>,
-    asset_server: Res<AssetServer>,
+    game_assets: Res<GameAssets>,
 ) {
     if let Ok(beetle_transform) = beetle_q.get_single() {
         // Check if below boundary
@@ -80,9 +76,11 @@ pub fn beetle_spawn_shroom(
             return;
         }
 
+
+
         let x = beetle_transform.translation.x;
         let y = beetle_transform.translation.y;
 
-        commands.spawn(Mushroom::bundle(x, y, &asset_server, &mut shroom_amount));
+        Mushroom::spawn(&Transform::from_xyz(x, y, 0.0), &mut commands, &game_assets, &mut shroom_amount)
     }
 }

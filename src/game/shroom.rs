@@ -1,4 +1,4 @@
-use bevy::{prelude::*, window::PrimaryWindow};
+use super::*;
 use rand::*;
 
 use crate::constants::*;
@@ -7,25 +7,21 @@ use crate::constants::*;
 pub struct Mushroom;
 
 impl Mushroom {
-    pub fn bundle(
-        x: f32,
-        y: f32,
-        asset_server: &Res<AssetServer>,
-        shroom_amount: &mut ResMut<ShroomAmount>,
-    ) -> (SpriteBundle, Self, Name, Health) {
-        shroom_amount.0 += 1;
+    pub fn spawn(location_transform: &Transform, commands: &mut Commands, game_assets: &Res<GameAssets>, shroom_amount: &mut ResMut<ShroomAmount>) {
+        let shroom_texture = &game_assets.shroom_texture;
 
-        let shroom_texture: Handle<Image> = asset_server.load("shroom.png");
-        (
-            SpriteBundle {
-                texture: shroom_texture,
-                transform: Transform::from_xyz(x, y, 0.0),
-                ..default()
-            },
-            Mushroom,
-            Name::from("Mushroom"),
-            Health(MUSHROOM_HEALTH),
-        )
+        commands.spawn((
+                Mushroom,
+                Health(MUSHROOM_HEALTH),
+                SpriteBundle {
+                    texture: shroom_texture.clone(),
+                    transform: *location_transform,
+                    ..default()
+                },
+        ));
+
+        // Add to shroom count
+        shroom_amount.0 += 1;
     }
 }
 
@@ -34,12 +30,10 @@ impl Mushroom {
 #[derive(Resource)]
 pub struct ShroomAmount(pub u8);
 
-#[derive(Component)]
-pub struct Health(pub i8);
 
 pub fn spawn_shroom_field(
     mut commands: Commands,
-    asset_server: Res<AssetServer>,
+    game_assets: Res<GameAssets>,
     window_query: Query<&Window, With<PrimaryWindow>>,
     mut shroom_amount: ResMut<ShroomAmount>,
 ) {
@@ -49,7 +43,7 @@ pub fn spawn_shroom_field(
         let x = rand::thread_rng().gen_range(0.0 + SPAWN_MARGIN..window.width() - SPAWN_MARGIN);
         let y = rand::thread_rng().gen_range(TOP_BOUND..window.height() - TOP_UI_HEIGHT);
 
-        commands.spawn(Mushroom::bundle(x, y, &asset_server, &mut shroom_amount));
+        Mushroom::spawn(&Transform::from_xyz(x, y, 0.0), &mut commands, &game_assets, &mut shroom_amount);
     }
 }
 
