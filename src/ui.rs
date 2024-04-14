@@ -1,4 +1,4 @@
-use crate::{constants::*, game::Score};
+use crate::{constants::*, game::{Score, player::Lives, level::Level}};
 use bevy::prelude::*;
 
 #[derive(Component)]
@@ -185,16 +185,35 @@ pub fn build_game_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
         });
 }
 
-pub fn update_game_ui(
-    mut commands: Commands,
+pub fn update_score_ui(
     mut score_query: Query<&mut Text, With<ScoreUi>>,
     score: Res<Score>,
 ) {
-    if !score.is_changed() {
-        return;
+    if score.is_changed() {
+        for mut text in score_query.iter_mut() {
+            text.sections[0].value = format!("{:07}", score.0);
+        }
     }
+}
 
-    for mut text in score_query.iter_mut() {
-        text.sections[0].value = format!("{:07}", score.0);
+pub fn update_lives_ui(
+    mut lives_query: Query<&mut Text, With<LivesUi>>,
+    lives: Res<Lives>,
+) {
+    if lives.is_changed() {
+        for mut text in lives_query.iter_mut() {
+            text.sections[0].value = format!("x {}", lives.0);
+        }
+    }
+}
+
+pub fn update_level_ui(
+    mut level_query: Query<&mut Text, With<LevelUi>>,
+    level: Res<Level>,
+) {
+    if level.is_changed() {
+        for mut text in level_query.iter_mut() {
+            text.sections[0].value = format!("Level {}", level.0);
+        }
     }
 }

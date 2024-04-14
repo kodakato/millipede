@@ -61,7 +61,13 @@ impl Plugin for GamePlugin {
                         .chain(),
                 )
                     .in_set(GameplaySet::Enemies),
-                (update_game_ui).in_set(GameplaySet::Ui),
+                (
+                    (
+                        update_level_ui,
+                        update_lives_ui,
+                        update_score_ui,
+                    )
+                ).in_set(GameplaySet::Ui),
                 ((check_if_change_level,)).run_if(in_state(LevelState::Unchanging)),
                 ((start_new_level).chain()).run_if(in_state(LevelState::Changing)),
             ),)
