@@ -5,29 +5,26 @@ pub struct GamePlugin;
 
 pub mod beetle;
 pub mod explosion;
+pub mod level;
 pub mod millipede;
 pub mod player;
 pub mod projectile;
 pub mod shroom;
 
+use crate::{constants::*, ui::*};
 use beetle::*;
 use explosion::*;
+use level::*;
 use millipede::*;
 use player::*;
 use projectile::*;
 use shroom::*;
-use crate::ui::*;
 
 impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             OnEnter(AppState::InGame),
-            (
-                spawn_player,
-                spawn_shroom_field,
-                spawn_millipede,
-            )
-                .chain(),
+            (spawn_player, spawn_shroom_field).chain(),
         )
         .add_systems(
             Update,
@@ -64,18 +61,19 @@ impl Plugin for GamePlugin {
                         .chain(),
                 )
                     .in_set(GameplaySet::Enemies),
-                (
-                    (
-                        update_game_ui
-                    )
-               )
-                    .in_set(GameplaySet::Ui)
+                (update_game_ui).in_set(GameplaySet::Ui),
+                ((check_if_change_level,)).run_if(in_state(LevelState::Unchanging)),
+                ((start_new_level).chain()).run_if(in_state(LevelState::Changing)),
             ),)
                 .run_if(in_state(GameState::Running))
                 .run_if(in_state(AppState::InGame)),
         )
         .insert_resource(SegmentPositions(HashMap::new()))
         .insert_resource(ShroomAmount(0))
+        .insert_resource(Lives(STARTING_LIVES))
+        .insert_resource(Score(0))
+        .insert_resource(Level(0))
+        .insert_resource(DownTimer(Timer::from_seconds(DOWNTIMER, TimerMode::Once)))
         .configure_sets(
             Update,
             (
@@ -84,7 +82,8 @@ impl Plugin for GamePlugin {
                 GameplaySet::Enemies,
             ),
         )
-        .add_event::<DespawnSegment>();
+        .add_event::<DespawnSegment>()
+        .init_state::<LevelState>();
     }
 }
 
@@ -96,5 +95,15 @@ pub enum GameplaySet {
     Player,
     Enemies,
     Projectile,
-    Ui
+    Ui,
 }
+
+#[derive(States, Debug, Clone, Eq, PartialEq, Hash, Default)]
+pub enum LevelState {
+    #[default]
+    Changing,
+    Unchanging,
+}
+
+#[derive(Resource)]
+pub struct Score(pub u32);

@@ -30,46 +30,55 @@ pub enum Segment {
 pub struct DespawnSegment(pub Entity);
 
 #[derive(Resource)]
-pub struct SegmentPositions(pub HashMap<Entity, Vec3>); // Pos, Vel
+pub struct SegmentPositions(pub HashMap<Entity, Vec3>); // Pos, Vec
 
-pub fn spawn_millipede(
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
-    window_query: Query<&Window, With<PrimaryWindow>>,
-) {
-    let window = window_query.get_single().unwrap();
-    let millipede_texture = asset_server.load("millipede.png");
-    let mut parent_entity: Option<Entity> = Some(
-        commands
-            .spawn((
-                SpriteBundle {
-                    texture: millipede_texture.clone(),
-                    transform: Transform::from_xyz(window.width() / 2.0, window.height(), 0.0),
-                    ..default()
-                },
-                Name::from("MillipedeSegment"),
-                Segment::Head {
-                    direction: Vec3::new(1.0, 0.0, 0.0),
-                },
-            ))
-            .id(),
-    );
+pub struct Millipede;
 
-    for _ in 1..NUM_OF_SEGMENTS {
-        let entity: Entity = commands
-            .spawn((
-                SpriteBundle {
-                    texture: millipede_texture.clone(),
-                    transform: Transform::from_xyz(window.width() / 2.0, window.height(), 0.0),
-                    ..default()
-                },
-                Name::from("MillipedeSegment"),
-                Segment::Body {
-                    parent: parent_entity,
-                },
-            ))
-            .id();
-        parent_entity = Some(entity);
+impl Millipede {
+    pub fn spawn(
+        mut commands: Commands,
+        asset_server: Res<AssetServer>,
+        window_query: Query<&Window, With<PrimaryWindow>>,
+        length: usize,
+    ) {
+        let window = window_query.get_single().unwrap();
+        let millipede_texture = asset_server.load("millipede.png");
+        let mut parent_entity: Option<Entity> = Some(
+            commands
+                .spawn((
+                    SpriteBundle {
+                        texture: millipede_texture.clone(),
+                        transform: Transform::from_xyz(
+                            window.width() / 2.0,
+                            window.height() - TOP_UI_HEIGHT,
+                            0.0,
+                        ),
+                        ..default()
+                    },
+                    Name::from("MillipedeSegment"),
+                    Segment::Head {
+                        direction: Vec3::new(1.0, 0.0, 0.0),
+                    },
+                ))
+                .id(),
+        );
+
+        for _ in 1..length {
+            let entity: Entity = commands
+                .spawn((
+                    SpriteBundle {
+                        texture: millipede_texture.clone(),
+                        transform: Transform::from_xyz(window.width() / 2.0, window.height(), 0.0),
+                        ..default()
+                    },
+                    Name::from("MillipedeSegment"),
+                    Segment::Body {
+                        parent: parent_entity,
+                    },
+                ))
+                .id();
+            parent_entity = Some(entity);
+        }
     }
 }
 

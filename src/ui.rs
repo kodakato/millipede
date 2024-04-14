@@ -1,5 +1,5 @@
+use crate::{constants::*, game::Score};
 use bevy::prelude::*;
-use crate::{Score, constants::*};
 
 #[derive(Component)]
 pub struct MainMenu;
@@ -10,13 +10,10 @@ pub struct PlayButton;
 #[derive(Component)]
 pub struct QuitButton;
 
-
-
 // Main Menu
 pub fn spawn_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
     build_main_menu(&mut commands, &asset_server);
 }
-
 
 pub fn despawn_main_menu(mut commands: Commands, main_menu_query: Query<Entity, With<MainMenu>>) {
     if let Ok(main_menu_entity) = main_menu_query.get_single() {
@@ -25,10 +22,10 @@ pub fn despawn_main_menu(mut commands: Commands, main_menu_query: Query<Entity, 
 }
 
 pub fn build_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>) -> Entity {
-    let main_menu_entity = commands.spawn(
-        (
+    let main_menu_entity = commands
+        .spawn((
             NodeBundle {
-                style: Style{
+                style: Style {
                     width: Val::Percent(100.0),
                     height: Val::Percent(100.0),
                     justify_content: JustifyContent::Center,
@@ -38,85 +35,166 @@ pub fn build_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>)
                 ..default()
             },
             MainMenu,
-        )
-    ).with_children(|parent| {
-        parent.spawn(
-            (
-                TextBundle {
-                    text: Text::from_section("Millipede!",
-                                             TextStyle {
-                                                 font_size: 60.0,
-                                                 color: Color::GREEN,
-                                                ..default()
-                                             }),
-                    ..default()
-                },
-            )
-        );
-
-    }
-    )
-    .id();
+        ))
+        .with_children(|parent| {
+            parent.spawn((TextBundle {
+                text: Text::from_section(
+                    "Millipede!",
+                    TextStyle {
+                        font_size: 60.0,
+                        color: Color::GREEN,
+                        ..default()
+                    },
+                ),
+                ..default()
+            },));
+        })
+        .id();
     main_menu_entity
 }
 
 #[derive(Component)]
 pub struct ScoreUi;
 
+#[derive(Component)]
+pub struct LivesUi;
 
-pub fn build_game_ui(mut commands: Commands) {
-    commands.spawn(
-        (
-            NodeBundle{
-                style: Style {
-                    width: Val::Percent(100.0),
-                    height: Val::Percent(100.0),
-                    ..default()
-                },
+#[derive(Component)]
+pub struct LevelUi;
+
+pub fn build_game_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
+    // Load Ui images
+    let player_icon = asset_server.load("snake.png");
+    commands
+        .spawn(NodeBundle {
+            style: Style {
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
                 ..default()
-            }
-        )
-    ).with_children( |parent| {// Top UI bar
-        parent.spawn(
-            NodeBundle{
-                style: Style {
-                    width: Val::Percent(100.0),
-                    height: Val::Percent(5.0),
-                    justify_content: JustifyContent::Center,
-                    align_items: AlignItems::Center,
-                    ..default()
-                },
-                ..default()
-            }
-        ).with_children(|parent| {
-            parent.spawn(
-                (
-                    TextBundle {
-                        text: Text::from_section("0",
-                                                 TextStyle {
-                                                     font_size: 20.0,
-                                                     color: TEXT_COLOR,
-                                                    ..default()
-                                                 }).with_justify(JustifyText::Center),
-                        background_color: BackgroundColor(Color::rgba(0.0, 0.0, 0.0, TEXT_TRANSPARENCY)),
+            },
+            ..default()
+        })
+        .with_children(|parent| {
+            // Top UI bar
+            parent
+                .spawn(NodeBundle {
+                    style: Style {
+                        width: Val::Percent(100.0),
+                        height: Val::Percent(3.0),
+                        flex_direction: FlexDirection::Row, // Use row layout
+                        justify_content: JustifyContent::SpaceBetween, // Distributes space between children
                         ..default()
                     },
-                    ScoreUi,
-                )
-            );
+                    background_color: TEXT_BACKGROUND.into(),
+                    ..default()
+                })
+                .with_children(|parent| {
+                    // Lives Count on the left
+                    parent
+                        .spawn(NodeBundle {
+                            style: Style {
+                                width: Val::Percent(33.0),
+                                height: Val::Percent(100.0),
+                                justify_content: JustifyContent::Start,
+                                ..default()
+                            },
+                            ..default()
+                        })
+                        .with_children(|parent| {
+                            parent.spawn(ImageBundle {
+                                style: Style {
+                                    height: Val::Px(16.0),
+                                    width: Val::Px(16.0),
+                                    ..default()
+                                },
+                                image: UiImage::new(player_icon),
+                                ..default()
+                            });
+                            parent.spawn((
+                                TextBundle {
+                                    text: Text::from_section(
+                                        "x 1",
+                                        TextStyle {
+                                            font_size: TEXT_SIZE,
+                                            color: TEXT_COLOR,
+                                            ..default()
+                                        },
+                                    ),
+                                    ..default()
+                                },
+                                LivesUi,
+                            ));
+                        });
 
+                    // Score in the center
+                    parent
+                        .spawn(NodeBundle {
+                            style: Style {
+                                width: Val::Percent(34.0),
+                                height: Val::Percent(100.0),
+                                justify_content: JustifyContent::Center,
+                                ..default()
+                            },
+                            ..default()
+                        })
+                        .with_children(|parent| {
+                            parent.spawn((
+                                TextBundle {
+                                    text: Text::from_section(
+                                        "0",
+                                        TextStyle {
+                                            font_size: TEXT_SIZE,
+                                            color: TEXT_COLOR,
+                                            ..default()
+                                        },
+                                    ),
+                                    ..default()
+                                },
+                                ScoreUi,
+                            ));
+                        });
+
+                    // Level Count on the right
+                    parent
+                        .spawn(NodeBundle {
+                            style: Style {
+                                width: Val::Percent(33.0),
+                                height: Val::Percent(100.0),
+                                justify_content: JustifyContent::End,
+                                ..default()
+                            },
+                            ..default()
+                        })
+                        .with_children(|parent| {
+                            parent.spawn((
+                                TextBundle {
+                                    text: Text::from_section(
+                                        "1",
+                                        TextStyle {
+                                            font_size: TEXT_SIZE,
+                                            color: TEXT_COLOR,
+                                            ..default()
+                                        },
+                                    ),
+                                    ..default()
+                                },
+                                LevelUi,
+                            ));
+                        });
+                });
         });
-
-    }
-    );
 }
 
-pub fn update_game_ui(mut commands: Commands, mut score_query: Query<&mut Text, With<ScoreUi>>, score: Res<Score>) {
+pub fn update_game_ui(
+    mut commands: Commands,
+    mut score_query: Query<&mut Text, With<ScoreUi>>,
+    score: Res<Score>,
+) {
     if !score.is_changed() {
-        return
+        return;
     }
 
     for mut text in score_query.iter_mut() {
-            text.sections[0].value = format!("{:06}", score.0);
+        text.sections[0].value = format!("{:07}", score.0);
     }
 }

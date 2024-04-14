@@ -47,7 +47,7 @@ pub fn spawn_shroom_field(
 
     for _ in 0..MUSHROOM_MAX_AMOUNT {
         let x = rand::thread_rng().gen_range(0.0 + SPAWN_MARGIN..window.width() - SPAWN_MARGIN);
-        let y = rand::thread_rng().gen_range(TOP_BOUND..window.height());
+        let y = rand::thread_rng().gen_range(TOP_BOUND..window.height() - TOP_UI_HEIGHT);
 
         commands.spawn(Mushroom::bundle(x, y, &asset_server, &mut shroom_amount));
     }

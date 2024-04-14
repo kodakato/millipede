@@ -6,6 +6,9 @@ use crate::constants::*;
 #[derive(Component)]
 pub struct Player;
 
+#[derive(Resource)]
+pub struct Lives(pub u8);
+
 pub fn spawn_player(
     mut commands: Commands,
     asset_server: Res<AssetServer>,

@@ -1,15 +1,15 @@
 use bevy::{prelude::*, window::PrimaryWindow};
 
 use super::{
+    beetle::Beetle,
     explosion::ExplosionBundle,
     millipede::{DespawnSegment, Segment},
     player::Player,
     shroom::{Health, Mushroom, ShroomAmount},
-    beetle::Beetle,
+    Score,
 };
 
 use crate::constants::*;
-use crate::Score;
 
 #[derive(Component)]
 pub struct PlayerProjectile;
@@ -139,9 +139,9 @@ pub fn projectile_hits_segment(
 
                 // Add to score
                 match segment {
-                    Segment::Head { direction: _ }=> {
+                    Segment::Head { direction: _ } => {
                         score.0 += HEAD_REWARD;
-                    },
+                    }
                     Segment::Body { parent: _ } => {
                         score.0 += SEGMENT_REWARD;
                     }
@@ -169,7 +169,6 @@ pub fn projectile_hits_beetle(
                 .translation
                 .distance(beetle_transform.translation);
             if distance < projectile_radius + segment_radius {
-                
                 let explosion_texture = asset_server.load("explosion.png");
                 // Spawn explosion
                 commands.spawn(
@@ -177,7 +176,6 @@ pub fn projectile_hits_beetle(
                         .with_texture(explosion_texture)
                         .with_transform(beetle_transform),
                 );
-
 
                 commands.entity(projectile_entity).despawn();
                 commands.entity(beetle_entity).despawn();
