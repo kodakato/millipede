@@ -3,12 +3,27 @@ use super::*;
 #[derive(Component)]
 pub struct PlayerProjectile;
 
+impl PlayerProjectile {
+    pub fn spawn(location_transform: &Transform, commands: &mut Commands, game_assets: &Res<GameAssets>,) {
+        let projectile_texture = &game_assets.projectile_texture;
+        
+        commands.spawn((
+            PlayerProjectile,
+            SpriteBundle {
+                texture: projectile_texture.clone(),
+                transform: *location_transform,
+                ..default()
+            },
+                ));
+    }
+}
+
 pub fn shoot_projectile(
     mut commands: Commands,
     player_query: Query<&Transform, With<Player>>,
     projectile_query: Query<Entity, With<PlayerProjectile>>,
     input: Res<ButtonInput<KeyCode>>,
-    asset_server: Res<AssetServer>,
+    game_assets: Res<GameAssets>,
 ) {
     // Check if a projectile already exists
     if !projectile_query.is_empty() {
@@ -20,17 +35,7 @@ pub fn shoot_projectile(
         return;
     }
     if let Ok(player_transform) = player_query.get_single() {
-        let projectile_texture = asset_server.load("stinger.png");
-        let projectile_transform = *player_transform;
-        commands.spawn((
-            Name::from("Player Projectile"),
-            PlayerProjectile,
-            SpriteBundle {
-                texture: projectile_texture,
-                transform: projectile_transform,
-                ..default()
-            },
-        ));
+        PlayerProjectile::spawn(&player_transform, &mut commands, &game_assets)
     }
 }
 
@@ -93,7 +98,6 @@ pub fn projectile_hits_segment(
     projectile_query: Query<(Entity, &Transform), With<PlayerProjectile>>,
     segment_query: Query<(Entity, &Transform, &Segment)>,
     mut event_writer: EventWriter<DespawnSegment>,
-    asset_server: Res<AssetServer>,
     game_assets: Res<GameAssets>,
     mut shroom_amount: ResMut<ShroomAmount>,
     mut score: ResMut<Score>,
@@ -109,15 +113,9 @@ pub fn projectile_hits_segment(
             if distance < projectile_radius + segment_radius {
                 event_writer.send(DespawnSegment(segment_entity));
 
-                let explosion_texture = asset_server.load("explosion.png");
-                // Spawn explosion
-                commands.spawn(
-                    ExplosionBundle::default()
-                        .with_texture(explosion_texture)
-                        .with_transform(segment_transform),
-                );
+                Explosion::spawn(&segment_transform, &mut commands, &game_assets);
 
-                Mushroom::spawn(segment_transform, &mut commands, &game_assets, &mut shroom_amount);
+                Mushroom::spawn(&segment_transform, &mut commands, &game_assets, &mut shroom_amount);
 
                 commands.entity(projectile_entity).despawn();
                 commands.entity(segment_entity).despawn();
@@ -142,8 +140,9 @@ pub fn projectile_hits_beetle(
     mut commands: Commands,
     projectile_query: Query<(Entity, &Transform), With<PlayerProjectile>>,
     beetle_query: Query<(Entity, &Transform), With<Beetle>>,
-    asset_server: Res<AssetServer>,
+    game_assets: Res<GameAssets>,
     mut score: ResMut<Score>,
+    mut shroom_amount: ResMut<ShroomAmount>,
 ) {
     if let Ok((projectile_entity, projectile_transform)) = projectile_query.get_single() {
         for (beetle_entity, beetle_transform) in beetle_query.iter() {
@@ -154,14 +153,10 @@ pub fn projectile_hits_beetle(
                 .translation
                 .distance(beetle_transform.translation);
             if distance < projectile_radius + segment_radius {
-                let explosion_texture = asset_server.load("explosion.png");
                 // Spawn explosion
-                commands.spawn(
-                    ExplosionBundle::default()
-                        .with_texture(explosion_texture)
-                        .with_transform(beetle_transform),
-                );
-
+                Explosion::spawn(&beetle_transform, &mut commands, &game_assets);
+                // Spawn mushroom
+                Mushroom::spawn(&beetle_transform, &mut commands, &game_assets, &mut shroom_amount);
                 commands.entity(projectile_entity).despawn();
                 commands.entity(beetle_entity).despawn();
 

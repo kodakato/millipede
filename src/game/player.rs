@@ -1,30 +1,47 @@
-use bevy::{prelude::*, window::PrimaryWindow};
-
-use crate::constants::*;
+use super::*;
 
 // Components
 #[derive(Component)]
 pub struct Player;
+
+impl Player {
+    pub fn spawn(location_transform: &Transform, commands: &mut Commands, game_assets: &Res<GameAssets>,) {
+        let player_texture = &game_assets.player_texture;
+
+        // Spawn Player
+        commands.spawn((
+            SpriteBundle {
+                texture: player_texture.clone(),
+                transform: *location_transform,
+                ..default()
+            },
+            Name::from("Player"),
+            Player,
+        ));
+    }
+}
 
 #[derive(Resource)]
 pub struct Lives(pub u8);
 
 pub fn spawn_player(
     mut commands: Commands,
-    asset_server: Res<AssetServer>,
+    game_assets: Res<GameAssets>,
     window_query: Query<&Window, With<PrimaryWindow>>,
 ) {
     let window = window_query.get_single().unwrap();
-    let player_model = asset_server.load("snake.png");
-    // Spawn Player
+    
+    let starting_transform = Transform::from_xyz(window.width() / 2.0, PLAYER_SPAWN_Y, 0.0);
+    
+    let player_texture = &game_assets.player_texture;
+
     commands.spawn((
+        Player,
         SpriteBundle {
-            texture: player_model,
-            transform: Transform::from_xyz(window.width() / 2.0, 20.0, 0.0),
+            texture: player_texture.clone(),
+            transform: starting_transform,
             ..default()
         },
-        Name::from("Player"),
-        Player,
     ));
 }
 

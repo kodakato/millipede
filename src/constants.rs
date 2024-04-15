@@ -24,6 +24,7 @@ pub const STARTING_LIVES: u8 = 3;
 // Map
 pub const TOP_BOUND: f32 = 100.0;
 pub const DOWNTIMER: f32 = 2.0;
+pub const PLAYER_SPAWN_Y: f32 = 20.0;
 
 /// Mushrooms
 pub const MUSHROOM_SIZE: f32 = 11.0;

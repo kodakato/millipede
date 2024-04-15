@@ -1,10 +1,4 @@
-use bevy::{prelude::*, window::PrimaryWindow};
-
-use super::{
-    millipede::{Millipede, Segment},
-    LevelState,
-};
-use crate::constants::*;
+use super::*;
 
 #[derive(Resource)]
 pub struct Level(pub u32);
@@ -32,8 +26,8 @@ pub fn check_if_change_level(
 pub fn start_new_level(
     mut timer: ResMut<DownTimer>,
     time: Res<Time>,
-    commands: Commands,
-    asset_server: Res<AssetServer>,
+    mut commands: Commands,
+    game_assets: Res<GameAssets>,
     window_query: Query<&Window, With<PrimaryWindow>>,
     mut next_level_state: ResMut<NextState<LevelState>>,
 ) {
@@ -42,13 +36,19 @@ pub fn start_new_level(
     if !timer.0.just_finished() {
         return;
     }
+    let window = window_query.get_single().unwrap();
 
+    let x = window.width() / 2.0;
+    let y = window.height() - TOP_UI_HEIGHT;
+    
+    let starting_transform = Transform::from_xyz(x, y, 0.0);
+    
     // Spawn new milipede
     Millipede::spawn(
-        commands,
-        asset_server,
-        window_query,
         MILLIPEDE_STARTING_LENGTH,
+        &starting_transform,
+        &mut commands,
+        &game_assets,
     );
 
     // Reset to the unchanging level state

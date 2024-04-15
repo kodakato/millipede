@@ -1,8 +1,5 @@
 use bevy::utils::HashMap;
-use bevy::{prelude::*, window::PrimaryWindow};
-
-use super::{explosion::ExplosionBundle, player::Player, shroom::Mushroom};
-use crate::{constants::*, AppState};
+use super::*;
 
 pub struct Body {
     parent: Option<Entity>,
@@ -36,23 +33,18 @@ pub struct Millipede;
 
 impl Millipede {
     pub fn spawn(
-        mut commands: Commands,
-        asset_server: Res<AssetServer>,
-        window_query: Query<&Window, With<PrimaryWindow>>,
         length: usize,
+        starting_transform: &Transform,
+        commands: &mut Commands,
+        game_assets: &Res<GameAssets>,    
     ) {
-        let window = window_query.get_single().unwrap();
-        let millipede_texture = asset_server.load("millipede.png");
+        let millipede_texture = &game_assets.segment_texture;
         let mut parent_entity: Option<Entity> = Some(
             commands
                 .spawn((
                     SpriteBundle {
                         texture: millipede_texture.clone(),
-                        transform: Transform::from_xyz(
-                            window.width() / 2.0,
-                            window.height() - TOP_UI_HEIGHT,
-                            0.0,
-                        ),
+                        transform: *starting_transform,
                         ..default()
                     },
                     Name::from("MillipedeSegment"),
@@ -68,7 +60,7 @@ impl Millipede {
                 .spawn((
                     SpriteBundle {
                         texture: millipede_texture.clone(),
-                        transform: Transform::from_xyz(window.width() / 2.0, window.height(), 0.0),
+                        transform: *starting_transform,
                         ..default()
                     },
                     Name::from("MillipedeSegment"),
@@ -201,7 +193,7 @@ pub fn segment_hits_player(
     player_q: Query<(Entity, &Transform), With<Player>>,
     segment_q: Query<&Transform, With<Segment>>,
     mut next_state: ResMut<NextState<AppState>>,
-    asset_server: Res<AssetServer>,
+    game_assets: Res<GameAssets>,
 ) {
     let player_radius = PLAYER_SIZE / 2.0;
     let segment_radius = SEGMENT_SIZE / 2.0;
@@ -211,12 +203,8 @@ pub fn segment_hits_player(
                 .translation
                 .distance(segment_transform.translation);
             if distance < player_radius + segment_radius {
-                let explosion_texture = asset_server.load("explosion.png");
-                commands.spawn(
-                    ExplosionBundle::default()
-                        .with_texture(explosion_texture)
-                        .with_transform(segment_transform),
-                );
+                Explosion::spawn(&player_transform, &mut commands, &game_assets);
+
                 commands.entity(player_entity).despawn();
                 next_state.set(AppState::GameOver);
             }

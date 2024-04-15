@@ -1,44 +1,26 @@
-use crate::constants::{EXPLOSION_DURATION, EXPLOSION_SIZE};
-use bevy::prelude::*;
+use super::*;
 use std::time::Duration;
 
 #[derive(Component)]
-pub struct ExplosionTimer(pub Timer);
+pub struct Explosion(pub Timer);
 
-#[derive(Bundle)]
-pub struct ExplosionBundle {
-    pub duration: ExplosionTimer,
-    pub sprite_bundle: SpriteBundle,
-}
 
-impl Default for ExplosionBundle {
-    fn default() -> Self {
-        Self {
-            duration: ExplosionTimer(Timer::from_seconds(EXPLOSION_DURATION, TimerMode::Once)),
-            sprite_bundle: SpriteBundle {
-                sprite: Sprite {
-                    custom_size: Some(Vec2::new(EXPLOSION_SIZE, EXPLOSION_SIZE)),
-                    ..default()
-                },
+impl Explosion {
+    pub fn spawn(location_transform: &Transform, commands: &mut Commands, game_assets: &Res<GameAssets>) {
+        let explosion_texture = &game_assets.explosion_texture;
+
+        commands.spawn((
+            Explosion(Timer::new(Duration::from_secs_f32(EXPLOSION_DURATION), TimerMode::Once)),
+            SpriteBundle {
+                texture: explosion_texture.clone(),
                 ..default()
             },
-        }
-    }
-}
-
-impl ExplosionBundle {
-    pub fn with_texture(mut self, texture: Handle<Image>) -> Self {
-        self.sprite_bundle.texture = texture;
-        self
-    }
-    pub fn with_transform(mut self, transform: &Transform) -> Self {
-        self.sprite_bundle.transform = transform.clone();
-        self
+        ));
     }
 }
 
 pub fn despawn_explosions(
-    mut explosion_query: Query<(Entity, &mut ExplosionTimer), With<ExplosionTimer>>,
+    mut explosion_query: Query<(Entity, &mut Explosion)>,
     mut commands: Commands,
     time: Res<Time>,
 ) {
