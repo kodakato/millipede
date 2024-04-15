@@ -7,11 +7,27 @@ use rand::*;
 #[derive(Component)]
 pub struct Beetle;
 
+impl Beetle {
+    pub fn spawn(starting_transform: &Transform, commands: &mut Commands, game_assets: &Res<GameAssets>,) {
+        let beetle_texture = &game_assets.beetle_texture;
+        
+        commands.spawn((
+                Beetle,
+                SpriteBundle {
+                    texture: beetle_texture.clone(),
+                    transform: *starting_transform,
+                    ..default()
+                },
+                Name::from("Beetle"),
+        ));
+    }
+}
+
 pub fn spawn_beetle(
     mut commands: Commands,
     shroom_amount: ResMut<ShroomAmount>,
     window_q: Query<&Window, With<PrimaryWindow>>,
-    asset_server: Res<AssetServer>,
+    game_assets: Res<GameAssets>,
     beetle_q: Query<&Beetle>,
 ) {
     // Check if under the threshold
@@ -29,18 +45,8 @@ pub fn spawn_beetle(
     let x = rand::thread_rng().gen_range(0.0 + SPAWN_MARGIN..window.width() - SPAWN_MARGIN);
     let y = window.height();
 
-    let beetle_texture = asset_server.load("textures/explosion.png");
 
-    // Spawn the beetle
-    commands.spawn((
-        SpriteBundle {
-            texture: beetle_texture,
-            transform: Transform::from_xyz(x, y, 0.0),
-            ..default()
-        },
-        Beetle,
-        Name::from("Beetle"),
-    ));
+    Beetle::spawn(&Transform::from_xyz(x, y, 0.0), &mut commands, &game_assets)
 }
 
 pub fn despawn_beetle(mut commands: Commands, beetle_q: Query<(Entity, &Transform), With<Beetle>>) {

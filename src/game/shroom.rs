@@ -18,6 +18,7 @@ impl Mushroom {
                     transform: *location_transform,
                     ..default()
                 },
+                Name::from("Mushroom"),
         ));
 
         // Add to shroom count

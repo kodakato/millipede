@@ -13,8 +13,10 @@ impl Explosion {
             Explosion(Timer::new(Duration::from_secs_f32(EXPLOSION_DURATION), TimerMode::Once)),
             SpriteBundle {
                 texture: explosion_texture.clone(),
+                transform: location_transform.clone(),
                 ..default()
             },
+            Name::from("Explosion"),
         ));
     }
 }

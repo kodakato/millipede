@@ -33,16 +33,8 @@ pub fn spawn_player(
     
     let starting_transform = Transform::from_xyz(window.width() / 2.0, PLAYER_SPAWN_Y, 0.0);
     
-    let player_texture = &game_assets.player_texture;
+    Player::spawn(&starting_transform, &mut commands, &game_assets);
 
-    commands.spawn((
-        Player,
-        SpriteBundle {
-            texture: player_texture.clone(),
-            transform: starting_transform,
-            ..default()
-        },
-    ));
 }
 
 pub fn move_player(
