@@ -1,4 +1,4 @@
-use crate::{constants::*, game::{Score, player::Lives, level::Level}};
+use crate::{constants::*, game::{Score, player::Lives, level::Level, assets::*}};
 use bevy::prelude::*;
 
 #[derive(Component)]
@@ -62,9 +62,9 @@ pub struct LivesUi;
 #[derive(Component)]
 pub struct LevelUi;
 
-pub fn build_game_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
+pub fn build_game_ui(mut commands: Commands, game_assets: Res<GameAssets>) {
+    let player_icon = &game_assets.player_texture;
     // Load Ui images
-    let player_icon = asset_server.load("snake.png");
     commands
         .spawn(NodeBundle {
             style: Style {
@@ -107,7 +107,7 @@ pub fn build_game_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
                                     width: Val::Px(16.0),
                                     ..default()
                                 },
-                                image: UiImage::new(player_icon),
+                                image: UiImage::new(player_icon.clone()),
                                 ..default()
                             });
                             parent.spawn((
