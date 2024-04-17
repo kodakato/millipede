@@ -29,7 +29,7 @@ pub fn despawn_explosions(
     for (entity, mut explosion_timer) in explosion_query.iter_mut() {
         explosion_timer
             .0
-            .tick(Duration::from_secs_f32(time.delta_seconds()));
+            .tick(time.delta());
         if explosion_timer.0.just_finished() {
             commands.entity(entity).despawn();
         }

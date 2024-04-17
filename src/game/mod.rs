@@ -11,6 +11,7 @@ pub mod player;
 pub mod projectile;
 pub mod shroom;
 pub mod assets;
+pub mod spider;
 
 use crate::{constants::*, ui::*};
 use beetle::*;
@@ -20,6 +21,7 @@ use millipede::*;
 use player::*;
 use projectile::*;
 use shroom::*;
+use spider::*;
 use assets::*;
 
 impl Plugin for GamePlugin {
@@ -59,8 +61,16 @@ impl Plugin for GamePlugin {
                         change_direction,
                         collide_with_shroom,
                         segment_hits_player,
+
                     )
                         .chain(),
+                    (
+                        spawn_spider,
+                        set_spider_direction,
+                        move_spider,
+                        despawn_spider,
+                        confine_spider_movement,
+                    ).chain(),
                 )
                     .in_set(GameplaySet::Enemies),
                 (
@@ -82,6 +92,7 @@ impl Plugin for GamePlugin {
         .insert_resource(Score(0))
         .insert_resource(Level(0))
         .insert_resource(DownTimer(Timer::from_seconds(DOWNTIMER, TimerMode::Once)))
+        .insert_resource(SpiderTimer(Timer::from_seconds(SPIDER_TIMER, TimerMode::Once)))
         .init_resource::<GameAssets>()
         .configure_sets(
             Update,

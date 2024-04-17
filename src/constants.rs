@@ -48,6 +48,14 @@ pub const EXPLOSION_SIZE: f32 = 22.0;
 pub const BEETLE_SPEED: f32 = 500.0;
 pub const BEETLE_SPAWN_RATE: u8 = 5;
 
+// Spider
+pub const SPIDER_TIMER: f32 = 2.0;
+pub const SPIDER_SPAWN_RATE: f64 = 1.0;
+pub const SPIDER_AVERAGE_SPAWN_HEIGHT: f32 = 100.0;
+pub const SPIDER_DIRECTION_CHANGE_RATE: f64 = 0.07;
+pub const SPIDER_SPEED: f32 = 275.0;
+pub const SPIDER_ATTACK_RATE: f64 = 0.05;
+
 // Scoring
 pub const MUSHROOM_REWARD: u32 = 1;
 pub const SEGMENT_REWARD: u32 = 10;
@@ -59,3 +67,5 @@ pub const TEXT_COLOR: Color = Color::rgb(102.0 / 255.0, 255.0 / 255.0, 143.0 / 2
 pub const TEXT_BACKGROUND: Color = Color::rgba(0.0 / 255.0, 51.0 / 255.0, 0.0 / 255.0, 1.0);
 pub const TEXT_SIZE: f32 = 20.0;
 pub const TOP_UI_HEIGHT: f32 = 24.0;
+
+

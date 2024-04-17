@@ -30,6 +30,7 @@ pub fn start_new_level(
     game_assets: Res<GameAssets>,
     window_query: Query<&Window, With<PrimaryWindow>>,
     mut next_level_state: ResMut<NextState<LevelState>>,
+    mut level: ResMut<Level>,
 ) {
     // Wait until the downtime is over
     timer.0.tick(time.delta());
@@ -50,6 +51,8 @@ pub fn start_new_level(
         &mut commands,
         &game_assets,
     );
+
+    level.0 += 1;
 
     // Reset to the unchanging level state
     next_level_state.set(LevelState::Unchanging);
