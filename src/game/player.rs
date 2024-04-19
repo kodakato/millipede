@@ -5,7 +5,11 @@ use super::*;
 pub struct Player;
 
 impl Player {
-    pub fn spawn(location_transform: &Transform, commands: &mut Commands, game_assets: &Res<GameAssets>,) {
+    pub fn spawn(
+        location_transform: &Transform,
+        commands: &mut Commands,
+        game_assets: &Res<GameAssets>,
+    ) {
         let player_texture = &game_assets.player_texture;
 
         // Spawn Player
@@ -30,11 +34,10 @@ pub fn spawn_player(
     window_query: Query<&Window, With<PrimaryWindow>>,
 ) {
     let window = window_query.get_single().unwrap();
-    
-    let starting_transform = Transform::from_xyz(window.width() / 2.0, PLAYER_SPAWN_Y, 0.0);
-    
-    Player::spawn(&starting_transform, &mut commands, &game_assets);
 
+    let starting_transform = Transform::from_xyz(window.width() / 2.0, PLAYER_SPAWN_Y, 0.0);
+
+    Player::spawn(&starting_transform, &mut commands, &game_assets);
 }
 
 pub fn move_player(

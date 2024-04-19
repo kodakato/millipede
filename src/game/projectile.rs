@@ -4,9 +4,13 @@ use super::*;
 pub struct PlayerProjectile;
 
 impl PlayerProjectile {
-    pub fn spawn(location_transform: &Transform, commands: &mut Commands, game_assets: &Res<GameAssets>,) {
+    pub fn spawn(
+        location_transform: &Transform,
+        commands: &mut Commands,
+        game_assets: &Res<GameAssets>,
+    ) {
         let projectile_texture = &game_assets.projectile_texture;
-        
+
         commands.spawn((
             PlayerProjectile,
             SpriteBundle {
@@ -14,7 +18,7 @@ impl PlayerProjectile {
                 transform: *location_transform,
                 ..default()
             },
-                ));
+        ));
     }
 }
 
@@ -111,11 +115,22 @@ pub fn projectile_hits_segment(
                 .translation
                 .distance(segment_transform.translation);
             if distance < projectile_radius + segment_radius {
-                event_writer.send(DespawnSegment(segment_entity));
+                // Pass in the x direction if its a head
+                if let Segment::Head { direction } = segment {
+                    event_writer.send(DespawnSegment(segment_entity, direction.x));
+                } else {
+                    event_writer.send(DespawnSegment(segment_entity, 1.0));
+                }
+                
 
                 Explosion::spawn(&segment_transform, &mut commands, &game_assets);
 
-                Mushroom::spawn(&segment_transform, &mut commands, &game_assets, &mut shroom_amount);
+                Mushroom::spawn(
+                    &segment_transform,
+                    &mut commands,
+                    &game_assets,
+                    &mut shroom_amount,
+                );
 
                 commands.entity(projectile_entity).despawn();
                 commands.entity(segment_entity).despawn();
@@ -156,12 +171,49 @@ pub fn projectile_hits_beetle(
                 // Spawn explosion
                 Explosion::spawn(&beetle_transform, &mut commands, &game_assets);
                 // Spawn mushroom
-                Mushroom::spawn(&beetle_transform, &mut commands, &game_assets, &mut shroom_amount);
+                Mushroom::spawn(
+                    &beetle_transform,
+                    &mut commands,
+                    &game_assets,
+                    &mut shroom_amount,
+                );
                 commands.entity(projectile_entity).despawn();
                 commands.entity(beetle_entity).despawn();
 
                 // Add to score
                 score.0 += BEETLE_REWARD;
+
+                return;
+            }
+        }
+    }
+}
+
+pub fn projectile_hits_spider(
+    mut commands: Commands,
+    projectile_query: Query<(Entity, &Transform), With<PlayerProjectile>>,
+    spider_query: Query<(Entity, &Transform), With<Spider>>,
+    game_assets: Res<GameAssets>,
+    mut score: ResMut<Score>,
+    mut spider_timer: ResMut<SpiderTimer>,
+) {
+    if let Ok((projectile_entity, projectile_transform)) = projectile_query.get_single() {
+        for (spider_entity, spider_transform) in spider_query.iter() {
+            let projectile_radius = PROJECTILE_SIZE / 2.0;
+            let segment_radius = SEGMENT_SIZE / 2.0;
+
+            let distance = projectile_transform
+                .translation
+                .distance(spider_transform.translation);
+            if distance < projectile_radius + segment_radius {
+                // Spawn explosion
+                Explosion::spawn(&spider_transform, &mut commands, &game_assets);
+                commands.entity(projectile_entity).despawn();
+
+                Spider::despawn(spider_entity, &mut commands, spider_timer);
+
+                // Add to score
+                score.0 += SPIDER_REWARD;
 
                 return;
             }

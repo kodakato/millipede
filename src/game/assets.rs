@@ -1,6 +1,5 @@
 use super::*;
 
-
 #[derive(Resource)]
 pub struct GameAssets {
     pub player_texture: Handle<Image>,
@@ -10,7 +9,6 @@ pub struct GameAssets {
     pub shroom_texture: Handle<Image>,
     pub spider_texture: Handle<Image>,
     pub explosion_texture: Handle<Image>,
-
 }
 
 impl FromWorld for GameAssets {
@@ -27,4 +25,3 @@ impl FromWorld for GameAssets {
         }
     }
 }
-

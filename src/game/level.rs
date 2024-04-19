@@ -31,6 +31,7 @@ pub fn start_new_level(
     window_query: Query<&Window, With<PrimaryWindow>>,
     mut next_level_state: ResMut<NextState<LevelState>>,
     mut level: ResMut<Level>,
+    mut game_vars: ResMut<GameVariables>,
 ) {
     // Wait until the downtime is over
     timer.0.tick(time.delta());
@@ -41,12 +42,37 @@ pub fn start_new_level(
 
     let x = window.width() / 2.0;
     let y = window.height() - TOP_UI_HEIGHT;
-    
+
     let starting_transform = Transform::from_xyz(x, y, 0.0);
     
+    // Set millipede
+    if game_vars.millipede_length < MILLIPEDE_MAX_LENGTH {
+        game_vars.millipede_length += 1;
+    }
+    game_vars.millipede_speed *= 1.001;
+
+
+    // Set Spider
+    game_vars.spider_speed *= 1.001;
+    game_vars.spider_attack_rate *= 1.001;
+    game_vars.spider_leave_rate /= 1.01;
+    
+    if level.0 <= 5 {
+        game_vars.spider_timer_length = SPIDER_TIMER;
+    } else if level.0 <= 10 {
+        game_vars.spider_timer_length = SPIDER_TIMER - 4.0;
+        game_vars.spider_reward *= 2;
+        game_vars.spider_average_spawn_height = SPIDER_AVERAGE_SPAWN_HEIGHT - 150.0;
+    } else {
+        game_vars.spider_timer_length = SPIDER_TIMER - 8.0;
+        game_vars.spider_reward *= 2;
+        game_vars.spider_average_spawn_height = SPIDER_AVERAGE_SPAWN_HEIGHT - 250.0;
+    }
+
+
     // Spawn new milipede
     Millipede::spawn(
-        MILLIPEDE_STARTING_LENGTH,
+        game_vars.millipede_length,
         &starting_transform,
         &mut commands,
         &game_assets,

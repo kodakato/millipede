@@ -1,5 +1,5 @@
-use bevy::utils::HashMap;
 use super::*;
+use bevy::utils::HashMap;
 
 pub struct Body {
     parent: Option<Entity>,
@@ -24,7 +24,7 @@ pub enum Segment {
 }
 
 #[derive(Event)]
-pub struct DespawnSegment(pub Entity);
+pub struct DespawnSegment(pub Entity, pub f32);
 
 #[derive(Resource)]
 pub struct SegmentPositions(pub HashMap<Entity, Vec3>); // Pos, Vec
@@ -36,7 +36,7 @@ impl Millipede {
         length: usize,
         starting_transform: &Transform,
         commands: &mut Commands,
-        game_assets: &Res<GameAssets>,    
+        game_assets: &Res<GameAssets>,
     ) {
         let millipede_texture = &game_assets.segment_texture;
         let mut parent_entity: Option<Entity> = Some(
@@ -72,6 +72,7 @@ impl Millipede {
             parent_entity = Some(entity);
         }
     }
+
 }
 
 pub fn update_positions(
@@ -88,6 +89,7 @@ pub fn update_positions(
 pub fn segment_movement(
     segment_positions: Res<SegmentPositions>,
     mut query: Query<(&mut Segment, &mut Transform)>,
+    game_vars: Res<GameVariables>,
     time: Res<Time>,
 ) {
     for (segment, mut transform) in query.iter_mut() {
@@ -100,7 +102,7 @@ pub fn segment_movement(
                             let direction_to_parent =
                                 (parent_position - transform.translation).normalize();
                             transform.translation +=
-                                direction_to_parent * MILLIPEDE_SPEED * time.delta_seconds();
+                                direction_to_parent * game_vars.millipede_speed * time.delta_seconds();
 
                             // Ensure that the segment doesn't move too close to its parent
                             if transform.translation.distance(parent_position) < SEGMENT_SPACING {
@@ -113,8 +115,8 @@ pub fn segment_movement(
             }
             Segment::Head { direction } => {
                 // Head segment logic
-                transform.translation.x += direction.x * MILLIPEDE_SPEED * time.delta_seconds();
-                transform.translation.y += direction.y * MILLIPEDE_SPEED * time.delta_seconds();
+                transform.translation.x += direction.x * time.delta_seconds() * game_vars.millipede_speed;
+                transform.translation.y += direction.y * time.delta_seconds() * game_vars.millipede_speed;
             }
         }
     }
@@ -148,12 +150,12 @@ pub fn update_segment_parents(
     mut event_reader: EventReader<DespawnSegment>,
     mut segment_query: Query<&mut Segment>,
 ) {
-    for dead_segment in event_reader.read() {
+    for despawn_event in event_reader.read() {
         for mut segment in segment_query.iter_mut() {
             if let Segment::Body { parent } = *segment {
-                if parent == Some(dead_segment.0) {
+                if parent == Some(despawn_event.0) {
                     *segment = Segment::Head {
-                        direction: Vec3::new(1.0, 0.0, 0.0),
+                        direction: Vec3::new(despawn_event.1, 0.0, 0.0),
                     };
                 }
             }
@@ -192,7 +194,7 @@ pub fn segment_hits_player(
     mut commands: Commands,
     player_q: Query<(Entity, &Transform), With<Player>>,
     segment_q: Query<&Transform, With<Segment>>,
-    mut next_state: ResMut<NextState<AppState>>,
+    mut next_state: ResMut<NextState<LevelState>>,
     game_assets: Res<GameAssets>,
 ) {
     let player_radius = PLAYER_SIZE / 2.0;
@@ -206,7 +208,7 @@ pub fn segment_hits_player(
                 Explosion::spawn(&player_transform, &mut commands, &game_assets);
 
                 commands.entity(player_entity).despawn();
-                next_state.set(AppState::GameOver);
+                next_state.set(Level);
             }
         }
     }

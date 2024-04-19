@@ -8,17 +8,21 @@ use rand::*;
 pub struct Beetle;
 
 impl Beetle {
-    pub fn spawn(starting_transform: &Transform, commands: &mut Commands, game_assets: &Res<GameAssets>,) {
+    pub fn spawn(
+        starting_transform: &Transform,
+        commands: &mut Commands,
+        game_assets: &Res<GameAssets>,
+    ) {
         let beetle_texture = &game_assets.beetle_texture;
-        
+
         commands.spawn((
-                Beetle,
-                SpriteBundle {
-                    texture: beetle_texture.clone(),
-                    transform: *starting_transform,
-                    ..default()
-                },
-                Name::from("Beetle"),
+            Beetle,
+            SpriteBundle {
+                texture: beetle_texture.clone(),
+                transform: *starting_transform,
+                ..default()
+            },
+            Name::from("Beetle"),
         ));
     }
 }
@@ -44,7 +48,6 @@ pub fn spawn_beetle(
     // Generate a random starting position
     let x = rand::thread_rng().gen_range(0.0 + SPAWN_MARGIN..window.width() - SPAWN_MARGIN);
     let y = window.height();
-
 
     Beetle::spawn(&Transform::from_xyz(x, y, 0.0), &mut commands, &game_assets)
 }
@@ -82,11 +85,14 @@ pub fn beetle_spawn_shroom(
             return;
         }
 
-
-
         let x = beetle_transform.translation.x;
         let y = beetle_transform.translation.y;
 
-        Mushroom::spawn(&Transform::from_xyz(x, y, 0.0), &mut commands, &game_assets, &mut shroom_amount)
+        Mushroom::spawn(
+            &Transform::from_xyz(x, y, 0.0),
+            &mut commands,
+            &game_assets,
+            &mut shroom_amount,
+        )
     }
 }

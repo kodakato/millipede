@@ -7,18 +7,23 @@ use crate::constants::*;
 pub struct Mushroom;
 
 impl Mushroom {
-    pub fn spawn(location_transform: &Transform, commands: &mut Commands, game_assets: &Res<GameAssets>, shroom_amount: &mut ResMut<ShroomAmount>) {
+    pub fn spawn(
+        location_transform: &Transform,
+        commands: &mut Commands,
+        game_assets: &Res<GameAssets>,
+        shroom_amount: &mut ResMut<ShroomAmount>,
+    ) {
         let shroom_texture = &game_assets.shroom_texture;
 
         commands.spawn((
-                Mushroom,
-                Health(MUSHROOM_HEALTH),
-                SpriteBundle {
-                    texture: shroom_texture.clone(),
-                    transform: *location_transform,
-                    ..default()
-                },
-                Name::from("Mushroom"),
+            Mushroom,
+            Health(MUSHROOM_HEALTH),
+            SpriteBundle {
+                texture: shroom_texture.clone(),
+                transform: *location_transform,
+                ..default()
+            },
+            Name::from("Mushroom"),
         ));
 
         // Add to shroom count
@@ -30,7 +35,6 @@ impl Mushroom {
 
 #[derive(Resource)]
 pub struct ShroomAmount(pub u8);
-
 
 pub fn spawn_shroom_field(
     mut commands: Commands,
@@ -44,7 +48,12 @@ pub fn spawn_shroom_field(
         let x = rand::thread_rng().gen_range(0.0 + SPAWN_MARGIN..window.width() - SPAWN_MARGIN);
         let y = rand::thread_rng().gen_range(TOP_BOUND..window.height() - TOP_UI_HEIGHT);
 
-        Mushroom::spawn(&Transform::from_xyz(x, y, 0.0), &mut commands, &game_assets, &mut shroom_amount);
+        Mushroom::spawn(
+            &Transform::from_xyz(x, y, 0.0),
+            &mut commands,
+            &game_assets,
+            &mut shroom_amount,
+        );
     }
 }
 

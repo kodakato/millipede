@@ -34,10 +34,11 @@ pub const SPAWN_MARGIN: f32 = 20.0;
 pub const MUSHROOM_HEALTH: i8 = 3;
 
 /// Millipede
-pub const MILLIPEDE_STARTING_LENGTH: usize = 10; // 10
+pub const MILLIPEDE_STARTING_LENGTH: usize = 9;
+pub const MILLIPEDE_MAX_LENGTH: usize = 40;
 pub const MILLIPEDE_SPEED: f32 = 250.0;
 pub const SEGMENT_SIZE: f32 = 16.0;
-pub const SEGMENT_SPACING: f32 = 13.0;
+pub const SEGMENT_SPACING: f32 = 15.0;
 pub const DROP_AMOUNT: f32 = SEGMENT_SIZE / 2.0;
 
 // Explosions
@@ -49,23 +50,24 @@ pub const BEETLE_SPEED: f32 = 500.0;
 pub const BEETLE_SPAWN_RATE: u8 = 5;
 
 // Spider
-pub const SPIDER_TIMER: f32 = 2.0;
-pub const SPIDER_SPAWN_RATE: f64 = 1.0;
-pub const SPIDER_AVERAGE_SPAWN_HEIGHT: f32 = 100.0;
+pub const SPIDER_TIMER: f32 = 10.0;
+pub const SPIDER_SPAWN_RATE: f64 = 0.5;
+pub const SPIDER_AVERAGE_SPAWN_HEIGHT: f32 = 500.0;
 pub const SPIDER_DIRECTION_CHANGE_RATE: f64 = 0.07;
 pub const SPIDER_SPEED: f32 = 275.0;
-pub const SPIDER_ATTACK_RATE: f64 = 0.05;
+pub const SPIDER_SIZE: f32 = 16.0;
+pub const SPIDER_ATTACK_RATE: f64 = 0.1;
+pub const SPIDER_LEAVE_RATE: f64 = 0.8;
 
 // Scoring
 pub const MUSHROOM_REWARD: u32 = 1;
 pub const SEGMENT_REWARD: u32 = 10;
 pub const HEAD_REWARD: u32 = 100;
 pub const BEETLE_REWARD: u32 = 15;
+pub const SPIDER_REWARD: u32 = 500;
 
 // UI
 pub const TEXT_COLOR: Color = Color::rgb(102.0 / 255.0, 255.0 / 255.0, 143.0 / 255.0);
 pub const TEXT_BACKGROUND: Color = Color::rgba(0.0 / 255.0, 51.0 / 255.0, 0.0 / 255.0, 1.0);
 pub const TEXT_SIZE: f32 = 20.0;
 pub const TOP_UI_HEIGHT: f32 = 24.0;
-
-

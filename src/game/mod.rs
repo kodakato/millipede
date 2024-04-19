@@ -3,26 +3,28 @@ use bevy::{prelude::*, utils::HashMap, window::PrimaryWindow};
 
 pub struct GamePlugin;
 
+pub mod assets;
 pub mod beetle;
 pub mod explosion;
+pub mod game;
 pub mod level;
 pub mod millipede;
 pub mod player;
 pub mod projectile;
 pub mod shroom;
-pub mod assets;
 pub mod spider;
 
 use crate::{constants::*, ui::*};
+use assets::*;
 use beetle::*;
 use explosion::*;
+use game::*;
 use level::*;
 use millipede::*;
 use player::*;
 use projectile::*;
 use shroom::*;
 use spider::*;
-use assets::*;
 
 impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
@@ -37,6 +39,7 @@ impl Plugin for GamePlugin {
                     .in_set(GameplaySet::Player),
                 (
                     move_projectile,
+                    projectile_hits_spider,
                     projectile_hits_segment,
                     projectile_hits_beetle,
                     projectile_hits_shroom,
@@ -61,7 +64,6 @@ impl Plugin for GamePlugin {
                         change_direction,
                         collide_with_shroom,
                         segment_hits_player,
-
                     )
                         .chain(),
                     (
@@ -70,16 +72,11 @@ impl Plugin for GamePlugin {
                         move_spider,
                         despawn_spider,
                         confine_spider_movement,
-                    ).chain(),
+                    )
+                        .chain(),
                 )
                     .in_set(GameplaySet::Enemies),
-                (
-                    (
-                        update_level_ui,
-                        update_lives_ui,
-                        update_score_ui,
-                    )
-                ).in_set(GameplaySet::Ui),
+                ((update_level_ui, update_lives_ui, update_score_ui)).in_set(GameplaySet::Ui),
                 ((check_if_change_level,)).run_if(in_state(LevelState::Unchanging)),
                 ((start_new_level).chain()).run_if(in_state(LevelState::Changing)),
             ),)
@@ -92,8 +89,12 @@ impl Plugin for GamePlugin {
         .insert_resource(Score(0))
         .insert_resource(Level(0))
         .insert_resource(DownTimer(Timer::from_seconds(DOWNTIMER, TimerMode::Once)))
-        .insert_resource(SpiderTimer(Timer::from_seconds(SPIDER_TIMER, TimerMode::Once)))
+        .insert_resource(SpiderTimer(Timer::from_seconds(
+            SPIDER_TIMER,
+            TimerMode::Once,
+        )))
         .init_resource::<GameAssets>()
+        .init_resource::<GameVariables>()
         .configure_sets(
             Update,
             (
@@ -125,9 +126,15 @@ pub enum LevelState {
     Unchanging,
 }
 
+#[derive(States, Debug, Clone, Eq, PartialEq, Hash, Default)]
+pub enum PlayerState {
+    #[default]
+    Alive,
+    Dead,
+}
+
 #[derive(Resource)]
 pub struct Score(pub u32);
 
 #[derive(Component)]
 pub struct Health(pub i8);
-

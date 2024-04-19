@@ -10,6 +10,7 @@ fn main() {
     let window_plugin = WindowPlugin {
         primary_window: Some(Window {
             title: "Millipede".into(),
+            canvas: Some("#game-canvas".into()),
             resolution: (480., 640.).into(),
             resizable: false,
             ..default()
