@@ -121,7 +121,6 @@ pub fn projectile_hits_segment(
                 } else {
                     event_writer.send(DespawnSegment(segment_entity, 1.0));
                 }
-                
 
                 Explosion::spawn(&segment_transform, &mut commands, &game_assets);
 

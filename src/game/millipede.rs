@@ -73,6 +73,12 @@ impl Millipede {
         }
     }
 
+    pub fn despawn(commands: &mut Commands, segment_query: &Query<Entity, With<Segment>>) {
+        // Despawn each segment
+        for segment_entity in segment_query.iter() {
+            commands.entity(segment_entity).despawn();
+        }
+    }
 }
 
 pub fn update_positions(
@@ -101,8 +107,9 @@ pub fn segment_movement(
                         if distance_to_parent > SEGMENT_SPACING {
                             let direction_to_parent =
                                 (parent_position - transform.translation).normalize();
-                            transform.translation +=
-                                direction_to_parent * game_vars.millipede_speed * time.delta_seconds();
+                            transform.translation += direction_to_parent
+                                * game_vars.millipede_speed
+                                * time.delta_seconds();
 
                             // Ensure that the segment doesn't move too close to its parent
                             if transform.translation.distance(parent_position) < SEGMENT_SPACING {
@@ -115,8 +122,10 @@ pub fn segment_movement(
             }
             Segment::Head { direction } => {
                 // Head segment logic
-                transform.translation.x += direction.x * time.delta_seconds() * game_vars.millipede_speed;
-                transform.translation.y += direction.y * time.delta_seconds() * game_vars.millipede_speed;
+                transform.translation.x +=
+                    direction.x * time.delta_seconds() * game_vars.millipede_speed;
+                transform.translation.y +=
+                    direction.y * time.delta_seconds() * game_vars.millipede_speed;
             }
         }
     }
@@ -194,8 +203,9 @@ pub fn segment_hits_player(
     mut commands: Commands,
     player_q: Query<(Entity, &Transform), With<Player>>,
     segment_q: Query<&Transform, With<Segment>>,
-    mut next_state: ResMut<NextState<LevelState>>,
+    mut next_player_state: ResMut<NextState<PlayerState>>,
     game_assets: Res<GameAssets>,
+    mut down_timer: ResMut<DownTimer>,
 ) {
     let player_radius = PLAYER_SIZE / 2.0;
     let segment_radius = SEGMENT_SIZE / 2.0;
@@ -205,10 +215,14 @@ pub fn segment_hits_player(
                 .translation
                 .distance(segment_transform.translation);
             if distance < player_radius + segment_radius {
-                Explosion::spawn(&player_transform, &mut commands, &game_assets);
-
-                commands.entity(player_entity).despawn();
-                next_state.set(Level);
+                Player::kill(
+                    player_transform,
+                    player_entity,
+                    &mut next_player_state,
+                    &game_assets,
+                    &mut commands,
+                    &mut down_timer,
+                );
             }
         }
     }

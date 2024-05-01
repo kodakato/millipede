@@ -23,6 +23,26 @@ impl Player {
             Player,
         ));
     }
+
+    pub fn kill(
+        player_transform: &Transform,
+        player_entity: Entity,
+        next_player_state: &mut ResMut<NextState<PlayerState>>,
+        game_assets: &Res<GameAssets>,
+        mut commands: &mut Commands,
+        down_timer: &mut ResMut<DownTimer>,
+    ) {
+        // Despawn player
+        commands.entity(player_entity).despawn();
+        // Spawn explosion
+        Explosion::spawn(&player_transform, &mut commands, &game_assets);
+
+        // Set next state
+        next_player_state.set(PlayerState::Dead);
+
+        // Start down timer
+        down_timer.0.reset();
+    }
 }
 
 #[derive(Resource)]
