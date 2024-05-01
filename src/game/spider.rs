@@ -39,7 +39,7 @@ impl Spider {
 
     pub fn despawn(entity: Entity, commands: &mut Commands, mut spider_timer: ResMut<SpiderTimer>) {
         commands.entity(entity).despawn();
-        
+
         spider_timer.0.reset();
     }
 }
@@ -256,21 +256,26 @@ pub fn despawn_spider(
 }
 
 pub fn spider_hits_player(
-    mut commands: Commands,
     spider_query: Query<(&Transform), With<Spider>>,
-    player_query: Query<&Transform, With<Player>>,
+    player_query: Query<(Entity, &Transform), With<Player>>,
+    game_assets: Res<GameAssets>,
+    mut next_player_state: ResMut<NextState<PlayerState>>,
+    mut commands: Commands,
+    mut down_timer: ResMut<DownTimer>,
+    mut lives: ResMut<Lives>,
 ) {
     if let Ok(spider_transform) = spider_query.get_single() {
-        if let Ok(player_transform) = player_query.get_single() {
+        if let Ok((player_entity, player_transform)) = player_query.get_single() {
             let spider_radius = SPIDER_SIZE / 2.0;
             let player_radius = PLAYER_SIZE / 2.0;
 
             let distance = spider_transform
                 .translation
                 .distance(player_transform.translation);
-            if distance < spider_radius + player_radius {
+            if distance > spider_radius + player_radius {
                 return;
             }
+            Player::kill(&player_transform, player_entity, &mut next_player_state, &game_assets, &mut commands, &mut down_timer, &mut lives)
         }
     }
 }

@@ -9,6 +9,7 @@ impl Player {
         location_transform: &Transform,
         commands: &mut Commands,
         game_assets: &Res<GameAssets>,
+        next_player_state: &mut ResMut<NextState<PlayerState>>,
     ) {
         let player_texture = &game_assets.player_texture;
 
@@ -22,6 +23,9 @@ impl Player {
             Name::from("Player"),
             Player,
         ));
+
+        // Set player state
+        next_player_state.set(PlayerState::Alive);
     }
 
     pub fn kill(
@@ -31,6 +35,7 @@ impl Player {
         game_assets: &Res<GameAssets>,
         mut commands: &mut Commands,
         down_timer: &mut ResMut<DownTimer>,
+        lives: &mut ResMut<Lives>,
     ) {
         // Despawn player
         commands.entity(player_entity).despawn();
@@ -39,6 +44,9 @@ impl Player {
 
         // Set next state
         next_player_state.set(PlayerState::Dead);
+
+        // Subtract lives
+        lives.0 -= 1;
 
         // Start down timer
         down_timer.0.reset();
@@ -52,12 +60,18 @@ pub fn spawn_player(
     mut commands: Commands,
     game_assets: Res<GameAssets>,
     window_query: Query<&Window, With<PrimaryWindow>>,
+    mut next_player_state: ResMut<NextState<PlayerState>>,
 ) {
     let window = window_query.get_single().unwrap();
 
     let starting_transform = Transform::from_xyz(window.width() / 2.0, PLAYER_SPAWN_Y, 0.0);
 
-    Player::spawn(&starting_transform, &mut commands, &game_assets);
+    Player::spawn(
+        &starting_transform,
+        &mut commands,
+        &game_assets,
+        &mut next_player_state,
+    );
 }
 
 pub fn move_player(

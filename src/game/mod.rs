@@ -45,7 +45,6 @@ impl Plugin for GamePlugin {
                         projectile_hits_beetle,
                         projectile_hits_shroom,
                         despawn_projectile,
-                        despawn_explosions,
                         despawn_mushroom,
                     )
                         .in_set(GameplaySet::Projectile)
@@ -73,21 +72,21 @@ impl Plugin for GamePlugin {
                             move_spider,
                             despawn_spider,
                             confine_spider_movement,
+                            spider_hits_player,
                         )
                             .chain(),
                     )
                         .in_set(GameplaySet::Enemies),
-                    ((update_level_ui, update_lives_ui, update_score_ui)).in_set(GameplaySet::Ui),
                     ((check_if_change_level,)).run_if(in_state(LevelState::Unchanging)),
                     ((start_new_level).chain()).run_if(in_state(LevelState::Changing)),
                 )
                     .run_if(in_state(GameState::Running))
                     .run_if(in_state(PlayerState::Alive)),
                 ((restart_level_from_death).chain()).run_if(in_state(PlayerState::Dead)),
+                ((update_level_ui, update_lives_ui, update_score_ui, despawn_explosions,)),
             )
                 .run_if(in_state(AppState::InGame)),
         )
-        .add_systems(OnEnter(PlayerState::Dead), despawn_enemies)
         .insert_resource(SegmentPositions(HashMap::new()))
         .insert_resource(ShroomAmount(0))
         .insert_resource(Lives(STARTING_LIVES))

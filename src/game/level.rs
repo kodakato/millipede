@@ -85,15 +85,18 @@ pub fn start_new_level(
 pub fn restart_level_from_death(
     mut commands: Commands,
     mut next_player_state: ResMut<NextState<PlayerState>>,
-    mut lives: ResMut<Lives>,
+    lives: ResMut<Lives>,
     mut next_app_state: ResMut<NextState<AppState>>,
     mut timer: ResMut<DownTimer>,
     time: Res<Time>,
     game_vars: Res<GameVariables>,
     window_query: Query<&Window, With<PrimaryWindow>>,
     game_assets: Res<GameAssets>,
+    segment_query: Query<Entity, With<Segment>>,
+    spider_query: Query<Entity, With<Spider>>,
+    spider_timer: ResMut<SpiderTimer>,
 ) {
-    if lives.0 == 1 {
+    if lives.0 == 0 {
         next_app_state.set(AppState::GameOver);
     }
 
@@ -102,9 +105,16 @@ pub fn restart_level_from_death(
     if !timer.0.just_finished() {
         return;
     }
+    // Despawn last millipede
+    Millipede::despawn(&mut commands, &segment_query);
+
+    // Despawn spider
+    if let Ok(spider_entity) = spider_query.get_single() {
+        Spider::despawn(spider_entity, &mut commands, spider_timer)
+    }
+
 
     // Spawn millipede
-
     let window = window_query.get_single().unwrap();
 
     let x = window.width() / 2.0;
@@ -119,11 +129,13 @@ pub fn restart_level_from_death(
         &game_assets,
     );
 
-    // Sub the lives, and set player state
-    lives.0 -= 1;
-    next_player_state.set(PlayerState::Alive);
+    // Spawn the player
+    let starting_transform = Transform::from_xyz(window.width() / 2.0, PLAYER_SPAWN_Y, 0.0);
+    Player::spawn(
+        &starting_transform,
+        &mut commands,
+        &game_assets,
+        &mut next_player_state,
+    )
 }
 
-pub fn despawn_enemies(mut commands: Commands, segment_query: Query<Entity, With<Segment>>, spider_query: Query<Entity, With<Spider>>) {
-    Millipede::despawn(&mut commands, &segment_query);
-}
