@@ -22,9 +22,21 @@ pub struct DespawnSegment{
 }
 
 #[derive(Resource)]
+pub struct SegmentSpawnerTimer(pub Timer);
+
+impl Default for SegmentSpawnerTimer  {
+    fn default() -> Self {
+        let mut timer = Timer::from_seconds(SEGMENT_SPAWN_TIMER_DURATION, TimerMode::Once);
+        timer.pause();
+        SegmentSpawnerTimer(timer)
+    }
+}
+
+#[derive(Resource)]
 pub struct SegmentPositions(pub HashMap<Entity, Vec3>); // Pos, Vec
 
 pub struct Millipede;
+
 
 impl Millipede {
     pub fn spawn(
@@ -170,7 +182,7 @@ pub fn update_segment_parents(
             if let Segment::Body { parent } = *segment {
                 if parent == Some(despawn_event.entity) {
                     *segment = Segment::Head {
-                        direction: despawn_event.direction.unwrap_or_else(|| Vec3::new(1.0, -1.0, 0.0)),
+                        direction: despawn_event.direction.unwrap_or_else(|| Vec3::new(1.0, -1.0, 0.0)), 
                     };
                 }
             }
@@ -234,4 +246,39 @@ pub fn segment_hits_player(
             }
         }
     }
+}
+
+pub fn spawn_lone_head(
+    mut spawner_timer: ResMut<SegmentSpawnerTimer>,
+    time: Res<Time>,
+    mut commands: Commands,
+    game_assets: Res<GameAssets>,
+) {
+    spawner_timer.0.tick(time.delta());
+    
+    if spawner_timer.0.just_finished() {
+        let starting_transform = Transform::from_xyz(0.0, TOP_BOUND, 0.0);
+        // Spawn a head
+        Millipede::spawn(1, &starting_transform, &mut commands, &game_assets);
+        
+        // Restart timer
+        spawner_timer.0.reset();
+    }
+}
+
+pub fn start_segment_spawner_timer(
+    mut spawner_timer: ResMut<SegmentSpawnerTimer>,
+    segment_query: Query<&Transform, With<Segment>>,
+) {
+    // Only run if the timer is paused
+    if !spawner_timer.0.paused() {
+        return
+    }
+    for segment_transform in segment_query.iter() {
+        if segment_transform.translation.y < TOP_BOUND * 2.0 {
+            // A segment is below the threshold, unpause the timer                   
+            spawner_timer.0.unpause();
+        }
+    }
+
 }

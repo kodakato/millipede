@@ -40,6 +40,7 @@ pub const MILLIPEDE_SPEED: f32 = 275.0;
 pub const SEGMENT_SIZE: f32 = 16.0;
 pub const SEGMENT_SPACING: f32 = 15.0;
 pub const DROP_AMOUNT: f32 = SEGMENT_SIZE / 2.0;
+pub const SEGMENT_SPAWN_TIMER_DURATION: f32 = 9.0;
 
 // Explosions
 pub const EXPLOSION_DURATION: f32 = 0.1;

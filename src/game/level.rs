@@ -32,6 +32,7 @@ pub fn start_new_level(
     mut next_level_state: ResMut<NextState<LevelState>>,
     mut level: ResMut<Level>,
     mut game_vars: ResMut<GameVariables>,
+    mut segment_spawner_timer: ResMut<SegmentSpawnerTimer>,
 ) {
     // Wait until the downtime is over
     timer.0.tick(time.delta());
@@ -78,6 +79,10 @@ pub fn start_new_level(
 
     level.0 += 1;
 
+    // Pause and reset the segment spawner timer
+    segment_spawner_timer.0.pause();
+    segment_spawner_timer.0.reset();
+        
     // Reset to the unchanging level state
     next_level_state.set(LevelState::Unchanging);
 }
@@ -95,6 +100,8 @@ pub fn restart_level_from_death(
     segment_query: Query<Entity, With<Segment>>,
     spider_query: Query<Entity, With<Spider>>,
     spider_timer: ResMut<SpiderTimer>,
+    mut segment_spawner_timer: ResMut<SegmentSpawnerTimer>,
+
 ) {
     if lives.0 == 0 {
         next_app_state.set(AppState::GameOver);
@@ -112,6 +119,10 @@ pub fn restart_level_from_death(
     if let Ok(spider_entity) = spider_query.get_single() {
         Spider::despawn(spider_entity, &mut commands, spider_timer)
     }
+
+    // Pause and reset the segment spawner timer
+    segment_spawner_timer.0.pause();
+    segment_spawner_timer.0.reset();
 
 
     // Spawn millipede

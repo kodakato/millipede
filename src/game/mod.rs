@@ -64,6 +64,8 @@ impl Plugin for GamePlugin {
                             change_direction,
                             collide_with_shroom,
                             segment_hits_player,
+                            start_segment_spawner_timer,
+                            spawn_lone_head,
                         )
                             .chain(),
                         (
@@ -99,6 +101,7 @@ impl Plugin for GamePlugin {
         )))
         .init_resource::<GameAssets>()
         .init_resource::<GameVariables>()
+        .init_resource::<SegmentSpawnerTimer>()
         .configure_sets(
             Update,
             (
