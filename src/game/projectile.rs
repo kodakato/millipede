@@ -115,11 +115,11 @@ pub fn projectile_hits_segment(
                 .translation
                 .distance(segment_transform.translation);
             if distance < projectile_radius + segment_radius {
-                // Pass in the x direction if its a head
-                if let Segment::Head { direction } = segment {
-                    event_writer.send(DespawnSegment(segment_entity, direction.x));
+                // Pass in the direction if its a head
+                if let Segment::Head { direction } = *segment {
+                    event_writer.send(DespawnSegment{entity: segment_entity, direction: Some(direction)});
                 } else {
-                    event_writer.send(DespawnSegment(segment_entity, 1.0));
+                    event_writer.send(DespawnSegment{entity: segment_entity, direction: None});
                 }
 
                 Explosion::spawn(&segment_transform, &mut commands, &game_assets);

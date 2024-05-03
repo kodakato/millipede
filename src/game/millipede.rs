@@ -9,14 +9,6 @@ pub struct Head {
     direction: Vec3, // A normalized vector
 }
 
-impl Default for Head {
-    fn default() -> Self {
-        Head {
-            direction: Vec3::new(1.0, 0.0, 0.0),
-        }
-    }
-}
-
 #[derive(Component)]
 pub enum Segment {
     Head { direction: Vec3 },
@@ -24,7 +16,10 @@ pub enum Segment {
 }
 
 #[derive(Event)]
-pub struct DespawnSegment(pub Entity, pub f32);
+pub struct DespawnSegment{
+    pub entity: Entity, 
+    pub direction: Option<Vec3>,
+}
 
 #[derive(Resource)]
 pub struct SegmentPositions(pub HashMap<Entity, Vec3>); // Pos, Vec
@@ -49,7 +44,7 @@ impl Millipede {
                     },
                     Name::from("MillipedeSegment"),
                     Segment::Head {
-                        direction: Vec3::new(1.0, 0.0, 0.0),
+                        direction: Vec3::new(1.0, -1.0, 0.0),
                     },
                 ))
                 .id(),
@@ -124,8 +119,6 @@ pub fn segment_movement(
                 // Head segment logic
                 transform.translation.x +=
                     direction.x * time.delta_seconds() * game_vars.millipede_speed;
-                transform.translation.y +=
-                    direction.y * time.delta_seconds() * game_vars.millipede_speed;
             }
         }
     }
@@ -140,16 +133,29 @@ pub fn change_direction(
     let segment_radius = SEGMENT_SIZE / 2.0;
     for (mut segment, mut transform) in head_query.iter_mut() {
         if let Segment::Head { ref mut direction } = *segment {
+
+            // Check if hit bottom boundary
+            if transform.translation.y < 5.0 + segment_radius {
+                // Set direction to up
+                direction.y = 1.0;
+            }
+
+            // Check if hit top player area boundary while in the up state
+            if transform.translation.y > TOP_BOUND && direction.y == 1.0 {
+                // Change back to down mode
+                direction.y = -1.0;
+            }
+
             // Check if hit left boundary
             if transform.translation.x < 0.0 + segment_radius {
-                *direction = Vec3::new(1.0, 0.0, 0.0);
-                transform.translation.y -= DROP_AMOUNT;
+                direction.x = 1.0;
+                transform.translation.y += DROP_AMOUNT * direction.y;
             }
 
             // And right
             if transform.translation.x > window.width() - segment_radius {
-                *direction = Vec3::new(-1.0, 0.0, 0.0);
-                transform.translation.y -= DROP_AMOUNT;
+                direction.x = -1.0;
+                transform.translation.y += DROP_AMOUNT * direction.y;
             }
         }
     }
@@ -162,9 +168,9 @@ pub fn update_segment_parents(
     for despawn_event in event_reader.read() {
         for mut segment in segment_query.iter_mut() {
             if let Segment::Body { parent } = *segment {
-                if parent == Some(despawn_event.0) {
+                if parent == Some(despawn_event.entity) {
                     *segment = Segment::Head {
-                        direction: Vec3::new(despawn_event.1, 0.0, 0.0),
+                        direction: despawn_event.direction.unwrap_or_else(|| Vec3::new(1.0, -1.0, 0.0)),
                     };
                 }
             }
@@ -186,7 +192,7 @@ pub fn collide_with_shroom(
                     .distance(segment_transform.translation);
                 if distance < shroom_radius + segment_radius {
                     // Move down
-                    segment_transform.translation.y -= DROP_AMOUNT;
+                    segment_transform.translation.y += DROP_AMOUNT * direction.y;
 
                     // Reverse direction
                     direction.x = -direction.x;

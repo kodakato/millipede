@@ -36,7 +36,7 @@ pub const MUSHROOM_HEALTH: i8 = 3;
 /// Millipede
 pub const MILLIPEDE_STARTING_LENGTH: usize = 9;
 pub const MILLIPEDE_MAX_LENGTH: usize = 40;
-pub const MILLIPEDE_SPEED: f32 = 250.0;
+pub const MILLIPEDE_SPEED: f32 = 275.0;
 pub const SEGMENT_SIZE: f32 = 16.0;
 pub const SEGMENT_SPACING: f32 = 15.0;
 pub const DROP_AMOUNT: f32 = SEGMENT_SIZE / 2.0;

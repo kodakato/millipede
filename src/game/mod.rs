@@ -121,7 +121,6 @@ pub enum GameplaySet {
     Player,
     Enemies,
     Projectile,
-    Ui,
 }
 
 #[derive(States, Debug, Clone, Eq, PartialEq, Hash, Default)]
