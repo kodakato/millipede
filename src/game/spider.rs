@@ -275,7 +275,46 @@ pub fn spider_hits_player(
             if distance > spider_radius + player_radius {
                 return;
             }
-            Player::kill(&player_transform, player_entity, &mut next_player_state, &game_assets, &mut commands, &mut down_timer, &mut lives)
+            Player::kill(
+                &player_transform,
+                player_entity,
+                &mut next_player_state,
+                &game_assets,
+                &mut commands,
+                &mut down_timer,
+                &mut lives,
+            )
         }
+    }
+}
+
+pub fn spider_eats_shroom(
+    spider_query: Query<&Transform, With<Spider>>,
+    mut mushroom_query: Query<(&Transform, &mut Health), With<Mushroom>>,
+) {
+    // Only run if spider exists
+    let spider_transform = match spider_query.get_single() {
+        Ok(spider_transform) => spider_transform,
+        Err(_) => return,
+    };
+
+    let spider_radius = SPIDER_SIZE / 2.0 ;
+    let shroom_radius = MUSHROOM_SIZE / 2.0;
+
+    for (shroom_transform, mut shroom_health) in mushroom_query.iter_mut() {
+        let distance = shroom_transform
+            .translation
+            .distance(spider_transform.translation);
+        if distance > spider_radius + shroom_radius {
+            continue;
+        }
+        
+        // Randomly eat a shroom
+        let eat_shroom = rand::thread_rng().gen_bool(SPIDER_EAT_RATE);
+        if !eat_shroom {
+            continue;
+        }
+        // Set the shroom health to 0
+        shroom_health.0 = 0;
     }
 }

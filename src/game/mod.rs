@@ -75,6 +75,7 @@ impl Plugin for GamePlugin {
                             despawn_spider,
                             confine_spider_movement,
                             spider_hits_player,
+                            spider_eats_shroom,
                         )
                             .chain(),
                     )
@@ -85,7 +86,12 @@ impl Plugin for GamePlugin {
                     .run_if(in_state(GameState::Running))
                     .run_if(in_state(PlayerState::Alive)),
                 ((restart_level_from_death).chain()).run_if(in_state(PlayerState::Dead)),
-                ((update_level_ui, update_lives_ui, update_score_ui, despawn_explosions,)),
+                ((
+                    update_level_ui,
+                    update_lives_ui,
+                    update_score_ui,
+                    despawn_explosions,
+                )),
             )
                 .run_if(in_state(AppState::InGame)),
         )

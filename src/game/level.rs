@@ -82,7 +82,7 @@ pub fn start_new_level(
     // Pause and reset the segment spawner timer
     segment_spawner_timer.0.pause();
     segment_spawner_timer.0.reset();
-        
+
     // Reset to the unchanging level state
     next_level_state.set(LevelState::Unchanging);
 }
@@ -101,7 +101,6 @@ pub fn restart_level_from_death(
     spider_query: Query<Entity, With<Spider>>,
     spider_timer: ResMut<SpiderTimer>,
     mut segment_spawner_timer: ResMut<SegmentSpawnerTimer>,
-
 ) {
     if lives.0 == 0 {
         next_app_state.set(AppState::GameOver);
@@ -123,7 +122,6 @@ pub fn restart_level_from_death(
     // Pause and reset the segment spawner timer
     segment_spawner_timer.0.pause();
     segment_spawner_timer.0.reset();
-
 
     // Spawn millipede
     let window = window_query.get_single().unwrap();
@@ -149,4 +147,3 @@ pub fn restart_level_from_death(
         &mut next_player_state,
     )
 }
-

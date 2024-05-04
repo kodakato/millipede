@@ -59,6 +59,7 @@ pub const SPIDER_SPEED: f32 = 275.0;
 pub const SPIDER_SIZE: f32 = 16.0;
 pub const SPIDER_ATTACK_RATE: f64 = 0.1;
 pub const SPIDER_LEAVE_RATE: f64 = 0.8;
+pub const SPIDER_EAT_RATE: f64 = 0.05;
 
 // Scoring
 pub const MUSHROOM_REWARD: u32 = 1;

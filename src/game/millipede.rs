@@ -16,15 +16,15 @@ pub enum Segment {
 }
 
 #[derive(Event)]
-pub struct DespawnSegment{
-    pub entity: Entity, 
+pub struct DespawnSegment {
+    pub entity: Entity,
     pub direction: Option<Vec3>,
 }
 
 #[derive(Resource)]
 pub struct SegmentSpawnerTimer(pub Timer);
 
-impl Default for SegmentSpawnerTimer  {
+impl Default for SegmentSpawnerTimer {
     fn default() -> Self {
         let mut timer = Timer::from_seconds(SEGMENT_SPAWN_TIMER_DURATION, TimerMode::Once);
         timer.pause();
@@ -36,7 +36,6 @@ impl Default for SegmentSpawnerTimer  {
 pub struct SegmentPositions(pub HashMap<Entity, Vec3>); // Pos, Vec
 
 pub struct Millipede;
-
 
 impl Millipede {
     pub fn spawn(
@@ -145,7 +144,6 @@ pub fn change_direction(
     let segment_radius = SEGMENT_SIZE / 2.0;
     for (mut segment, mut transform) in head_query.iter_mut() {
         if let Segment::Head { ref mut direction } = *segment {
-
             // Check if hit bottom boundary
             if transform.translation.y < 5.0 + segment_radius {
                 // Set direction to up
@@ -182,7 +180,9 @@ pub fn update_segment_parents(
             if let Segment::Body { parent } = *segment {
                 if parent == Some(despawn_event.entity) {
                     *segment = Segment::Head {
-                        direction: despawn_event.direction.unwrap_or_else(|| Vec3::new(1.0, -1.0, 0.0)), 
+                        direction: despawn_event
+                            .direction
+                            .unwrap_or_else(|| Vec3::new(1.0, -1.0, 0.0)),
                     };
                 }
             }
@@ -255,12 +255,12 @@ pub fn spawn_lone_head(
     game_assets: Res<GameAssets>,
 ) {
     spawner_timer.0.tick(time.delta());
-    
+
     if spawner_timer.0.just_finished() {
         let starting_transform = Transform::from_xyz(0.0, TOP_BOUND, 0.0);
         // Spawn a head
         Millipede::spawn(1, &starting_transform, &mut commands, &game_assets);
-        
+
         // Restart timer
         spawner_timer.0.reset();
     }
@@ -272,13 +272,12 @@ pub fn start_segment_spawner_timer(
 ) {
     // Only run if the timer is paused
     if !spawner_timer.0.paused() {
-        return
+        return;
     }
     for segment_transform in segment_query.iter() {
         if segment_transform.translation.y < TOP_BOUND * 2.0 {
-            // A segment is below the threshold, unpause the timer                   
+            // A segment is below the threshold, unpause the timer
             spawner_timer.0.unpause();
         }
     }
-
 }
