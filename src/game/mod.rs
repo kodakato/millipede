@@ -66,6 +66,7 @@ impl Plugin for GamePlugin {
                             segment_hits_player,
                             start_segment_spawner_timer,
                             spawn_lone_head,
+                            collide_with_head,
                         )
                             .chain(),
                         (

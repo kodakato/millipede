@@ -50,7 +50,7 @@ pub fn start_new_level(
     if game_vars.millipede_length < MILLIPEDE_MAX_LENGTH {
         game_vars.millipede_length += 1;
     }
-    game_vars.millipede_speed *= 1.001;
+    game_vars.millipede_speed *= 1.01;
 
     // Set Spider
     game_vars.spider_speed *= 1.001;

@@ -1,13 +1,6 @@
 use super::*;
 use bevy::utils::HashMap;
 
-pub struct Body {
-    parent: Option<Entity>,
-}
-
-pub struct Head {
-    direction: Vec3, // A normalized vector
-}
 
 #[derive(Component)]
 pub enum Segment {
@@ -275,9 +268,53 @@ pub fn start_segment_spawner_timer(
         return;
     }
     for segment_transform in segment_query.iter() {
-        if segment_transform.translation.y < TOP_BOUND * 2.0 {
+        if segment_transform.translation.y < TOP_BOUND * 0.2 {
             // A segment is below the threshold, unpause the timer
             spawner_timer.0.unpause();
+        }
+    }
+}
+
+// If a head collides with another head whilst on the same Y value, change their directions
+pub fn collide_with_head(
+    mut segment_query: Query<(Entity, &Transform, &mut Segment)>,
+) {
+    let mut heads = Vec::new();
+
+    // Collect entities and their positions if they are heads
+    for (entity, transform, segment) in segment_query.iter_mut() {
+        if let Segment::Head { direction } = &*segment {
+            heads.push((entity, transform.translation, *direction));
+        }
+    }
+
+    if heads.len() < 2 { // Don't run if there are fewer than 2 heads
+        return;
+    }
+
+    // Collect changes to apply later
+    let mut changes = Vec::new();
+
+    // Compare each position
+    for i in 0..heads.len() {
+        for j in i + 1..heads.len() {
+            let (entity1, pos1, _) = heads[i];
+            let (entity2, pos2, _) = heads[j];
+
+            if (pos1.y - pos2.y).abs() <= 1.0 && (pos1.x - pos2.x).abs() <= SEGMENT_SIZE / 2.0 {
+                // Record the entities to change direction
+                changes.push(entity1);
+                changes.push(entity2);
+            }
+        }
+    }
+
+    // Apply direction changes
+    for entity in changes {
+        if let Ok((_, _, mut segment)) = segment_query.get_mut(entity) {
+            if let Segment::Head { direction } = &mut *segment {
+                *direction = -*direction;
+            }
         }
     }
 }
