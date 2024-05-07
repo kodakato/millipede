@@ -13,6 +13,7 @@ pub mod player;
 pub mod projectile;
 pub mod shroom;
 pub mod spider;
+pub mod scorpion;
 
 use crate::{constants::*, ui::*};
 use assets::*;
@@ -25,6 +26,7 @@ use player::*;
 use projectile::*;
 use shroom::*;
 use spider::*;
+use scorpion::*;
 
 impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
@@ -79,6 +81,11 @@ impl Plugin for GamePlugin {
                             spider_eats_shroom,
                         )
                             .chain(),
+                        (
+                            spawn_scorpion,
+                            move_scorpion,
+                            despawn_scorpion,
+                        ).chain(),
                     )
                         .in_set(GameplaySet::Enemies),
                     ((check_if_change_level,)).run_if(in_state(LevelState::Unchanging)),

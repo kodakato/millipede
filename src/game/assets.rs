@@ -9,6 +9,7 @@ pub struct GameAssets {
     pub shroom_texture: Handle<Image>,
     pub spider_texture: Handle<Image>,
     pub explosion_texture: Handle<Image>,
+    pub scorpion_texture: Handle<Image>,
 }
 
 impl FromWorld for GameAssets {
@@ -22,6 +23,7 @@ impl FromWorld for GameAssets {
             shroom_texture: asset_server.load("textures/shroom.png"),
             spider_texture: asset_server.load("textures/spider.png"),
             explosion_texture: asset_server.load("textures/explosion.png"),
+            scorpion_texture: asset_server.load("textures/explosion.png"),
         }
     }
 }

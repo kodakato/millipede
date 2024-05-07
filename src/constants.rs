@@ -40,6 +40,7 @@ pub const MILLIPEDE_SPEED: f32 = 275.0;
 pub const SEGMENT_SIZE: f32 = 16.0;
 pub const SEGMENT_SPACING: f32 = 15.0;
 pub const DROP_AMOUNT: f32 = SEGMENT_SIZE / 2.0 + 1.0;
+pub const PUSH_BACK_AMOUNT: f32 = 10.0;
 pub const SEGMENT_SPAWN_TIMER_DURATION: f32 = 9.0;
 
 // Explosions
@@ -61,12 +62,18 @@ pub const SPIDER_ATTACK_RATE: f64 = 0.1;
 pub const SPIDER_LEAVE_RATE: f64 = 0.8;
 pub const SPIDER_EAT_RATE: f64 = 0.05;
 
+// Scorpion
+pub const SCORPION_SPAWN_RATE: f64 = 1.0;
+pub const SCORPION_SPAWN_HEIGHT: f32 = 100.0;
+pub const SCORPION_SPEED: f32 = 250.0;
+
 // Scoring
 pub const MUSHROOM_REWARD: u32 = 1;
 pub const SEGMENT_REWARD: u32 = 10;
 pub const HEAD_REWARD: u32 = 100;
 pub const BEETLE_REWARD: u32 = 15;
 pub const SPIDER_REWARD: u32 = 500;
+pub const SCORPION_REWARD: u32 = 1000;
 
 // UI
 pub const TEXT_COLOR: Color = Color::rgb(102.0 / 255.0, 255.0 / 255.0, 143.0 / 255.0);

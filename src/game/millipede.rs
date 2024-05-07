@@ -203,7 +203,7 @@ pub fn collide_with_shroom(
                     direction.x = -direction.x;
 
                     // Bounce backwards slightly
-                    segment_transform.translation.x += direction.x * 12.0;
+                    segment_transform.translation.x += direction.x * PUSH_BACK_AMOUNT;
                 }
             }
         }
@@ -307,7 +307,7 @@ pub fn collide_with_head(
             let (entity1, pos1, _) = heads[i];
             let (entity2, pos2, _) = heads[j];
 
-            if (pos1.y - pos2.y).abs() <= SEGMENT_SIZE / 1.5 && (pos1.x - pos2.x).abs() <= SEGMENT_SIZE / 2.0 {
+            if (pos1.y - pos2.y).abs() <= SEGMENT_SIZE / 1.3 && (pos1.x - pos2.x).abs() <= SEGMENT_SIZE / 2.0 {
                 // Record the entities to change direction
                 changes.push(entity1);
                 changes.push(entity2);
@@ -321,7 +321,7 @@ pub fn collide_with_head(
             if let Segment::Head { direction } = &mut *segment {
                 direction.x  = -direction.x ;
                 // Bounce backwards slightly
-                transform.translation.x += direction.x * 12.0;
+                transform.translation.x += direction.x * PUSH_BACK_AMOUNT;
                 //transform.translation.y += DROP_AMOUNT * direction.y;
             }
         }
