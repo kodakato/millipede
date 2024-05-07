@@ -107,7 +107,7 @@ pub fn segment_movement(
                             let direction_to_parent =
                                 (parent_position - transform.translation).normalize();
                             transform.translation += direction_to_parent
-                                * game_vars.millipede_speed
+                                * game_vars.millipede_speed * 3.0
                                 * time.delta_seconds();
 
                             // Ensure that the segment doesn't move too close to its parent
