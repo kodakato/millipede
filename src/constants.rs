@@ -28,8 +28,8 @@ pub const PLAYER_SPAWN_Y: f32 = 20.0;
 
 /// Mushrooms
 pub const MUSHROOM_SIZE: f32 = 11.0;
-pub const MUSHROOM_MAX_AMOUNT: u8 = 100;
-pub const MUSHROOM_MIN_AMOUNT: u8 = 70;
+pub const MUSHROOM_MAX_AMOUNT: u8 = 100; // 100
+pub const MUSHROOM_MIN_AMOUNT: u8 = 70; // 70
 pub const SPAWN_MARGIN: f32 = 20.0;
 pub const MUSHROOM_HEALTH: i8 = 3;
 

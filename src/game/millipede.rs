@@ -246,7 +246,13 @@ pub fn spawn_lone_head(
     time: Res<Time>,
     mut commands: Commands,
     game_assets: Res<GameAssets>,
+    level_state: Res<State<LevelState>>,
 ) {
+    // Only run if level not changing
+    if let LevelState::Changing = level_state.get() {
+        return;
+    }
+
     spawner_timer.0.tick(time.delta());
 
     if spawner_timer.0.just_finished() {
@@ -277,7 +283,7 @@ pub fn start_segment_spawner_timer(
 
 // If a head collides with another head whilst on the same Y value, change their directions
 pub fn collide_with_head(
-    mut segment_query: Query<(Entity, &Transform, &mut Segment)>,
+    mut segment_query: Query<(Entity, &mut Transform, &mut Segment)>,
 ) {
     let mut heads = Vec::new();
 
@@ -301,7 +307,7 @@ pub fn collide_with_head(
             let (entity1, pos1, _) = heads[i];
             let (entity2, pos2, _) = heads[j];
 
-            if (pos1.y - pos2.y).abs() <= 1.0 && (pos1.x - pos2.x).abs() <= SEGMENT_SIZE / 2.0 {
+            if (pos1.y - pos2.y).abs() <= SEGMENT_SIZE / 1.5 && (pos1.x - pos2.x).abs() <= SEGMENT_SIZE / 2.0 {
                 // Record the entities to change direction
                 changes.push(entity1);
                 changes.push(entity2);
@@ -311,9 +317,12 @@ pub fn collide_with_head(
 
     // Apply direction changes
     for entity in changes {
-        if let Ok((_, _, mut segment)) = segment_query.get_mut(entity) {
+        if let Ok((_, mut transform, mut segment)) = segment_query.get_mut(entity) {
             if let Segment::Head { direction } = &mut *segment {
-                *direction = -*direction;
+                direction.x  = -direction.x ;
+                // Bounce backwards slightly
+                transform.translation.x += direction.x * 12.0;
+                //transform.translation.y += DROP_AMOUNT * direction.y;
             }
         }
     }
