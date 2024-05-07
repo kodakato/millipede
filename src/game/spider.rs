@@ -298,7 +298,7 @@ pub fn spider_eats_shroom(
         Err(_) => return,
     };
 
-    let spider_radius = SPIDER_SIZE / 2.0 ;
+    let spider_radius = SPIDER_SIZE / 2.0;
     let shroom_radius = MUSHROOM_SIZE / 2.0;
 
     for (shroom_transform, mut shroom_health) in mushroom_query.iter_mut() {
@@ -308,7 +308,7 @@ pub fn spider_eats_shroom(
         if distance > spider_radius + shroom_radius {
             continue;
         }
-        
+
         // Randomly eat a shroom
         let eat_shroom = rand::thread_rng().gen_bool(SPIDER_EAT_RATE);
         if !eat_shroom {

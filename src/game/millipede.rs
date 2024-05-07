@@ -1,6 +1,6 @@
 use super::*;
 use bevy::utils::HashMap;
-
+use rand::Rng;
 
 #[derive(Component)]
 pub enum Segment {
@@ -107,7 +107,8 @@ pub fn segment_movement(
                             let direction_to_parent =
                                 (parent_position - transform.translation).normalize();
                             transform.translation += direction_to_parent
-                                * game_vars.millipede_speed * 3.0
+                                * game_vars.millipede_speed
+                                * 3.0
                                 * time.delta_seconds();
 
                             // Ensure that the segment doesn't move too close to its parent
@@ -282,9 +283,7 @@ pub fn start_segment_spawner_timer(
 }
 
 // If a head collides with another head whilst on the same Y value, change their directions
-pub fn collide_with_head(
-    mut segment_query: Query<(Entity, &mut Transform, &mut Segment)>,
-) {
+pub fn collide_with_head(mut segment_query: Query<(Entity, &mut Transform, &mut Segment)>) {
     let mut heads = Vec::new();
 
     // Collect entities and their positions if they are heads
@@ -294,7 +293,8 @@ pub fn collide_with_head(
         }
     }
 
-    if heads.len() < 2 { // Don't run if there are fewer than 2 heads
+    if heads.len() < 2 {
+        // Don't run if there are fewer than 2 heads
         return;
     }
 
@@ -307,7 +307,9 @@ pub fn collide_with_head(
             let (entity1, pos1, _) = heads[i];
             let (entity2, pos2, _) = heads[j];
 
-            if (pos1.y - pos2.y).abs() <= SEGMENT_SIZE / 1.3 && (pos1.x - pos2.x).abs() <= SEGMENT_SIZE / 2.0 {
+            if (pos1.y - pos2.y).abs() <= SEGMENT_SIZE / 1.3
+                && (pos1.x - pos2.x).abs() <= SEGMENT_SIZE / 2.0
+            {
                 // Record the entities to change direction
                 changes.push(entity1);
                 changes.push(entity2);
@@ -319,10 +321,17 @@ pub fn collide_with_head(
     for entity in changes {
         if let Ok((_, mut transform, mut segment)) = segment_query.get_mut(entity) {
             if let Segment::Head { direction } = &mut *segment {
-                direction.x  = -direction.x ;
+                direction.x = -direction.x;
                 // Bounce backwards slightly
                 transform.translation.x += direction.x * PUSH_BACK_AMOUNT;
-                //transform.translation.y += DROP_AMOUNT * direction.y;
+
+                // Randomly decide to drop
+                // It needs to randomly drop in order to remove the chance that it gets caught in a
+                // loop
+                let drop = rand::thread_rng().gen_bool(0.01);
+                if drop {
+                    transform.translation.y += DROP_AMOUNT * direction.y;
+                }
             }
         }
     }
