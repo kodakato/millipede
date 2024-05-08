@@ -18,12 +18,12 @@ impl FromWorld for GameAssets {
         GameAssets {
             player_texture: asset_server.load("textures/snake.png"),
             segment_texture: asset_server.load("textures/millipede.png"),
-            beetle_texture: asset_server.load("textures/explosion.png"),
+            beetle_texture: asset_server.load("textures/beetle.png"),
             projectile_texture: asset_server.load("textures/stinger.png"),
             shroom_texture: asset_server.load("textures/shroom.png"),
             spider_texture: asset_server.load("textures/spider.png"),
             explosion_texture: asset_server.load("textures/explosion.png"),
-            scorpion_texture: asset_server.load("textures/explosion.png"),
+            scorpion_texture: asset_server.load("textures/scorpion.png"),
         }
     }
 }
