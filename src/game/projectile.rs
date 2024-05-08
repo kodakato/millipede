@@ -225,3 +225,31 @@ pub fn projectile_hits_spider(
         }
     }
 }
+
+pub fn projectile_hits_scorpion(
+    mut commands: Commands,
+    scorpion_query: Query<(Entity, &Transform), With<Scorpion>>,
+    projectile_query: Query<(Entity, &Transform), With<PlayerProjectile>>,
+    game_assets: Res<GameAssets>,
+    mut score: ResMut<Score>,
+) {
+    if let (Ok((projectile_entity, projectile_transform)), Ok((scorpion_entity, scorpion_transform))) = (projectile_query.get_single(), scorpion_query.get_single()) {
+        let projectile_radius = PROJECTILE_SIZE / 2.0;
+        let scorpion_radius = SCORPION_SIZE / 2.0;
+
+        let distance = projectile_transform
+            .translation
+            .distance(scorpion_transform.translation);
+
+        if distance > projectile_radius + scorpion_radius {
+            return;
+        }
+
+        // Spawn explosion
+        Explosion::spawn(&scorpion_transform, &mut commands, &game_assets);
+        //Despawn projectile
+        commands.entity(projectile_entity).despawn();
+        // Kill Scorpion
+        Scorpion::kill(scorpion_entity, &mut commands, &mut score);
+   }
+}

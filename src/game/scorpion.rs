@@ -36,7 +36,7 @@ impl Scorpion {
         commands.entity(scorpion_entity).despawn();
     }
 
-    pub fn kill(scorpion_entity: Entity, commands: &mut Commands, mut score: ResMut<Score>) {
+    pub fn kill(scorpion_entity: Entity, commands: &mut Commands, score: &mut ResMut<Score>) {
         Self::despawn(scorpion_entity, commands);
         score.0 += SCORPION_REWARD;
     }
@@ -74,8 +74,10 @@ pub fn spawn_scorpion(
     let left = rand::thread_rng().gen_bool(0.5);
     if left {
         starting_transform.translation.x = 1.0;
+        starting_transform.rotation = Quat::from_rotation_z(-1.55);
     } else {
         starting_transform.translation.x = window.width() - 1.0;
+        starting_transform.rotation = Quat::from_rotation_z(1.55);
     }
 
     // Now set height

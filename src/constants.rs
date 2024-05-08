@@ -66,6 +66,7 @@ pub const SPIDER_EAT_RATE: f64 = 0.05;
 pub const SCORPION_SPAWN_RATE: f64 = 1.0; //0.0005;
 pub const SCORPION_SPAWN_HEIGHT: f32 = 100.0;
 pub const SCORPION_SPEED: f32 = 250.0;
+pub const SCORPION_SIZE: f32 = 16.0;
 
 // Scoring
 pub const MUSHROOM_REWARD: u32 = 1;

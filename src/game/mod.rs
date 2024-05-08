@@ -42,6 +42,7 @@ impl Plugin for GamePlugin {
                         .in_set(GameplaySet::Player),
                     (
                         move_projectile,
+                        projectile_hits_scorpion,
                         projectile_hits_spider,
                         projectile_hits_segment,
                         projectile_hits_beetle,
