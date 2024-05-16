@@ -233,7 +233,11 @@ pub fn projectile_hits_scorpion(
     game_assets: Res<GameAssets>,
     mut score: ResMut<Score>,
 ) {
-    if let (Ok((projectile_entity, projectile_transform)), Ok((scorpion_entity, scorpion_transform))) = (projectile_query.get_single(), scorpion_query.get_single()) {
+    if let (
+        Ok((projectile_entity, projectile_transform)),
+        Ok((scorpion_entity, scorpion_transform)),
+    ) = (projectile_query.get_single(), scorpion_query.get_single())
+    {
         let projectile_radius = PROJECTILE_SIZE / 2.0;
         let scorpion_radius = SCORPION_SIZE / 2.0;
 
@@ -251,5 +255,5 @@ pub fn projectile_hits_scorpion(
         commands.entity(projectile_entity).despawn();
         // Kill Scorpion
         Scorpion::kill(scorpion_entity, &mut commands, &mut score);
-   }
+    }
 }
