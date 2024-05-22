@@ -81,3 +81,5 @@ pub const TEXT_COLOR: Color = Color::rgb(102.0 / 255.0, 255.0 / 255.0, 143.0 / 2
 pub const TEXT_BACKGROUND: Color = Color::rgba(0.0 / 255.0, 51.0 / 255.0, 0.0 / 255.0, 1.0);
 pub const TEXT_SIZE: f32 = 20.0;
 pub const TOP_UI_HEIGHT: f32 = 24.0;
+pub const BUTTON_HOVER_COLOR: Color = Color::rgba(129.0 / 255.0, 161.0 / 255.0, 137.0 / 255.0, 0.2);
+pub const BUTTON_NORMAL_COLOR: Color = Color::rgba(0.0, 0.0, 0.0, 0.0);

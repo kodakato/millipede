@@ -2,7 +2,7 @@ use crate::{
     constants::*,
     game::{assets::*, level::Level, player::Lives, Score},
 };
-use bevy::prelude::*;
+use bevy::{app::AppExit, prelude::*};
 
 #[derive(Component)]
 pub struct MainMenu;
@@ -12,6 +12,15 @@ pub struct PlayButton;
 
 #[derive(Component)]
 pub struct QuitButton;
+
+#[derive(Resource)]
+pub struct SelectedButton(pub ButtonType);
+
+#[derive(Clone, Copy, Component, PartialEq)]
+pub enum ButtonType {
+    Play,
+    Quit,
+}
 
 // Main Menu
 pub fn spawn_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
@@ -26,18 +35,21 @@ pub fn despawn_main_menu(mut commands: Commands, main_menu_query: Query<Entity, 
 
 pub fn build_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>) {
     // Define the main menu parent node with MainMenu marker struct
-    let main_menu_node = (NodeBundle {
-        style: Style {
-            width: Val::Percent(100.0),
-            height: Val::Percent(100.0),
-            flex_direction: FlexDirection::Column,
-            align_items: AlignItems::Center,
-            justify_content: JustifyContent::FlexStart,
+    let main_menu_node = (
+        NodeBundle {
+            style: Style {
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
+                flex_direction: FlexDirection::Column,
+                align_items: AlignItems::Center,
+                justify_content: JustifyContent::FlexStart,
+                ..default()
+            },
+            background_color: Color::BLACK.into(),
             ..default()
         },
-        background_color: Color::BLACK.into(),
-        ..default()
-    }, MainMenu);
+        MainMenu,
+    );
 
     // Spawn parent entity and attach the main menu component
     let main_menu_entity = commands.spawn(main_menu_node).id();
@@ -55,22 +67,25 @@ pub fn build_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>)
         ..default()
     };
 
-    let title_entity = commands.spawn(title_node).with_children(|parent| {
-        parent.spawn(TextBundle {
-            text: Text {
-                sections: vec![TextSection::new(
-                    "Millipede!",
-                    TextStyle {
-                        color: Color::GREEN.into(),
-                        font_size: 60.0,
-                        ..default()
-                    },
-                )],
+    let title_entity = commands
+        .spawn(title_node)
+        .with_children(|parent| {
+            parent.spawn(TextBundle {
+                text: Text {
+                    sections: vec![TextSection::new(
+                        "Millipede!",
+                        TextStyle {
+                            color: Color::GREEN.into(),
+                            font_size: 60.0,
+                            ..default()
+                        },
+                    )],
+                    ..default()
+                },
                 ..default()
-            },
-            ..default()
-        });
-    }).id();
+            });
+        })
+        .id();
 
     // Define the button node
     let buttons_node = NodeBundle {
@@ -83,48 +98,56 @@ pub fn build_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>)
             ..default()
         },
         ..default()
-    }; 
+    };
 
-    let buttons_entity = commands.spawn(buttons_node).with_children(|parent| {
-        // Play Button
-        parent.spawn(TextBundle {
-            text: Text {
-                sections: vec![TextSection::new(
-                    "Play",
-                    TextStyle {
-                        color: Color::GREEN.into(),
-                        font_size: 40.0,
+    let buttons_entity = commands
+        .spawn(buttons_node)
+        .with_children(|parent| {
+            // Play Button
+            parent.spawn((
+                TextBundle {
+                    text: Text {
+                        sections: vec![TextSection::new(
+                            "Play",
+                            TextStyle {
+                                color: Color::GREEN.into(),
+                                font_size: 40.0,
+                                ..default()
+                            },
+                        )],
                         ..default()
                     },
-                )],
-                ..default()
-            },
-            background_color: Color::RED.into(),
-            ..default()
-        });
+                    ..default()
+                },
+                ButtonType::Play,
+            ));
 
-        // Quit Button
-        parent.spawn(TextBundle {
-            text: Text {
-                sections: vec![TextSection::new(
-                    "Quit",
-                    TextStyle {
-                        color: Color::GREEN.into(),
-                        font_size: 40.0,
+            // Quit Button
+            parent.spawn((
+                TextBundle {
+                    text: Text {
+                        sections: vec![TextSection::new(
+                            "Quit",
+                            TextStyle {
+                                color: Color::GREEN.into(),
+                                font_size: 40.0,
+                                ..default()
+                            },
+                        )],
                         ..default()
                     },
-                )],
-                ..default()
-            },
-            background_color: Color::RED.into(),
-            ..default()
-        });
-    }).id();
+                    ..default()
+                },
+                ButtonType::Quit,
+            ));
+        })
+        .id();
 
     // Set up parent-child relationships
-    commands.entity(main_menu_entity).push_children(&[title_entity, buttons_entity]);
+    commands
+        .entity(main_menu_entity)
+        .push_children(&[title_entity, buttons_entity]);
 }
-
 
 #[derive(Component)]
 pub struct ScoreUi;
@@ -278,6 +301,58 @@ pub fn update_level_ui(mut level_query: Query<&mut Text, With<LevelUi>>, level: 
     if level.is_changed() {
         for mut text in level_query.iter_mut() {
             text.sections[0].value = format!("Level {}", level.0);
+        }
+    }
+}
+
+pub fn handle_button_navigation(
+    keyboard_input: Res<ButtonInput<KeyCode>>,
+    mut selected_button: ResMut<SelectedButton>,
+) {
+    if keyboard_input.just_pressed(UP) || keyboard_input.just_pressed(UP) {
+        selected_button.0 = match selected_button.0 {
+            ButtonType::Play => ButtonType::Quit,
+            ButtonType::Quit => ButtonType::Play,
+        };
+    }
+
+    if keyboard_input.just_pressed(DOWN) || keyboard_input.just_pressed(DOWN) {
+        selected_button.0 = match selected_button.0 {
+            ButtonType::Play => ButtonType::Quit,
+            ButtonType::Quit => ButtonType::Play,
+        };
+    }
+}
+
+pub fn update_button_colors(
+    selected_button: Res<SelectedButton>,
+    mut query: Query<(&ButtonType, &mut BackgroundColor)>,
+) {
+    for (button_type, mut background_color) in query.iter_mut() {
+        if *button_type == selected_button.0 {
+            *background_color = BUTTON_HOVER_COLOR.into();
+        } else {
+            *background_color = BUTTON_NORMAL_COLOR.into();
+        }
+    }
+}
+
+pub fn handle_button_actions(
+    keyboard_input: Res<ButtonInput<KeyCode>>,
+    selected_button: Res<SelectedButton>,
+    mut app_exit_events: EventWriter<AppExit>,
+    mut next_app_state: ResMut<NextState<crate::AppState>>,
+) {
+    if keyboard_input.just_pressed(SHOOT_KEY) {
+        match selected_button.0 {
+            ButtonType::Play => {
+                // Start the game
+                next_app_state.set(crate::AppState::InGame);
+            }
+            ButtonType::Quit => {
+                // Quit the game
+                app_exit_events.send(AppExit);
+            }
         }
     }
 }
