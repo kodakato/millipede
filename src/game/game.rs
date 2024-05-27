@@ -13,9 +13,24 @@ pub struct GameVariables {
     pub spider_reward: u32,
 }
 
+impl GameVariables {
+    pub fn reset(&mut self) {
+        self.millipede_length = MILLIPEDE_STARTING_LENGTH;
+        self.millipede_speed = MILLIPEDE_SPEED;
+        self.spider_speed = SPIDER_SPEED;
+        self.spider_attack_rate = SPIDER_ATTACK_RATE;
+        self.spider_leave_rate = SPIDER_LEAVE_RATE;
+        self.spider_timer_length = SPIDER_TIMER;
+        self.spider_spawn_rate = SPIDER_SPAWN_RATE;
+        self.spider_average_spawn_height = SPIDER_AVERAGE_SPAWN_HEIGHT;
+        self.spider_reward = SPIDER_REWARD;
+    }
+}
+
+
 impl FromWorld for GameVariables {
     fn from_world(_world: &mut World) -> Self {
-        GameVariables {
+        let mut vars = GameVariables {
             millipede_length: MILLIPEDE_STARTING_LENGTH,
             millipede_speed: MILLIPEDE_SPEED,
             spider_speed: SPIDER_SPEED,
@@ -25,7 +40,9 @@ impl FromWorld for GameVariables {
             spider_spawn_rate: SPIDER_SPAWN_RATE,
             spider_average_spawn_height: SPIDER_AVERAGE_SPAWN_HEIGHT,
             spider_reward: SPIDER_REWARD,
-        }
+        };
+        vars.reset();
+        vars
     }
 }
 
@@ -42,8 +59,10 @@ pub fn init_game(
                  spider_query: Query<Entity, With<Spider>>,
                  scorpion_query: Query<Entity, With<Scorpion>>,
                  beetle_query: Query<Entity, With<Beetle>>,
+                 explosion_query: Query<Entity, With<Explosion>>,
                  mut next_level_state: ResMut<NextState<LevelState>>,
                  mut shroom_amount: ResMut<ShroomAmount>,
+                 mut game_vars: ResMut<GameVariables>,
                  ){
     lives.0 = STARTING_LIVES;
 
@@ -51,7 +70,8 @@ pub fn init_game(
 
     level.0 = 0;
 
-    
+    // Reset Game vars
+    game_vars.reset();   
 
     down_timer.0.reset();
 
@@ -89,6 +109,10 @@ pub fn init_game(
         commands.entity(millipede_entity).despawn();
     }
 
+    // Despawn existing explosions
+    for explosion_entity in explosion_query.iter() {
+        commands.entity(explosion_entity).despawn();
+    }
     // Init level state
     next_level_state.set(LevelState::Changing);
 }

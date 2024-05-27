@@ -380,7 +380,9 @@ pub fn handle_button_actions(
             ButtonType::MainMenu => {
                 next_app_state.set(AppState::MainMenu);
             }
-            _ => todo!(),
+            ButtonType::Restart => {
+                next_app_state.set(AppState::InGame);
+            }
         }
     }
 }
