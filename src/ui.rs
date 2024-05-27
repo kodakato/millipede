@@ -2,6 +2,8 @@ use crate::{
     constants::*,
     game::{assets::*, level::Level, player::Lives, Score},
 };
+
+use super::*; 
 use bevy::{app::AppExit, prelude::*};
 
 #[derive(Component)]
@@ -20,6 +22,8 @@ pub struct SelectedButton(pub ButtonType);
 pub enum ButtonType {
     Play,
     Quit,
+    Restart,
+    MainMenu,
 }
 
 // Main Menu
@@ -308,19 +312,39 @@ pub fn update_level_ui(mut level_query: Query<&mut Text, With<LevelUi>>, level: 
 pub fn handle_button_navigation(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut selected_button: ResMut<SelectedButton>,
+    app_state: Res<State<AppState>>,
 ) {
-    if keyboard_input.just_pressed(UP) || keyboard_input.just_pressed(UP) {
-        selected_button.0 = match selected_button.0 {
-            ButtonType::Play => ButtonType::Quit,
-            ButtonType::Quit => ButtonType::Play,
-        };
+    // Main Menu
+    if *app_state.get() == AppState::MainMenu {
+        if keyboard_input.just_pressed(UP) || keyboard_input.just_pressed(DOWN) {
+            selected_button.0 = match selected_button.0 {
+                ButtonType::Play => ButtonType::Quit,
+                ButtonType::Quit => ButtonType::Play,
+                _ => unreachable!("Tried to set button not in main menu!"),
+            }
+        }
     }
 
-    if keyboard_input.just_pressed(DOWN) || keyboard_input.just_pressed(DOWN) {
-        selected_button.0 = match selected_button.0 {
-            ButtonType::Play => ButtonType::Quit,
-            ButtonType::Quit => ButtonType::Play,
-        };
+    // Game Over Screen
+    if *app_state.get() == AppState::GameOver {
+        if keyboard_input.just_pressed(UP) || keyboard_input.just_pressed(DOWN) {
+            selected_button.0 = match selected_button.0 {
+                ButtonType::Restart => ButtonType::MainMenu,
+                ButtonType::MainMenu => ButtonType::Restart,
+                _ => unreachable!("Tried to set button not in game over screen!"),
+            };
+        }
+    }
+}
+
+pub fn set_default_button_selection(app_state: Res<State<AppState>>,
+                                    mut selected_button: ResMut<SelectedButton>,) {
+    // Set default button, this is to fix the bug that when going into game over,
+    // the selected button from the main menu is leftover
+    match *app_state.get() {
+        AppState::MainMenu => selected_button.0 = ButtonType::Play,
+        AppState::GameOver => selected_button.0 = ButtonType::Restart,
+        _ => unreachable!("Tried to set the default button to an invalid state!"),
     }
 }
 
@@ -341,18 +365,175 @@ pub fn handle_button_actions(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     selected_button: Res<SelectedButton>,
     mut app_exit_events: EventWriter<AppExit>,
-    mut next_app_state: ResMut<NextState<crate::AppState>>,
+    mut next_app_state: ResMut<NextState<AppState>>,
 ) {
     if keyboard_input.just_pressed(SHOOT_KEY) {
         match selected_button.0 {
             ButtonType::Play => {
                 // Start the game
-                next_app_state.set(crate::AppState::InGame);
+                next_app_state.set(AppState::InGame);
             }
             ButtonType::Quit => {
                 // Quit the game
                 app_exit_events.send(AppExit);
             }
+            ButtonType::MainMenu => {
+                next_app_state.set(AppState::MainMenu);
+            }
+            _ => todo!(),
         }
     }
+}
+
+#[derive(Component)]
+pub struct GameOverUI;
+
+pub fn spawn_game_over_ui(mut commands: Commands,  score: Res<Score>) {
+    build_game_over_ui(&mut commands, &score);
+}
+
+pub fn despawn_game_over_ui(mut commands: Commands, game_over_ui_query: Query<Entity, With<GameOverUI>>) {
+    if let Ok(game_over_ui_entity) = game_over_ui_query.get_single() {
+        commands.entity(game_over_ui_entity).despawn_recursive();
+    }
+}
+
+pub fn build_game_over_ui(commands: &mut Commands, score: &Res<Score>) {
+    // Create the root node for the game over screen
+    commands
+        .spawn((NodeBundle {
+            style: Style {
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
+                justify_content: JustifyContent::Center,
+                align_items: AlignItems::Center,
+                ..default()
+            },
+            background_color: Color::rgba(0.0, 0.0, 0.0, 0.03).into(), // Translucent background
+            ..default()
+        },
+        GameOverUI))
+        .with_children(|parent| {
+            // Add a vertical layout container
+            parent
+                .spawn(NodeBundle {
+                    style: Style {
+                        width: Val::Percent(50.0),
+                        height: Val::Percent(50.0),
+                        flex_direction: FlexDirection::Column,
+                        justify_content: JustifyContent::Center,
+                        align_items: AlignItems::Center,
+                        ..default()
+                    },
+                    ..default()
+                })
+                .with_children(|parent| {
+                    parent.spawn(TextBundle {
+                        text: Text::from_section(
+                            "GAME OVER",
+                            TextStyle {
+                                font_size: 60.0,
+                                color: Color::WHITE,
+                                ..default()
+                            },
+                        ),
+                        ..default()
+                    });
+
+                    // Add some spacing between the texts
+                    parent.spawn(NodeBundle {
+                        style: Style {
+                            height: Val::Px(20.0),
+                            ..default()
+                        },
+                        ..default()
+                    });
+
+                    // Add final score text
+                    parent.spawn(TextBundle {
+                        text: Text::from_section(
+                            format!("Final Score: {}", score.0),
+                            TextStyle {
+                                font_size: 40.0,
+                                color: Color::WHITE,
+                                ..default()
+                            },
+                        ),
+                        ..default()
+                    });
+
+                    // Define the button node
+                    parent
+                        .spawn(NodeBundle {
+                            style: Style {
+                                height: Val::Percent(60.0),
+                                width: Val::Percent(100.0),
+                                flex_direction: FlexDirection::Column,
+                                align_items: AlignItems::Center,
+                                justify_content: JustifyContent::SpaceEvenly,
+                                ..default()
+                            },
+                            ..default()
+                        })
+                        .with_children(|parent| {
+                            // Restart Button
+                            parent.spawn((
+                                ButtonBundle {
+                                    style: Style {
+                                        width: Val::Px(200.0),
+                                        height: Val::Px(80.0),
+                                        justify_content: JustifyContent::Center,
+                                        align_items: AlignItems::Center,
+                                        ..default()
+                                    },
+                                    background_color: BUTTON_NORMAL_COLOR.into(),
+                                    ..default()
+                                },
+                                ButtonType::Restart,
+                            ))
+                            .with_children(|parent| {
+                                parent.spawn(TextBundle {
+                                    text: Text::from_section(
+                                        "Restart",
+                                        TextStyle {
+                                            font_size: 40.0,
+                                            color: Color::GREEN,
+                                            ..default()
+                                        },
+                                    ),
+                                    ..default()
+                                });
+                            });
+
+                            // Main Menu Button
+                            parent.spawn((
+                                ButtonBundle {
+                                    style: Style {
+                                        width: Val::Px(200.0), 
+                                        height: Val::Px(80.0),
+                                        justify_content: JustifyContent::Center,
+                                        align_items: AlignItems::Center,
+                                        ..default()
+                                    },
+                                    background_color: BUTTON_NORMAL_COLOR.into(),
+                                    ..default()
+                                },
+                                ButtonType::MainMenu,
+                            ))
+                            .with_children(|parent| {
+                                parent.spawn(TextBundle {
+                                    text: Text::from_section(
+                                        "Main Menu",
+                                        TextStyle {
+                                            font_size: 40.0,
+                                            color: Color::GREEN,
+                                            ..default()
+                                        },
+                                    ),
+                                    ..default()
+                                });
+                            });
+                        });
+                });
+        });
 }

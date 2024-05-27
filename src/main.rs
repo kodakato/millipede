@@ -30,15 +30,27 @@ fn main() {
         .add_systems(
             Update,
             (
-                enter_game,
                 ui::handle_button_actions,
                 ui::handle_button_navigation,
                 ui::update_button_colors,
             )
-                .run_if(in_state(AppState::MainMenu)),
+            .run_if(in_menu)
         )
+        .add_systems(
+            OnEnter(AppState::GameOver),
+            (
+                ui::spawn_game_over_ui,
+            )
+        )
+        .add_systems(
+            OnExit(AppState::GameOver),
+            (
+                ui::despawn_game_over_ui,
+            )
+        )
+        .add_systems(OnEnter(AppState::MainMenu), ui::set_default_button_selection)
+        .add_systems(OnEnter(AppState::GameOver), ui::set_default_button_selection)
         .add_systems(Update, (toggle_pause).run_if(in_state(AppState::InGame)))
-        .add_systems(Update, quit_game)
         .add_systems(Startup, (camera::spawn_game_camera).chain())
         .add_systems(OnEnter(AppState::MainMenu), ui::spawn_main_menu)
         .add_systems(OnExit(AppState::MainMenu), ui::despawn_main_menu)
@@ -47,12 +59,6 @@ fn main() {
         .run();
 }
 
-fn enter_game(mut next_state: ResMut<NextState<AppState>>, input: Res<ButtonInput<KeyCode>>) {
-    // Check if player hits play button
-    if input.just_pressed(constants::MENU_KEY) {
-        next_state.set(AppState::InGame)
-    }
-}
 
 fn toggle_pause(
     state: Res<State<GameState>>,
@@ -65,13 +71,6 @@ fn toggle_pause(
             GameState::Paused => next_state.set(GameState::Running),
         }
     }
-}
-
-fn quit_game(input: Res<ButtonInput<KeyCode>>, mut exit: EventWriter<AppExit>) {
-    if !input.pressed(constants::QUIT_KEY) {
-        return;
-    }
-    exit.send(AppExit);
 }
 
 #[derive(States, Debug, Clone, Eq, PartialEq, Hash, Default)]
@@ -87,4 +86,12 @@ pub enum GameState {
     #[default]
     Running,
     Paused,
+}
+
+fn in_menu(state: Res<State<AppState>>) -> bool {
+    if *state.get() == AppState::MainMenu || *state.get() == AppState::GameOver {
+        true
+    } else {
+        false
+    }
 }

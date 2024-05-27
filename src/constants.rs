@@ -19,7 +19,7 @@ pub const PLAYER_SIZE: f32 = 16.0;
 pub const PROJECTILE_SPEED: f32 = 1300.0;
 pub const PROJECTILE_ACCELERATION: f32 = 1.0;
 pub const PROJECTILE_SIZE: f32 = 10.0;
-pub const STARTING_LIVES: u8 = 3;
+pub const STARTING_LIVES: u8 = 1;
 
 // Map
 pub const TOP_BOUND: f32 = 100.0;
