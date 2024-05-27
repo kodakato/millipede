@@ -411,7 +411,7 @@ pub fn build_game_over_ui(commands: &mut Commands, score: &Res<Score>) {
                 align_items: AlignItems::Center,
                 ..default()
             },
-            background_color: Color::rgba(0.0, 0.0, 0.0, 0.03).into(), // Translucent background
+            background_color: Color::rgba(0.0, 0.0, 0.0, 0.95).into(), // Translucent background
             ..default()
         },
         GameOverUI))
@@ -420,7 +420,7 @@ pub fn build_game_over_ui(commands: &mut Commands, score: &Res<Score>) {
             parent
                 .spawn(NodeBundle {
                     style: Style {
-                        width: Val::Percent(50.0),
+                        width: Val::Percent(100.0),
                         height: Val::Percent(50.0),
                         flex_direction: FlexDirection::Column,
                         justify_content: JustifyContent::Center,
@@ -430,39 +430,63 @@ pub fn build_game_over_ui(commands: &mut Commands, score: &Res<Score>) {
                     ..default()
                 })
                 .with_children(|parent| {
-                    parent.spawn(TextBundle {
-                        text: Text::from_section(
-                            "GAME OVER",
-                            TextStyle {
-                                font_size: 60.0,
-                                color: Color::WHITE,
+                    parent
+                        .spawn(NodeBundle {
+                            style: Style {
+                                width: Val::Percent(100.0),
+                                justify_content: JustifyContent::Center,
+                                align_items: AlignItems::Center,
                                 ..default()
                             },
-                        ),
-                        ..default()
-                    });
-
+                            ..default()
+                        })
+                        .with_children(|parent| {
+                            parent.spawn(TextBundle {
+                                text: Text::from_section(
+                                    "GAME OVER",
+                                    TextStyle {
+                                        font_size: 60.0,
+                                        color: Color::WHITE,
+                                        ..default()
+                                    },
+                                ),
+                                ..default()
+                            });
+                        });                    
+                    
                     // Add some spacing between the texts
                     parent.spawn(NodeBundle {
                         style: Style {
-                            height: Val::Px(20.0),
+                            height: Val::Px(80.0),
                             ..default()
                         },
                         ..default()
                     });
 
-                    // Add final score text
-                    parent.spawn(TextBundle {
-                        text: Text::from_section(
-                            format!("Final Score: {}", score.0),
-                            TextStyle {
-                                font_size: 40.0,
-                                color: Color::WHITE,
+                    // Add a container for final score text
+                    parent
+                        .spawn(NodeBundle {
+                            style: Style {
+                                width: Val::Percent(100.0),
+                                justify_content: JustifyContent::Center,
+                                align_items: AlignItems::Center,
                                 ..default()
                             },
-                        ),
-                        ..default()
-                    });
+                            ..default()
+                        })
+                        .with_children(|parent| {
+                            parent.spawn(TextBundle {
+                                text: Text::from_section(
+                                    format!("{:07}", score.0),
+                                    TextStyle {
+                                        font_size: 40.0,
+                                        color: Color::WHITE,
+                                        ..default()
+                                    },
+                                ),
+                                ..default()
+                            });
+                        });
 
                     // Define the button node
                     parent
