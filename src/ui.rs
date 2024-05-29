@@ -67,7 +67,6 @@ pub fn build_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>)
             align_items: AlignItems::Center,
             ..default()
         },
-        background_color: Color::WHITE.into(),
         ..default()
     };
 
