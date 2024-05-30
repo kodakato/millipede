@@ -83,3 +83,9 @@ pub const TEXT_SIZE: f32 = 20.0;
 pub const TOP_UI_HEIGHT: f32 = 24.0;
 pub const BUTTON_HOVER_COLOR: Color = Color::rgba(129.0 / 255.0, 161.0 / 255.0, 137.0 / 255.0, 0.2);
 pub const BUTTON_NORMAL_COLOR: Color = Color::rgba(0.0, 0.0, 0.0, 0.0);
+
+// Audio
+pub const BACKGROUND_VOLUME: f32 = 1.0;
+pub const MILLIPEDE_VOLUMEL: f32 = 1.0;
+pub const SPIDER_VOLUME: f32 = 0.5;
+pub const SCORPION_VOLUME: f32 = 0.5;

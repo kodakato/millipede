@@ -1,10 +1,12 @@
 use bevy::{app::AppExit, prelude::*};
+use bevy_kira_audio::prelude::*;
 
 mod camera;
 mod constants;
 mod debug;
 mod game;
 mod ui;
+mod audio;
 
 fn main() {
     let window_plugin = WindowPlugin {
@@ -27,6 +29,7 @@ fn main() {
         )
         .add_plugins(debug::DebugPlugin)
         .add_plugins(game::GamePlugin)
+        .add_plugins(AudioPlugin)
         .add_systems(
             Update,
             (
@@ -56,8 +59,14 @@ fn main() {
         .add_systems(OnExit(AppState::MainMenu), ui::despawn_main_menu)
         .add_systems(OnEnter(AppState::InGame), ui::build_game_ui)
         .insert_resource(ui::SelectedButton(ui::ButtonType::Play))
+        .add_audio_channel::<audio::BackgroundChannel>()
+        .add_audio_channel::<audio::SpiderChannel>()
+        .add_audio_channel::<audio::ScorpionChannel>()
+        .add_audio_channel::<audio::MillipedeChannel>()
+        .add_systems(Startup, (audio::prepare_audio, audio::start_background_audio, audio::set_initial_volumes).chain())
         .run();
 }
+
 
 
 fn toggle_pause(
