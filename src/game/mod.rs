@@ -32,7 +32,7 @@ impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             OnEnter(AppState::InGame),
-            (init_game, spawn_player, spawn_shroom_field,).chain(),
+            (init_game, spawn_player, spawn_shroom_field).chain(),
         )
         .add_systems(
             OnExit(AppState::GameOver),
@@ -160,6 +160,3 @@ pub struct Score(pub u32);
 
 #[derive(Component)]
 pub struct Health(pub i8);
-
-
-

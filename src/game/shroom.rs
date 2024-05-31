@@ -72,8 +72,7 @@ pub fn despawn_mushroom(
     }
 }
 
-pub fn despawn_shroom_field(mut commands: Commands,
-                           mushroom_query: Query<Entity, With<Mushroom>>) {
+pub fn despawn_shroom_field(mut commands: Commands, mushroom_query: Query<Entity, With<Mushroom>>) {
     for mushroom_entity in mushroom_query.iter() {
         commands.entity(mushroom_entity).despawn();
     }

@@ -3,7 +3,7 @@ use crate::{
     game::{assets::*, level::Level, player::Lives, Score},
 };
 
-use super::*; 
+use super::*;
 use bevy::{app::AppExit, prelude::*};
 
 #[derive(Component)]
@@ -336,8 +336,10 @@ pub fn handle_button_navigation(
     }
 }
 
-pub fn set_default_button_selection(app_state: Res<State<AppState>>,
-                                    mut selected_button: ResMut<SelectedButton>,) {
+pub fn set_default_button_selection(
+    app_state: Res<State<AppState>>,
+    mut selected_button: ResMut<SelectedButton>,
+) {
     // Set default button, this is to fix the bug that when going into game over,
     // the selected button from the main menu is leftover
     match *app_state.get() {
@@ -389,11 +391,14 @@ pub fn handle_button_actions(
 #[derive(Component)]
 pub struct GameOverUI;
 
-pub fn spawn_game_over_ui(mut commands: Commands,  score: Res<Score>) {
+pub fn spawn_game_over_ui(mut commands: Commands, score: Res<Score>) {
     build_game_over_ui(&mut commands, &score);
 }
 
-pub fn despawn_game_over_ui(mut commands: Commands, game_over_ui_query: Query<Entity, With<GameOverUI>>) {
+pub fn despawn_game_over_ui(
+    mut commands: Commands,
+    game_over_ui_query: Query<Entity, With<GameOverUI>>,
+) {
     if let Ok(game_over_ui_entity) = game_over_ui_query.get_single() {
         commands.entity(game_over_ui_entity).despawn_recursive();
     }
@@ -402,18 +407,20 @@ pub fn despawn_game_over_ui(mut commands: Commands, game_over_ui_query: Query<En
 pub fn build_game_over_ui(commands: &mut Commands, score: &Res<Score>) {
     // Create the root node for the game over screen
     commands
-        .spawn((NodeBundle {
-            style: Style {
-                width: Val::Percent(100.0),
-                height: Val::Percent(100.0),
-                justify_content: JustifyContent::Center,
-                align_items: AlignItems::Center,
+        .spawn((
+            NodeBundle {
+                style: Style {
+                    width: Val::Percent(100.0),
+                    height: Val::Percent(100.0),
+                    justify_content: JustifyContent::Center,
+                    align_items: AlignItems::Center,
+                    ..default()
+                },
+                background_color: Color::rgba(0.0, 0.0, 0.0, 0.95).into(), // Translucent background
                 ..default()
             },
-            background_color: Color::rgba(0.0, 0.0, 0.0, 0.95).into(), // Translucent background
-            ..default()
-        },
-        GameOverUI))
+            GameOverUI,
+        ))
         .with_children(|parent| {
             // Add a vertical layout container
             parent
@@ -451,8 +458,8 @@ pub fn build_game_over_ui(commands: &mut Commands, score: &Res<Score>) {
                                 ),
                                 ..default()
                             });
-                        });                    
-                    
+                        });
+
                     // Add some spacing between the texts
                     parent.spawn(NodeBundle {
                         style: Style {
@@ -502,62 +509,64 @@ pub fn build_game_over_ui(commands: &mut Commands, score: &Res<Score>) {
                         })
                         .with_children(|parent| {
                             // Restart Button
-                            parent.spawn((
-                                ButtonBundle {
-                                    style: Style {
-                                        width: Val::Px(200.0),
-                                        height: Val::Px(80.0),
-                                        justify_content: JustifyContent::Center,
-                                        align_items: AlignItems::Center,
-                                        ..default()
-                                    },
-                                    background_color: BUTTON_NORMAL_COLOR.into(),
-                                    ..default()
-                                },
-                                ButtonType::Restart,
-                            ))
-                            .with_children(|parent| {
-                                parent.spawn(TextBundle {
-                                    text: Text::from_section(
-                                        "Restart",
-                                        TextStyle {
-                                            font_size: 40.0,
-                                            color: Color::GREEN,
+                            parent
+                                .spawn((
+                                    ButtonBundle {
+                                        style: Style {
+                                            width: Val::Px(200.0),
+                                            height: Val::Px(80.0),
+                                            justify_content: JustifyContent::Center,
+                                            align_items: AlignItems::Center,
                                             ..default()
                                         },
-                                    ),
-                                    ..default()
+                                        background_color: BUTTON_NORMAL_COLOR.into(),
+                                        ..default()
+                                    },
+                                    ButtonType::Restart,
+                                ))
+                                .with_children(|parent| {
+                                    parent.spawn(TextBundle {
+                                        text: Text::from_section(
+                                            "Restart",
+                                            TextStyle {
+                                                font_size: 40.0,
+                                                color: Color::GREEN,
+                                                ..default()
+                                            },
+                                        ),
+                                        ..default()
+                                    });
                                 });
-                            });
 
                             // Main Menu Button
-                            parent.spawn((
-                                ButtonBundle {
-                                    style: Style {
-                                        width: Val::Px(200.0), 
-                                        height: Val::Px(80.0),
-                                        justify_content: JustifyContent::Center,
-                                        align_items: AlignItems::Center,
-                                        ..default()
-                                    },
-                                    background_color: BUTTON_NORMAL_COLOR.into(),
-                                    ..default()
-                                },
-                                ButtonType::MainMenu,
-                            ))
-                            .with_children(|parent| {
-                                parent.spawn(TextBundle {
-                                    text: Text::from_section(
-                                        "Main Menu",
-                                        TextStyle {
-                                            font_size: 40.0,
-                                            color: Color::GREEN,
+                            parent
+                                .spawn((
+                                    ButtonBundle {
+                                        style: Style {
+                                            width: Val::Px(200.0),
+                                            height: Val::Px(80.0),
+                                            justify_content: JustifyContent::Center,
+                                            align_items: AlignItems::Center,
                                             ..default()
                                         },
-                                    ),
-                                    ..default()
+                                        background_color: BUTTON_NORMAL_COLOR.into(),
+                                        ..default()
+                                    },
+                                    ButtonType::MainMenu,
+                                ))
+                                .with_children(|parent| {
+                                    parent.spawn(TextBundle {
+                                        text: Text::from_section(
+                                            "Main Menu",
+                                            TextStyle {
+                                                font_size: 40.0,
+                                                color: Color::GREEN,
+                                                ..default()
+                                            },
+                                        ),
+                                        ..default()
+                                    });
                                 });
-                            });
                         });
                 });
         });

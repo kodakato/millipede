@@ -27,7 +27,6 @@ impl GameVariables {
     }
 }
 
-
 impl FromWorld for GameVariables {
     fn from_world(_world: &mut World) -> Self {
         let mut vars = GameVariables {
@@ -49,21 +48,21 @@ impl FromWorld for GameVariables {
 pub fn init_game(
     mut commands: Commands,
     mut lives: ResMut<Lives>,
-                 mut score: ResMut<Score>,
-                 mut level: ResMut<Level>,
-                 mut down_timer: ResMut<DownTimer>,
-                 mut spider_timer: ResMut<SpiderTimer>,
-                 player_query: Query<Entity, With<Player>>,
-                 mushroom_query: Query<Entity, With<Mushroom>>,
-                 millipede_query: Query<Entity, With<Segment>>,
-                 spider_query: Query<Entity, With<Spider>>,
-                 scorpion_query: Query<Entity, With<Scorpion>>,
-                 beetle_query: Query<Entity, With<Beetle>>,
-                 explosion_query: Query<Entity, With<Explosion>>,
-                 mut next_level_state: ResMut<NextState<LevelState>>,
-                 mut shroom_amount: ResMut<ShroomAmount>,
-                 mut game_vars: ResMut<GameVariables>,
-                 ){
+    mut score: ResMut<Score>,
+    mut level: ResMut<Level>,
+    mut down_timer: ResMut<DownTimer>,
+    mut spider_timer: ResMut<SpiderTimer>,
+    player_query: Query<Entity, With<Player>>,
+    mushroom_query: Query<Entity, With<Mushroom>>,
+    millipede_query: Query<Entity, With<Segment>>,
+    spider_query: Query<Entity, With<Spider>>,
+    scorpion_query: Query<Entity, With<Scorpion>>,
+    beetle_query: Query<Entity, With<Beetle>>,
+    explosion_query: Query<Entity, With<Explosion>>,
+    mut next_level_state: ResMut<NextState<LevelState>>,
+    mut shroom_amount: ResMut<ShroomAmount>,
+    mut game_vars: ResMut<GameVariables>,
+) {
     lives.0 = STARTING_LIVES;
 
     score.0 = 0;
@@ -71,7 +70,7 @@ pub fn init_game(
     level.0 = 0;
 
     // Reset Game vars
-    game_vars.reset();   
+    game_vars.reset();
 
     down_timer.0.reset();
 
@@ -91,7 +90,6 @@ pub fn init_game(
     if let Ok(beetle_entity) = beetle_query.get_single() {
         commands.entity(beetle_entity).despawn();
     }
-
 
     // Despawn existing player
     if let Ok(player_entity) = player_query.get_single() {
@@ -116,5 +114,3 @@ pub fn init_game(
     // Init level state
     next_level_state.set(LevelState::Changing);
 }
-
-
