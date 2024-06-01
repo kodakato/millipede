@@ -391,8 +391,8 @@ pub fn handle_button_actions(
 #[derive(Component)]
 pub struct GameOverUI;
 
-pub fn spawn_game_over_ui(mut commands: Commands, score: Res<Score>) {
-    build_game_over_ui(&mut commands, &score);
+pub fn spawn_game_over_ui(mut commands: Commands, score: Res<Score>, level: Res<Level>,) {
+    build_game_over_ui(&mut commands, &score, &level);
 }
 
 pub fn despawn_game_over_ui(
@@ -404,7 +404,7 @@ pub fn despawn_game_over_ui(
     }
 }
 
-pub fn build_game_over_ui(commands: &mut Commands, score: &Res<Score>) {
+pub fn build_game_over_ui(commands: &mut Commands, score: &Res<Score>, level: &Res<Level>) {
     // Create the root node for the game over screen
     commands
         .spawn((
@@ -476,11 +476,23 @@ pub fn build_game_over_ui(commands: &mut Commands, score: &Res<Score>) {
                                 width: Val::Percent(100.0),
                                 justify_content: JustifyContent::Center,
                                 align_items: AlignItems::Center,
+                                flex_direction: FlexDirection::Column,
                                 ..default()
                             },
                             ..default()
                         })
                         .with_children(|parent| {
+                            parent.spawn(TextBundle {
+                                text: Text::from_section(
+                                    format!("Level: {}", level.0),
+                                    TextStyle {
+                                        font_size: 40.0,
+                                        color: Color::WHITE,
+                                        ..default()
+                                    },
+                                ),
+                                ..default()
+                            });
                             parent.spawn(TextBundle {
                                 text: Text::from_section(
                                     format!("{:07}", score.0),

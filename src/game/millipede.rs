@@ -328,7 +328,7 @@ pub fn collide_with_head(mut segment_query: Query<(Entity, &mut Transform, &mut 
                 // Randomly decide to drop
                 // It needs to randomly drop in order to remove the chance that it gets caught in a
                 // loop
-                let drop = rand::thread_rng().gen_bool(0.8);
+                let drop = rand::thread_rng().gen_bool(SEGMENT_DROP_RATE);
                 if drop {
                     transform.translation.y += DROP_AMOUNT * direction.y;
                 }

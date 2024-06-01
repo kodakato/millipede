@@ -36,12 +36,15 @@ pub const MUSHROOM_HEALTH: i8 = 3;
 /// Millipede
 pub const MILLIPEDE_STARTING_LENGTH: usize = 9;
 pub const MILLIPEDE_MAX_LENGTH: usize = 40;
-pub const MILLIPEDE_SPEED: f32 = 275.0;
+pub const MILLIPEDE_SPEED: f32 = 300.0;
+pub const MILLIPEDE_MAX_SPEED: f32 = 500.0;
+pub const MILLIPEDE_SPEED_CHANGE_RATE: f32 = 1.025;
 pub const SEGMENT_SIZE: f32 = 16.0;
 pub const SEGMENT_SPACING: f32 = 15.0;
 pub const DROP_AMOUNT: f32 = SEGMENT_SIZE / 2.0 + 1.0;
 pub const PUSH_BACK_AMOUNT: f32 = 10.0;
 pub const SEGMENT_SPAWN_TIMER_DURATION: f32 = 9.0;
+pub const SEGMENT_DROP_RATE: f64 = 0.1;
 
 // Explosions
 pub const EXPLOSION_DURATION: f32 = 0.1;
@@ -85,7 +88,7 @@ pub const BUTTON_HOVER_COLOR: Color = Color::rgba(129.0 / 255.0, 161.0 / 255.0, 
 pub const BUTTON_NORMAL_COLOR: Color = Color::rgba(0.0, 0.0, 0.0, 0.0);
 
 // Audio
-pub const BACKGROUND_VOLUME: f64 = 0.8;
+pub const BACKGROUND_VOLUME: f64 = 0.7;
 pub const MILLIPEDE_VOLUME: f64 = 0.6;
 pub const SPIDER_VOLUME: f64 = 0.4;
 pub const SCORPION_VOLUME: f64 = 0.4;

@@ -178,7 +178,7 @@ pub fn sync_audio(
     if let Some(background_instance) = audio_instances.get_mut(background_beat_handle) {
         match background_instance.state() {
             PlaybackState::Playing { position } => {
-                if position <= 0.2 {
+                if position <= 0.7 && position >= 0.5 {
                     // Set the position of each track to 0
                     let spider_handle = &instances.spider.0;
                     if let Some(spider_instance) = audio_instances.get_mut(spider_handle) {
