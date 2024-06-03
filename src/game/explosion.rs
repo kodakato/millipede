@@ -1,4 +1,6 @@
 use super::*;
+use crate::audio::AudioHandles;
+use bevy_kira_audio::Audio;
 use std::time::Duration;
 
 #[derive(Component)]
@@ -9,6 +11,8 @@ impl Explosion {
         location_transform: &Transform,
         commands: &mut Commands,
         game_assets: &Res<GameAssets>,
+        audio: &Res<Audio>,
+        audio_handles: &Res<AudioHandles>,
     ) {
         let explosion_texture = &game_assets.explosion_texture;
 
@@ -24,6 +28,10 @@ impl Explosion {
             },
             Name::from("Explosion"),
         ));
+
+        // Play sound
+        let audio = *audio;
+        audio.play(audio_handles.explosion.clone()).with_volume(0.4);
     }
 }
 

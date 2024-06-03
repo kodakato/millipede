@@ -13,6 +13,12 @@ pub struct Instances {
     highhat: (Handle<AudioInstance>, f64),
 }
 
+#[derive(Resource)]
+pub struct AudioHandles {
+    pub shoot: Handle<AudioSource>,
+    pub explosion: Handle<AudioSource>,
+}
+
 pub fn prepare_audio(mut commands: Commands, audio: Res<Audio>, asset_server: Res<AssetServer>) {
     let background_beat_handle = audio
         .play(asset_server.load("sounds/background_beat.ogg"))
@@ -48,6 +54,15 @@ pub fn prepare_audio(mut commands: Commands, audio: Res<Audio>, asset_server: Re
         scorpion,
         highhat,
     });
+
+    // Sound effects
+    let shoot_handle = asset_server.load("sounds/shoot.ogg");
+    let explosion_handle = asset_server.load("sounds/explosion.ogg");
+
+    commands.insert_resource(AudioHandles {
+        shoot: shoot_handle,
+        explosion: explosion_handle,
+    })
 }
 
 pub fn initialize_volume(
@@ -74,13 +89,12 @@ pub fn initialize_volume(
         instance.set_volume(0.0, AudioTween::default());
         instances.spider.1 = 0.0;
     }
-    
+
     let highhat_handle = &instances.highhat.0;
     if let Some(instance) = audio_instances.get_mut(highhat_handle) {
         instance.set_volume(0.0, AudioTween::default());
         instances.spider.1 = 0.0;
     }
-   
 }
 
 pub fn set_volume(
@@ -94,7 +108,7 @@ pub fn set_volume(
 ) {
     let millipede_handle = &instances.millipede.0;
     // Millipede
-    if !millipede_query.is_empty() && app_state.get() == &AppState::InGame{
+    if !millipede_query.is_empty() && app_state.get() == &AppState::InGame {
         if instances.millipede.1 != MILLIPEDE_VOLUME {
             if let Some(instance) = audio_instances.get_mut(millipede_handle) {
                 instance.set_volume(
@@ -115,7 +129,7 @@ pub fn set_volume(
 
     let spider_handle = &instances.spider.0;
     // Spider
-    if !spider_query.is_empty() && app_state.get() == &AppState::InGame{
+    if !spider_query.is_empty() && app_state.get() == &AppState::InGame {
         if instances.spider.1 != SPIDER_VOLUME {
             if let Some(instance) = audio_instances.get_mut(spider_handle) {
                 instance.set_volume(
@@ -137,7 +151,7 @@ pub fn set_volume(
     let scorpion_handle = &instances.scorpion.0;
     // Scorpion
     if !scorpion_query.is_empty() {
-        if instances.scorpion.1 != SCORPION_VOLUME  && app_state.get() == &AppState::InGame{
+        if instances.scorpion.1 != SCORPION_VOLUME && app_state.get() == &AppState::InGame {
             if let Some(instance) = audio_instances.get_mut(scorpion_handle) {
                 instance.set_volume(SCORPION_VOLUME, AudioTween::default());
                 instances.scorpion.1 = SCORPION_VOLUME;
@@ -154,7 +168,7 @@ pub fn set_volume(
     let highhat_handle = &instances.highhat.0;
     match *app_state.get() {
         AppState::InGame => {
-            if instances.highhat.1 != BACKGROUND_VOLUME  && game_state.get() == &GameState::Running {
+            if instances.highhat.1 != BACKGROUND_VOLUME && game_state.get() == &GameState::Running {
                 if let Some(instance) = audio_instances.get_mut(highhat_handle) {
                     instance.set_volume(BACKGROUND_VOLUME, AudioTween::default());
                     instances.highhat.1 = BACKGROUND_VOLUME;

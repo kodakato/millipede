@@ -1,5 +1,7 @@
 use super::*;
+use crate::audio::AudioHandles;
 use bevy::utils::HashMap;
+use bevy_kira_audio::Audio;
 use rand::Rng;
 
 #[derive(Component)]
@@ -219,6 +221,8 @@ pub fn segment_hits_player(
     game_assets: Res<GameAssets>,
     mut down_timer: ResMut<DownTimer>,
     mut lives: ResMut<Lives>,
+    audio: Res<Audio>,
+    audio_handles: Res<AudioHandles>,
 ) {
     let player_radius = PLAYER_SIZE / 2.0;
     let segment_radius = SEGMENT_SIZE / 2.0;
@@ -236,6 +240,8 @@ pub fn segment_hits_player(
                     &mut commands,
                     &mut down_timer,
                     &mut lives,
+                    &audio,
+                    &audio_handles,
                 );
             }
         }

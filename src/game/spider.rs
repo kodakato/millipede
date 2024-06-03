@@ -1,3 +1,5 @@
+use crate::audio::AudioHandles;
+
 use super::*;
 use rand::Rng;
 
@@ -263,6 +265,8 @@ pub fn spider_hits_player(
     mut commands: Commands,
     mut down_timer: ResMut<DownTimer>,
     mut lives: ResMut<Lives>,
+    audio: Res<Audio>,
+    audio_handles: Res<AudioHandles>,
 ) {
     if let Ok(spider_transform) = spider_query.get_single() {
         if let Ok((player_entity, player_transform)) = player_query.get_single() {
@@ -283,6 +287,8 @@ pub fn spider_hits_player(
                 &mut commands,
                 &mut down_timer,
                 &mut lives,
+                &audio,
+                &audio_handles,
             )
         }
     }

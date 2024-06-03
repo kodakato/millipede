@@ -1,4 +1,6 @@
 use super::*;
+use crate::audio::AudioHandles;
+use bevy_kira_audio::Audio;
 
 // Components
 #[derive(Component)]
@@ -36,11 +38,19 @@ impl Player {
         mut commands: &mut Commands,
         down_timer: &mut ResMut<DownTimer>,
         lives: &mut ResMut<Lives>,
+        audio: &Res<Audio>,
+        audio_handles: &Res<AudioHandles>,
     ) {
         // Despawn player
         commands.entity(player_entity).despawn();
         // Spawn explosion
-        Explosion::spawn(&player_transform, &mut commands, &game_assets);
+        Explosion::spawn(
+            &player_transform,
+            &mut commands,
+            &game_assets,
+            audio,
+            audio_handles,
+        );
 
         // Set next state
         next_player_state.set(PlayerState::Dead);

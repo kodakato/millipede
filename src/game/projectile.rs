@@ -1,4 +1,6 @@
 use super::*;
+use crate::audio::AudioHandles;
+use bevy_kira_audio::{Audio, AudioControl};
 
 #[derive(Component)]
 pub struct PlayerProjectile;
@@ -28,6 +30,8 @@ pub fn shoot_projectile(
     projectile_query: Query<Entity, With<PlayerProjectile>>,
     input: Res<ButtonInput<KeyCode>>,
     game_assets: Res<GameAssets>,
+    audio: Res<Audio>,
+    audio_handles: Res<AudioHandles>,
 ) {
     // Check if a projectile already exists
     if !projectile_query.is_empty() {
@@ -39,7 +43,9 @@ pub fn shoot_projectile(
         return;
     }
     if let Ok(player_transform) = player_query.get_single() {
-        PlayerProjectile::spawn(&player_transform, &mut commands, &game_assets)
+        PlayerProjectile::spawn(&player_transform, &mut commands, &game_assets);
+        // Play shoot sound
+        audio.play(audio_handles.shoot.clone()).with_volume(0.2);
     }
 }
 
@@ -105,6 +111,8 @@ pub fn projectile_hits_segment(
     game_assets: Res<GameAssets>,
     mut shroom_amount: ResMut<ShroomAmount>,
     mut score: ResMut<Score>,
+    audio: Res<Audio>,
+    audio_handles: Res<AudioHandles>,
 ) {
     if let Ok((projectile_entity, projectile_transform)) = projectile_query.get_single() {
         for (segment_entity, segment_transform, segment) in segment_query.iter() {
@@ -128,7 +136,13 @@ pub fn projectile_hits_segment(
                     });
                 }
 
-                Explosion::spawn(&segment_transform, &mut commands, &game_assets);
+                Explosion::spawn(
+                    &segment_transform,
+                    &mut commands,
+                    &game_assets,
+                    &audio,
+                    &audio_handles,
+                );
 
                 Mushroom::spawn(
                     &segment_transform,
@@ -163,6 +177,8 @@ pub fn projectile_hits_beetle(
     game_assets: Res<GameAssets>,
     mut score: ResMut<Score>,
     mut shroom_amount: ResMut<ShroomAmount>,
+    audio: Res<Audio>,
+    audio_handles: Res<AudioHandles>,
 ) {
     if let Ok((projectile_entity, projectile_transform)) = projectile_query.get_single() {
         for (beetle_entity, beetle_transform) in beetle_query.iter() {
@@ -174,7 +190,13 @@ pub fn projectile_hits_beetle(
                 .distance(beetle_transform.translation);
             if distance < projectile_radius + segment_radius {
                 // Spawn explosion
-                Explosion::spawn(&beetle_transform, &mut commands, &game_assets);
+                Explosion::spawn(
+                    &beetle_transform,
+                    &mut commands,
+                    &game_assets,
+                    &audio,
+                    &audio_handles,
+                );
                 // Spawn mushroom
                 Mushroom::spawn(
                     &beetle_transform,
@@ -201,6 +223,8 @@ pub fn projectile_hits_spider(
     game_assets: Res<GameAssets>,
     mut score: ResMut<Score>,
     mut spider_timer: ResMut<SpiderTimer>,
+    audio: Res<Audio>,
+    audio_handles: Res<AudioHandles>,
 ) {
     if let Ok((projectile_entity, projectile_transform)) = projectile_query.get_single() {
         for (spider_entity, spider_transform) in spider_query.iter() {
@@ -212,7 +236,13 @@ pub fn projectile_hits_spider(
                 .distance(spider_transform.translation);
             if distance < projectile_radius + segment_radius {
                 // Spawn explosion
-                Explosion::spawn(&spider_transform, &mut commands, &game_assets);
+                Explosion::spawn(
+                    &spider_transform,
+                    &mut commands,
+                    &game_assets,
+                    &audio,
+                    &audio_handles,
+                );
                 commands.entity(projectile_entity).despawn();
 
                 Spider::despawn(spider_entity, &mut commands, spider_timer);
@@ -232,6 +262,8 @@ pub fn projectile_hits_scorpion(
     projectile_query: Query<(Entity, &Transform), With<PlayerProjectile>>,
     game_assets: Res<GameAssets>,
     mut score: ResMut<Score>,
+    audio: Res<Audio>,
+    audio_handles: Res<AudioHandles>,
 ) {
     if let (
         Ok((projectile_entity, projectile_transform)),
@@ -250,7 +282,13 @@ pub fn projectile_hits_scorpion(
         }
 
         // Spawn explosion
-        Explosion::spawn(&scorpion_transform, &mut commands, &game_assets);
+        Explosion::spawn(
+            &scorpion_transform,
+            &mut commands,
+            &game_assets,
+            &audio,
+            &audio_handles,
+        );
         //Despawn projectile
         commands.entity(projectile_entity).despawn();
         // Kill Scorpion
