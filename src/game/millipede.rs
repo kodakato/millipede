@@ -221,8 +221,7 @@ pub fn segment_hits_player(
     game_assets: Res<GameAssets>,
     mut down_timer: ResMut<DownTimer>,
     mut lives: ResMut<Lives>,
-    audio: Res<Audio>,
-    audio_handles: Res<AudioHandles>,
+    mut explosion_events: EventWriter<ExplosionEvent>,
 ) {
     let player_radius = PLAYER_SIZE / 2.0;
     let segment_radius = SEGMENT_SIZE / 2.0;
@@ -240,8 +239,7 @@ pub fn segment_hits_player(
                     &mut commands,
                     &mut down_timer,
                     &mut lives,
-                    &audio,
-                    &audio_handles,
+                    &mut explosion_events,
                 );
             }
         }

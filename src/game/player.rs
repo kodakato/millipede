@@ -38,19 +38,12 @@ impl Player {
         mut commands: &mut Commands,
         down_timer: &mut ResMut<DownTimer>,
         lives: &mut ResMut<Lives>,
-        audio: &Res<Audio>,
-        audio_handles: &Res<AudioHandles>,
+        explosion_events: &mut EventWriter<ExplosionEvent>,
     ) {
         // Despawn player
         commands.entity(player_entity).despawn();
         // Spawn explosion
-        Explosion::spawn(
-            &player_transform,
-            &mut commands,
-            &game_assets,
-            audio,
-            audio_handles,
-        );
+        explosion_events.send(ExplosionEvent(player_transform.clone()));
 
         // Set next state
         next_player_state.set(PlayerState::Dead);
@@ -83,6 +76,7 @@ pub fn spawn_player(
         &mut next_player_state,
     );
 }
+
 
 pub fn despawn_player(mut commands: Commands, player_query: Query<Entity, With<Player>>) {
     if let Ok(player_entity) = player_query.get_single() {

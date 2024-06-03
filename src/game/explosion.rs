@@ -1,19 +1,23 @@
 use super::*;
 use crate::audio::AudioHandles;
-use bevy_kira_audio::Audio;
+use bevy_kira_audio::{Audio, AudioControl};
 use std::time::Duration;
 
 #[derive(Component)]
 pub struct Explosion(pub Timer);
 
-impl Explosion {
-    pub fn spawn(
-        location_transform: &Transform,
-        commands: &mut Commands,
-        game_assets: &Res<GameAssets>,
-        audio: &Res<Audio>,
-        audio_handles: &Res<AudioHandles>,
-    ) {
+#[derive(Event)]
+pub struct ExplosionEvent(pub Transform);
+
+
+pub fn spawn_explosion(
+    mut commands: Commands,
+    mut explosion_events: EventReader<ExplosionEvent>,
+    game_assets: Res<GameAssets>,
+    audio: Res<Audio>,
+    audio_handles: Res<AudioHandles>,
+) {
+    for event in explosion_events.read() {
         let explosion_texture = &game_assets.explosion_texture;
 
         commands.spawn((
@@ -23,14 +27,13 @@ impl Explosion {
             )),
             SpriteBundle {
                 texture: explosion_texture.clone(),
-                transform: location_transform.clone(),
+                transform: event.0,
                 ..default()
             },
             Name::from("Explosion"),
         ));
 
         // Play sound
-        let audio = *audio;
         audio.play(audio_handles.explosion.clone()).with_volume(0.4);
     }
 }

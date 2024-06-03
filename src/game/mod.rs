@@ -99,6 +99,7 @@ impl Plugin for GamePlugin {
                     update_level_ui,
                     update_lives_ui,
                     update_score_ui,
+                    spawn_explosion,
                     despawn_explosions,
                 )),
             )
@@ -126,6 +127,7 @@ impl Plugin for GamePlugin {
             ),
         )
         .add_event::<DespawnSegment>()
+        .add_event::<ExplosionEvent>()
         .init_state::<LevelState>()
         .init_state::<PlayerState>();
     }

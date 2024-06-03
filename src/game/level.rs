@@ -64,11 +64,11 @@ pub fn start_new_level(
         game_vars.spider_timer_length = SPIDER_TIMER;
     } else if level.0 <= 10 {
         game_vars.spider_timer_length = SPIDER_TIMER - 4.0;
-        game_vars.spider_reward *= 2;
+        game_vars.spider_reward = SPIDER_REWARD * 2;
         game_vars.spider_average_spawn_height = SPIDER_AVERAGE_SPAWN_HEIGHT - 150.0;
     } else {
         game_vars.spider_timer_length = SPIDER_TIMER - 8.0;
-        game_vars.spider_reward *= 2;
+        game_vars.spider_reward = SPIDER_REWARD * 4;
         game_vars.spider_average_spawn_height = SPIDER_AVERAGE_SPAWN_HEIGHT - 250.0;
     }
 
