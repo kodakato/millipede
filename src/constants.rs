@@ -32,7 +32,6 @@ pub const MUSHROOM_MAX_AMOUNT: u8 = 100; // 100
 pub const MUSHROOM_MIN_AMOUNT: u8 = 70; // 70
 pub const SPAWN_MARGIN: f32 = 20.0;
 pub const MUSHROOM_HEALTH: i8 = 3;
-pub const MUSHROOM_CONVERSION_RATE: f64 = 1.0;
 pub const MUSHROOM_POISON_COLOR: Color = Color::rgb(0.2, 0.2, 1.0);
 
 /// Millipede
@@ -47,7 +46,8 @@ pub const DROP_AMOUNT: f32 = SEGMENT_SIZE / 2.0 + 1.0;
 pub const PUSH_BACK_AMOUNT: f32 = 10.0;
 pub const SEGMENT_SPAWN_TIMER_DURATION: f32 = 9.0;
 pub const SEGMENT_DROP_RATE: f64 = 0.1;
-pub const MILLIPEDE_HEAD_COLOR: Color = Color::rgb(1.0, 0.6, 0.6);
+pub const MILLIPEDE_HEAD_COLOR: Color = Color::rgb(1.0, 0.4, 0.6);
+pub const MILLIPEDE_HEAD_COLOR_POISONED: Color = Color::rgb(0.3, 0.1, 1.0);
 
 // Explosions
 pub const EXPLOSION_DURATION: f32 = 0.1;
@@ -69,10 +69,11 @@ pub const SPIDER_LEAVE_RATE: f64 = 0.8;
 pub const SPIDER_EAT_RATE: f64 = 0.05;
 
 // Scorpion
-pub const SCORPION_SPAWN_RATE: f64 = 0.0005;
+pub const SCORPION_SPAWN_RATE: f64 = 1.0;//0.0005;
 pub const SCORPION_SPAWN_HEIGHT: f32 = 100.0;
 pub const SCORPION_SPEED: f32 = 250.0;
 pub const SCORPION_SIZE: f32 = 16.0;
+pub const MUSHROOM_CONVERSION_RATE: f64 = 0.02;
 
 // Scoring
 pub const MUSHROOM_REWARD: u32 = 1;

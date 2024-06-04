@@ -102,9 +102,18 @@ pub fn update_head_color(
 ) {
     for (segment, mut sprite) in segment_query.iter_mut() {
         match segment {
-            Segment::Head { direction: _, head_state: _ } => {
-               if sprite.color !=  MILLIPEDE_HEAD_COLOR {
-                    sprite.color = MILLIPEDE_HEAD_COLOR;
+            Segment::Head { direction: _, head_state} => {
+                let color: Color;
+                match head_state {
+                    HeadState::Healthy => {
+                        color = MILLIPEDE_HEAD_COLOR;
+                    },
+                    HeadState::Poisoned => {
+                        color = MILLIPEDE_HEAD_COLOR_POISONED;
+                    }
+                }
+               if sprite.color !=  color {
+                    sprite.color = color;
                }
             },
             _ => continue
