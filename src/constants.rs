@@ -47,6 +47,7 @@ pub const DROP_AMOUNT: f32 = SEGMENT_SIZE / 2.0 + 1.0;
 pub const PUSH_BACK_AMOUNT: f32 = 10.0;
 pub const SEGMENT_SPAWN_TIMER_DURATION: f32 = 9.0;
 pub const SEGMENT_DROP_RATE: f64 = 0.1;
+pub const MILLIPEDE_HEAD_COLOR: Color = Color::rgb(1.0, 0.6, 0.6);
 
 // Explosions
 pub const EXPLOSION_DURATION: f32 = 0.1;

@@ -4,9 +4,14 @@ use bevy::utils::HashMap;
 use bevy_kira_audio::Audio;
 use rand::Rng;
 
+pub enum HeadState{
+    Healthy,
+    Poisoned,
+}
+
 #[derive(Component)]
 pub enum Segment {
-    Head { direction: Vec3 },
+    Head { direction: Vec3, head_state: HeadState },
     Body { parent: Option<Entity> },
 }
 
@@ -51,6 +56,7 @@ impl Millipede {
                     Name::from("MillipedeSegment"),
                     Segment::Head {
                         direction: Vec3::new(1.0, -1.0, 0.0),
+                        head_state: HeadState::Healthy,
                     },
                 ))
                 .id(),
@@ -91,19 +97,34 @@ pub fn update_positions(
     }
 }
 
+pub fn update_head_color(
+    mut segment_query: Query<(&Segment, &mut Sprite)>
+) {
+    for (segment, mut sprite) in segment_query.iter_mut() {
+        match segment {
+            Segment::Head { direction: _, head_state: _ } => {
+               if sprite.color !=  MILLIPEDE_HEAD_COLOR {
+                    sprite.color = MILLIPEDE_HEAD_COLOR;
+               }
+            },
+            _ => continue
+        }
+    }
+}
+
 // Stores the position in a global hashmap in order for the
 // children segments to know the position of their parents
 pub fn segment_movement(
     segment_positions: Res<SegmentPositions>,
-    mut query: Query<(&mut Segment, &mut Transform)>,
+    mut query: Query<(&Segment, &mut Transform)>,
     game_vars: Res<GameVariables>,
     time: Res<Time>,
 ) {
     for (segment, mut transform) in query.iter_mut() {
-        match *segment {
+        match segment {
             Segment::Body { parent } => {
                 if let Some(parent_entity) = parent {
-                    if let Some(&parent_position) = segment_positions.0.get(&parent_entity) {
+                    if let Some(&parent_position) = segment_positions.0.get(parent_entity) {
                         let distance_to_parent = transform.translation.distance(parent_position);
                         if distance_to_parent > SEGMENT_SPACING {
                             let direction_to_parent =
@@ -122,10 +143,19 @@ pub fn segment_movement(
                     }
                 }
             }
-            Segment::Head { direction } => {
-                // Head segment logic
-                transform.translation.x +=
-                    direction.x * time.delta_seconds() * game_vars.millipede_speed;
+            Segment::Head { direction, head_state } => {
+                match head_state {
+                    HeadState::Healthy => {
+                        // Move in its direction
+                        transform.translation.x +=
+                            direction.x * time.delta_seconds() * game_vars.millipede_speed;
+
+                    },
+                    HeadState::Poisoned => {
+                        // Move down
+                        transform.translation.y -= time.delta_seconds() * game_vars.millipede_speed;
+                    }
+                }
             }
         }
     }
@@ -139,7 +169,7 @@ pub fn change_direction(
     let window = window_query.get_single().unwrap();
     let segment_radius = SEGMENT_SIZE / 2.0;
     for (mut segment, mut transform) in head_query.iter_mut() {
-        if let Segment::Head { ref mut direction } = *segment {
+        if let Segment::Head { ref mut direction, head_state: _ } = *segment {
             // Check if hit bottom boundary
             if transform.translation.y < 5.0 + segment_radius {
                 // Set direction to up
@@ -179,6 +209,7 @@ pub fn update_segment_parents(
                         direction: despawn_event
                             .direction
                             .unwrap_or_else(|| Vec3::new(1.0, -1.0, 0.0)),
+                        head_state: HeadState::Healthy,
                     };
                 }
             }
@@ -193,7 +224,7 @@ pub fn collide_with_shroom(
     let shroom_radius = MUSHROOM_SIZE / 3.0;
     let segment_radius = SEGMENT_SIZE / 3.0;
     for (mut segment_transform, mut segment) in segment_query.iter_mut() {
-        if let Segment::Head { ref mut direction } = *segment {
+        if let Segment::Head{ ref mut direction, head_state: _ } = *segment {
             for shroom_transform in shroom_query.iter() {
                 let distance = shroom_transform
                     .translation
@@ -292,7 +323,7 @@ pub fn collide_with_head(mut segment_query: Query<(Entity, &mut Transform, &mut 
 
     // Collect entities and their positions if they are heads
     for (entity, transform, segment) in segment_query.iter_mut() {
-        if let Segment::Head { direction } = &*segment {
+        if let Segment::Head { direction, head_state: _} = &*segment {
             heads.push((entity, transform.translation, *direction));
         }
     }
@@ -324,7 +355,7 @@ pub fn collide_with_head(mut segment_query: Query<(Entity, &mut Transform, &mut 
     // Apply direction changes
     for entity in changes {
         if let Ok((_, mut transform, mut segment)) = segment_query.get_mut(entity) {
-            if let Segment::Head { direction } = &mut *segment {
+            if let Segment::Head { direction, head_state} = &mut *segment {
                 direction.x = -direction.x;
                 // Bounce backwards slightly
                 transform.translation.x += direction.x * PUSH_BACK_AMOUNT;
@@ -341,22 +372,44 @@ pub fn collide_with_head(mut segment_query: Query<(Entity, &mut Transform, &mut 
     }
 }
 
-pub fn despawn_segments(mut commands: Commands,
-                        mut despawn_seg_er: EventReader<DespawnSegment>,
-                        mut score: ResMut<Score>,
-                        mut spawn_explosion_ew: EventWriter<ExplosionEvent>,
-                        query: Query<&Transform, With<Segment>>,
-                        ) {
-    for event in despawn_seg_er.read() {
-        let transform = match query.get(event.entity) {
-            Ok(transform) => transform,
-            Err(_) => continue,
-        };
-        // Despawn Entity
-        commands.entity(event.entity).despawn();
-        // Increase score
-        score.0 += SEGMENT_REWARD;
-        // Spawn explosion
-        spawn_explosion_ew.send(ExplosionEvent(transform.clone()));
+pub fn head_gets_poisoned(
+    mut segment_query: Query<(&mut Segment, &Transform)>,
+    mushroom_query: Query<(&Mushroom, &Transform)>,
+) {
+    // If a non-poisoned head touches a poison mushroom, the head
+    // becomes poisoned
+    let shroom_radius = MUSHROOM_SIZE / 3.0;
+    let segment_radius = SEGMENT_SIZE / 3.0;
+    for (mut segment, transform) in segment_query.iter_mut() {
+        match &mut *segment{
+            Segment::Head{ direction: _, head_state} => {
+                match *head_state {
+                    HeadState::Healthy => {
+                        // Check if touching shroom
+                        for (mushroom, mushroom_transform) in mushroom_query.iter() {
+                            if *mushroom != Mushroom::Poison {
+                                continue;
+                            } 
+
+                            let distance = mushroom_transform.translation.distance(transform.translation);
+                            if distance > shroom_radius + segment_radius {
+                                continue;
+                            }
+
+                            *head_state = HeadState::Poisoned;
+                        }
+                    }
+                    HeadState::Poisoned => {
+                        // Check if hit bottom boundary
+                        if transform.translation.y < 10.0 {
+                            *head_state = HeadState::Healthy;
+                        }
+                    }
+                }
+            },
+            _ => continue
+        }
     }
 }
+
+

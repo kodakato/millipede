@@ -50,7 +50,7 @@ pub fn spawn_scorpion(
     scorpion_query: Query<(), With<Scorpion>>,
 ) {
     // Only run if above a certain level
-    if level.0 < 0 {
+    if level.0 < 3 {
         return;
     }
 
@@ -81,7 +81,7 @@ pub fn spawn_scorpion(
     }
 
     // Now set height
-    let height_range = rand::thread_rng().gen_range(-25.0..25.0);
+    let height_range = rand::thread_rng().gen_range(-50.0..50.0);
     starting_transform.translation.y = window.height() - SCORPION_SPAWN_HEIGHT + height_range;
 
     Scorpion::spawn(&starting_transform, &mut commands, &game_assets);

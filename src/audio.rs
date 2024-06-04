@@ -150,7 +150,7 @@ pub fn set_volume(
 
     let scorpion_handle = &instances.scorpion.0;
     // Scorpion
-    if !scorpion_query.is_empty() {
+    if !scorpion_query.is_empty() && app_state.get() == &AppState::InGame{
         if instances.scorpion.1 != SCORPION_VOLUME && app_state.get() == &AppState::InGame {
             if let Some(instance) = audio_instances.get_mut(scorpion_handle) {
                 instance.set_volume(SCORPION_VOLUME, AudioTween::default());

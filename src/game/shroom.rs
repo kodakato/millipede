@@ -79,12 +79,13 @@ pub fn despawn_shroom_field(mut commands: Commands, mushroom_query: Query<Entity
 
 
 pub fn update_shroom_color(
-    mut shroom_q: Query<(&Mushroom, &mut Sprite), With<Mushroom>>,
+    mut shroom_q: Query<(&Mushroom, &mut Sprite, &mut Transform), With<Mushroom>>,
 ) {
-    for (mushroom, mut mushroom_sprite) in shroom_q.iter_mut() {
+    for (mushroom, mut mushroom_sprite, mut mushroom_transform) in shroom_q.iter_mut() {
         if *mushroom == Mushroom::Poison && mushroom_sprite.color == Color::rgb(1.0, 1.0, 1.0) {
             // Set the color
             mushroom_sprite.color = MUSHROOM_POISON_COLOR;
+            mushroom_transform.translation.z = 0.5;
         }
     }
 }

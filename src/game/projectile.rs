@@ -128,10 +128,10 @@ pub fn projectile_hits_segment(
                 .distance(segment_transform.translation);
             if distance < projectile_radius + segment_radius {
                 // Pass in the direction if its a head
-                if let Segment::Head { direction } = *segment {
+                if let Segment::Head { direction, head_state } = segment {
                     event_writer.send(DespawnSegment {
                         entity: segment_entity,
-                        direction: Some(direction),
+                        direction: Some(*direction),
                     });
                 } else {
                     event_writer.send(DespawnSegment {
@@ -152,7 +152,7 @@ pub fn projectile_hits_segment(
 
                 // Add to score
                 match segment {
-                    Segment::Head { direction: _ } => {
+                    Segment::Head { direction: _ , head_state} => {
                         score.0 += HEAD_REWARD;
                     }
                     Segment::Body { parent: _ } => {

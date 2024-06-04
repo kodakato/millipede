@@ -70,12 +70,14 @@ impl Plugin for GamePlugin {
                             update_positions,
                             segment_movement,
                             change_direction,
+                            head_gets_poisoned,
                             collide_with_shroom,
                             segment_hits_player,
                             start_segment_spawner_timer,
                             spawn_lone_head,
                             collide_with_head,
                             update_shroom_color,
+                            update_head_color,
                         )
                             .chain(),
                         (
