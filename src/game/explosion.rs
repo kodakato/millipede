@@ -9,7 +9,6 @@ pub struct Explosion(pub Timer);
 #[derive(Event)]
 pub struct ExplosionEvent(pub Transform);
 
-
 pub fn spawn_explosion(
     mut commands: Commands,
     mut explosion_events: EventReader<ExplosionEvent>,
@@ -27,7 +26,7 @@ pub fn spawn_explosion(
             )),
             SpriteBundle {
                 texture: explosion_texture.clone(),
-                transform: event.0,
+                transform: Transform::from_xyz(event.0.translation.x, event.0.translation.y, 0.5),
                 ..default()
             },
             Name::from("Explosion"),

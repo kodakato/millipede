@@ -27,3 +27,10 @@ impl FromWorld for GameAssets {
         }
     }
 }
+
+pub fn setup_sprite_animation(
+    mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
+    game_assets: Res<GameAssets>,
+) {
+    let shroom_texture = game_assets.shroom_texture.clone();
+}

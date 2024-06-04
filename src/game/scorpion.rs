@@ -50,7 +50,7 @@ pub fn spawn_scorpion(
     scorpion_query: Query<(), With<Scorpion>>,
 ) {
     // Only run if above a certain level
-    if level.0 < 3 {
+    if level.0 < 0 {
         return;
     }
 
@@ -107,6 +107,33 @@ pub fn despawn_scorpion(
             || scorpion_transform.translation.x > window.width()
         {
             Scorpion::despawn(scorpion_entity, &mut commands);
+        }
+    }
+}
+
+pub fn convert_to_poison_shroom(
+    scorpion_query: Query<&Transform, With<Scorpion>>,
+    mut mushroom_query: Query<(&Transform, &mut Mushroom)>,
+) {
+    for scorpion_transform in scorpion_query.iter() {
+        for (mushroom_transform, mut mushroom) in mushroom_query.iter_mut() {
+            // Check if scorpion collides with a shroom
+            let mushroom_radius = MUSHROOM_SIZE / 2.0;
+            let scorpion_radius = SCORPION_SIZE / 2.0;
+            let distance = scorpion_transform
+                .translation
+                .distance(mushroom_transform.translation);
+            if distance <= mushroom_radius + scorpion_radius {
+                // Randomly choose to turn it into poison mushroom
+                if *mushroom == Mushroom::Poison {
+                    return;
+                }
+                let convert = rand::thread_rng().gen_bool(MUSHROOM_CONVERSION_RATE);
+                if !convert {
+                    return;
+                }
+                *mushroom = Mushroom::Poison;
+            }
         }
     }
 }

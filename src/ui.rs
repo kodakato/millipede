@@ -391,7 +391,7 @@ pub fn handle_button_actions(
 #[derive(Component)]
 pub struct GameOverUI;
 
-pub fn spawn_game_over_ui(mut commands: Commands, score: Res<Score>, level: Res<Level>,) {
+pub fn spawn_game_over_ui(mut commands: Commands, score: Res<Score>, level: Res<Level>) {
     build_game_over_ui(&mut commands, &score, &level);
 }
 

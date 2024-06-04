@@ -32,6 +32,8 @@ pub const MUSHROOM_MAX_AMOUNT: u8 = 100; // 100
 pub const MUSHROOM_MIN_AMOUNT: u8 = 70; // 70
 pub const SPAWN_MARGIN: f32 = 20.0;
 pub const MUSHROOM_HEALTH: i8 = 3;
+pub const MUSHROOM_CONVERSION_RATE: f64 = 1.0;
+pub const MUSHROOM_POISON_COLOR: Color = Color::rgb(0.2, 0.2, 1.0);
 
 /// Millipede
 pub const MILLIPEDE_STARTING_LENGTH: usize = 9;

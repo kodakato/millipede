@@ -77,7 +77,6 @@ pub fn spawn_player(
     );
 }
 
-
 pub fn despawn_player(mut commands: Commands, player_query: Query<Entity, With<Player>>) {
     if let Ok(player_entity) = player_query.get_single() {
         commands.entity(player_entity).despawn();

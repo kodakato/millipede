@@ -111,7 +111,12 @@ pub fn projectile_hits_segment(
     game_assets: Res<GameAssets>,
     mut shroom_amount: ResMut<ShroomAmount>,
     mut score: ResMut<Score>,
-    mut explosion_events: EventWriter<ExplosionEvent>
+    mut explosion_events: EventWriter<ExplosionEvent>,
+    mut spawn_mushroom_ew: EventWriter<SpawnMushroomEvent>,
+
+
+
+
 ) {
     if let Ok((projectile_entity, projectile_transform)) = projectile_query.get_single() {
         for (segment_entity, segment_transform, segment) in segment_query.iter() {
@@ -134,15 +139,13 @@ pub fn projectile_hits_segment(
                         direction: None,
                     });
                 }
-
+                
+                // Spawn explosion
                 explosion_events.send(ExplosionEvent(segment_transform.clone()));
-
-                Mushroom::spawn(
-                    &segment_transform,
-                    &mut commands,
-                    &game_assets,
-                    &mut shroom_amount,
-                );
+                
+                // Spawn mushroom
+                spawn_mushroom_ew.send(SpawnMushroomEvent(segment_transform.clone()));
+                
 
                 commands.entity(projectile_entity).despawn();
                 commands.entity(segment_entity).despawn();
@@ -167,11 +170,9 @@ pub fn projectile_hits_beetle(
     mut commands: Commands,
     projectile_query: Query<(Entity, &Transform), With<PlayerProjectile>>,
     beetle_query: Query<(Entity, &Transform), With<Beetle>>,
-    game_assets: Res<GameAssets>,
     mut score: ResMut<Score>,
-    mut shroom_amount: ResMut<ShroomAmount>,
     mut explosion_events: EventWriter<ExplosionEvent>,
-
+    mut spawn_mushroom_ew: EventWriter<SpawnMushroomEvent>,
 ) {
     if let Ok((projectile_entity, projectile_transform)) = projectile_query.get_single() {
         for (beetle_entity, beetle_transform) in beetle_query.iter() {
@@ -185,12 +186,7 @@ pub fn projectile_hits_beetle(
                 // Spawn explosion
                 explosion_events.send(ExplosionEvent(beetle_transform.clone()));
                 // Spawn mushroom
-                Mushroom::spawn(
-                    &beetle_transform,
-                    &mut commands,
-                    &game_assets,
-                    &mut shroom_amount,
-                );
+                spawn_mushroom_ew.send(SpawnMushroomEvent(beetle_transform.clone()));
                 commands.entity(projectile_entity).despawn();
                 commands.entity(beetle_entity).despawn();
 
@@ -210,7 +206,6 @@ pub fn projectile_hits_spider(
     mut score: ResMut<Score>,
     spider_timer: ResMut<SpiderTimer>,
     mut explosion_events: EventWriter<ExplosionEvent>,
-    
 ) {
     if let Ok((projectile_entity, projectile_transform)) = projectile_query.get_single() {
         for (spider_entity, spider_transform) in spider_query.iter() {

@@ -69,9 +69,7 @@ pub fn move_beetle(mut beetle_q: Query<&mut Transform, With<Beetle>>, time: Res<
 
 pub fn beetle_spawn_shroom(
     beetle_q: Query<&Transform, With<Beetle>>,
-    mut commands: Commands,
-    mut shroom_amount: ResMut<ShroomAmount>,
-    game_assets: Res<GameAssets>,
+    mut spawn_mushroom_ew: EventWriter<SpawnMushroomEvent>,
 ) {
     if let Ok(beetle_transform) = beetle_q.get_single() {
         // Check if below boundary
@@ -88,11 +86,6 @@ pub fn beetle_spawn_shroom(
         let x = beetle_transform.translation.x;
         let y = beetle_transform.translation.y;
 
-        Mushroom::spawn(
-            &Transform::from_xyz(x, y, 0.0),
-            &mut commands,
-            &game_assets,
-            &mut shroom_amount,
-        )
+        spawn_mushroom_ew.send(SpawnMushroomEvent(Transform::from_xyz(x, y, 0.0)));
     }
 }

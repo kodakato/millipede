@@ -58,6 +58,7 @@ impl Plugin for GamePlugin {
                         .chain(),
                     (
                         (
+                            spawn_shroom,
                             spawn_beetle,
                             move_beetle,
                             beetle_spawn_shroom,
@@ -74,6 +75,7 @@ impl Plugin for GamePlugin {
                             start_segment_spawner_timer,
                             spawn_lone_head,
                             collide_with_head,
+                            update_shroom_color,
                         )
                             .chain(),
                         (
@@ -84,6 +86,7 @@ impl Plugin for GamePlugin {
                             confine_spider_movement,
                             spider_hits_player,
                             spider_eats_shroom,
+                            convert_to_poison_shroom,
                         )
                             .chain(),
                         (spawn_scorpion, move_scorpion, despawn_scorpion).chain(),
@@ -128,6 +131,7 @@ impl Plugin for GamePlugin {
         )
         .add_event::<DespawnSegment>()
         .add_event::<ExplosionEvent>()
+        .add_event::<SpawnMushroomEvent>()
         .init_state::<LevelState>()
         .init_state::<PlayerState>();
     }

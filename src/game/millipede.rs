@@ -340,3 +340,23 @@ pub fn collide_with_head(mut segment_query: Query<(Entity, &mut Transform, &mut 
         }
     }
 }
+
+pub fn despawn_segments(mut commands: Commands,
+                        mut despawn_seg_er: EventReader<DespawnSegment>,
+                        mut score: ResMut<Score>,
+                        mut spawn_explosion_ew: EventWriter<ExplosionEvent>,
+                        query: Query<&Transform, With<Segment>>,
+                        ) {
+    for event in despawn_seg_er.read() {
+        let transform = match query.get(event.entity) {
+            Ok(transform) => transform,
+            Err(_) => continue,
+        };
+        // Despawn Entity
+        commands.entity(event.entity).despawn();
+        // Increase score
+        score.0 += SEGMENT_REWARD;
+        // Spawn explosion
+        spawn_explosion_ew.send(ExplosionEvent(transform.clone()));
+    }
+}
