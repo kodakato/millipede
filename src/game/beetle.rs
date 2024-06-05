@@ -3,6 +3,8 @@
 
 use super::*;
 use rand::*;
+use bevy_kira_audio::{Audio, AudioControl};
+use crate::audio::AudioHandles;
 
 #[derive(Component)]
 pub struct Beetle;
@@ -33,6 +35,8 @@ pub fn spawn_beetle(
     window_q: Query<&Window, With<PrimaryWindow>>,
     game_assets: Res<GameAssets>,
     beetle_q: Query<&Beetle>,
+    audio: Res<Audio>,
+    audio_handles: Res<AudioHandles>,
 ) {
     // Check if under the threshold
     if shroom_amount.0 > MUSHROOM_MIN_AMOUNT {
@@ -49,7 +53,8 @@ pub fn spawn_beetle(
     let x = rand::thread_rng().gen_range(0.0 + SPAWN_MARGIN..window.width() - SPAWN_MARGIN);
     let y = window.height();
 
-    Beetle::spawn(&Transform::from_xyz(x, y, 0.0), &mut commands, &game_assets)
+    Beetle::spawn(&Transform::from_xyz(x, y, 0.0), &mut commands, &game_assets);
+    
 }
 
 pub fn despawn_beetle(mut commands: Commands, beetle_q: Query<(Entity, &Transform), With<Beetle>>) {
@@ -70,6 +75,9 @@ pub fn move_beetle(mut beetle_q: Query<&mut Transform, With<Beetle>>, time: Res<
 pub fn beetle_spawn_shroom(
     beetle_q: Query<&Transform, With<Beetle>>,
     mut spawn_mushroom_ew: EventWriter<SpawnMushroomEvent>,
+    audio: Res<Audio>,
+    audio_handles: Res<AudioHandles>,
+
 ) {
     if let Ok(beetle_transform) = beetle_q.get_single() {
         // Check if below boundary
@@ -87,5 +95,6 @@ pub fn beetle_spawn_shroom(
         let y = beetle_transform.translation.y;
 
         spawn_mushroom_ew.send(SpawnMushroomEvent(Transform::from_xyz(x, y, 0.0)));
+        audio.play(audio_handles.spawn.clone()).with_volume(0.6);
     }
 }

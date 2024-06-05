@@ -69,7 +69,7 @@ pub const SPIDER_LEAVE_RATE: f64 = 0.8;
 pub const SPIDER_EAT_RATE: f64 = 0.05;
 
 // Scorpion
-pub const SCORPION_SPAWN_RATE: f64 = 1.0;//0.0005;
+pub const SCORPION_SPAWN_RATE: f64 = 0.0005;
 pub const SCORPION_SPAWN_HEIGHT: f32 = 100.0;
 pub const SCORPION_SPEED: f32 = 250.0;
 pub const SCORPION_SIZE: f32 = 16.0;
@@ -96,3 +96,4 @@ pub const BACKGROUND_VOLUME: f64 = 0.7;
 pub const MILLIPEDE_VOLUME: f64 = 0.6;
 pub const SPIDER_VOLUME: f64 = 0.4;
 pub const SCORPION_VOLUME: f64 = 0.4;
+pub const FALLING_VOLUME: f64 = 0.6;

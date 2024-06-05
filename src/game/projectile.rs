@@ -108,8 +108,6 @@ pub fn projectile_hits_segment(
     projectile_query: Query<(Entity, &Transform), With<PlayerProjectile>>,
     segment_query: Query<(Entity, &Transform, &Segment)>,
     mut event_writer: EventWriter<DespawnSegment>,
-    game_assets: Res<GameAssets>,
-    mut shroom_amount: ResMut<ShroomAmount>,
     mut score: ResMut<Score>,
     mut explosion_events: EventWriter<ExplosionEvent>,
     mut spawn_mushroom_ew: EventWriter<SpawnMushroomEvent>,
@@ -128,7 +126,7 @@ pub fn projectile_hits_segment(
                 .distance(segment_transform.translation);
             if distance < projectile_radius + segment_radius {
                 // Pass in the direction if its a head
-                if let Segment::Head { direction, head_state } = segment {
+                if let Segment::Head { direction, head_state: _ } = segment {
                     event_writer.send(DespawnSegment {
                         entity: segment_entity,
                         direction: Some(*direction),

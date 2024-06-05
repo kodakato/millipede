@@ -1,4 +1,4 @@
-use crate::{constants::*, AppState, GameState};
+use crate::{constants::*, AppState, GameState, game::beetle::Beetle};
 use bevy::{prelude::*, utils::Duration, window::PrimaryWindow};
 use bevy_kira_audio::prelude::*;
 
@@ -11,12 +11,14 @@ pub struct Instances {
     spider: (Handle<AudioInstance>, f64),
     scorpion: (Handle<AudioInstance>, f64),
     highhat: (Handle<AudioInstance>, f64),
+    falling: (Handle<AudioInstance>, f64),
 }
 
 #[derive(Resource)]
 pub struct AudioHandles {
     pub shoot: Handle<AudioSource>,
     pub explosion: Handle<AudioSource>,
+    pub spawn: Handle<AudioSource>,
 }
 
 pub fn prepare_audio(mut commands: Commands, audio: Res<Audio>, asset_server: Res<AssetServer>) {
@@ -41,11 +43,15 @@ pub fn prepare_audio(mut commands: Commands, audio: Res<Audio>, asset_server: Re
         .looped()
         .handle();
 
+
+    let falling_handle = audio.play(asset_server.load("sounds/falling.ogg")).looped().handle();
+
     let background_beat = (background_beat_handle.clone(), 1.0);
     let millipede = (millipede_handle.clone(), 1.0);
     let spider = (spider_handle.clone(), 1.0);
     let scorpion = (scorpion_handle.clone(), 1.0);
     let highhat = (highhat_handle.clone(), 1.0);
+    let falling = (falling_handle.clone(), FALLING_VOLUME);
 
     commands.insert_resource(Instances {
         background_beat,
@@ -53,17 +59,23 @@ pub fn prepare_audio(mut commands: Commands, audio: Res<Audio>, asset_server: Re
         spider,
         scorpion,
         highhat,
+        falling,
     });
 
     // Sound effects
     let shoot_handle = asset_server.load("sounds/shoot.ogg");
     let explosion_handle = asset_server.load("sounds/explosion.ogg");
+    let spawn_handle = asset_server.load("sounds/spawn.ogg");
 
     commands.insert_resource(AudioHandles {
         shoot: shoot_handle,
         explosion: explosion_handle,
+        spawn: spawn_handle,
     })
 }
+
+#[derive(Resource)]
+pub struct BeetleAudioInstance(pub Handle<AudioInstance>);
 
 pub fn initialize_volume(
     mut audio_instances: ResMut<Assets<AudioInstance>>,
@@ -87,13 +99,19 @@ pub fn initialize_volume(
     // Scorpion
     if let Some(instance) = audio_instances.get_mut(scorpion_handle) {
         instance.set_volume(0.0, AudioTween::default());
-        instances.spider.1 = 0.0;
+        instances.scorpion.1 = 0.0;
     }
 
     let highhat_handle = &instances.highhat.0;
     if let Some(instance) = audio_instances.get_mut(highhat_handle) {
         instance.set_volume(0.0, AudioTween::default());
-        instances.spider.1 = 0.0;
+        instances.highhat.1 = 0.0;
+    }
+
+    let falling_handle = &instances.falling.0;
+    if let Some(instance) = audio_instances.get_mut(falling_handle) {
+        instance.set_volume(0.0, AudioTween::default());
+        instances.falling.1 = 0.0;
     }
 }
 
@@ -105,6 +123,7 @@ pub fn set_volume(
     scorpion_query: Query<(), With<Scorpion>>,
     app_state: Res<State<AppState>>,
     game_state: Res<State<GameState>>,
+    beetle_query: Query<(), With<Beetle>>,
 ) {
     let millipede_handle = &instances.millipede.0;
     // Millipede
@@ -182,6 +201,30 @@ pub fn set_volume(
             }
         }
     }
+
+    let falling_handle = &instances.falling.0;
+    if !beetle_query.is_empty() {
+        if app_state.get() != &AppState::InGame {
+            return;
+        }
+        if instances.falling.1 != FALLING_VOLUME {
+            if let Some(instance) = audio_instances.get_mut(falling_handle) {
+                instance.seek_to(0.0); // Restart
+                instance.set_volume(FALLING_VOLUME, AudioTween::default());
+                instance.resume(AudioTween::default());
+                instances.falling.1 = FALLING_VOLUME;
+            }
+        }
+    } else {
+        if instances.falling.1 == FALLING_VOLUME {
+            if let Some(instance) = audio_instances.get_mut(falling_handle) {
+                instance.pause(AudioTween::default());
+                instance.set_volume(0.0, AudioTween::default());
+                instances.falling.1 = 0.0;
+            }
+        }
+    }
+
 }
 
 pub fn sync_audio(
