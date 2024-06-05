@@ -10,7 +10,7 @@ pub enum Mushroom {
 }
 
 #[derive(Event)]
-pub struct SpawnMushroomEvent(pub Transform);
+pub struct SpawnMushroomEvent(pub Transform, pub Color);
 
 pub fn spawn_shroom(
     mut commands: Commands,
@@ -27,6 +27,10 @@ pub fn spawn_shroom(
             SpriteBundle {
                 texture: shroom_texture.clone(),
                 transform: event.0,
+                sprite: Sprite{
+                    color: event.1,
+                    ..default()
+                },
                 ..default()
             },
             Name::from("Mushroom"),
@@ -42,9 +46,7 @@ pub fn spawn_shroom(
 pub struct ShroomAmount(pub u8);
 
 pub fn spawn_shroom_field(
-    mut commands: Commands,
     window_query: Query<&Window, With<PrimaryWindow>>,
-    mut shroom_amount: ResMut<ShroomAmount>,
     mut spawn_mushroom: EventWriter<SpawnMushroomEvent>,
 ) {
     let window = window_query.get_single().unwrap();
@@ -52,7 +54,7 @@ pub fn spawn_shroom_field(
     for _ in 0..MUSHROOM_MAX_AMOUNT {
         let x = rand::thread_rng().gen_range(0.0 + SPAWN_MARGIN..window.width() - SPAWN_MARGIN);
         let y = rand::thread_rng().gen_range(TOP_BOUND..window.height() - TOP_UI_HEIGHT);
-        spawn_mushroom.send(SpawnMushroomEvent(Transform::from_xyz(x,y,0.0)));
+        spawn_mushroom.send(SpawnMushroomEvent(Transform::from_xyz(x,y,0.0), Color::rgb(1.0, 1.0, 1.0)));
     }
 }
 
@@ -80,8 +82,12 @@ pub fn despawn_shroom_field(mut commands: Commands, mushroom_query: Query<Entity
 
 pub fn update_shroom_color(
     mut shroom_q: Query<(&Mushroom, &mut Sprite, &mut Transform), With<Mushroom>>,
+    beetle_q: Query<(), With<Beetle>>,
 ) {
     for (mushroom, mut mushroom_sprite, mut mushroom_transform) in shroom_q.iter_mut() {
+        if mushroom_sprite.color == MUSHROOM_FRESH_COLOR && beetle_q.is_empty(){
+            mushroom_sprite.color = Color::rgb(1.0, 1.0, 1.0);
+        }
         if *mushroom == Mushroom::Poison && mushroom_sprite.color == Color::rgb(1.0, 1.0, 1.0) {
             // Set the color
             mushroom_sprite.color = MUSHROOM_POISON_COLOR;

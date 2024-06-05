@@ -206,6 +206,27 @@ pub fn change_direction(
     }
 }
 
+pub fn confine_segment_movement(
+    mut head_query: Query<(&mut Transform), With<Segment>>,
+    window_query: Query<&Window, With<PrimaryWindow>>,
+    ) {
+    let window = window_query.get_single().unwrap();
+    for mut transform in head_query.iter_mut() {
+        if transform.translation.y < 0.0 {
+            transform.translation.y = 0.0;
+        }
+        if transform.translation.y > window.height(){
+            transform.translation.y = window.height();
+        }
+        if transform.translation.x <  0.0 {
+            transform.translation.x = 0.0;
+        }
+        if transform.translation.x > window.width(){
+            transform.translation.x = window.width();
+        }
+    }
+}
+
 pub fn update_segment_parents(
     mut event_reader: EventReader<DespawnSegment>,
     mut segment_query: Query<&mut Segment>,

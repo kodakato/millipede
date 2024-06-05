@@ -142,7 +142,7 @@ pub fn projectile_hits_segment(
                 explosion_events.send(ExplosionEvent(segment_transform.clone()));
                 
                 // Spawn mushroom
-                spawn_mushroom_ew.send(SpawnMushroomEvent(segment_transform.clone()));
+                spawn_mushroom_ew.send(SpawnMushroomEvent(segment_transform.clone(), Color::rgb(1.0, 1.0, 1.0)));
                 
 
                 commands.entity(projectile_entity).despawn();
@@ -184,7 +184,7 @@ pub fn projectile_hits_beetle(
                 // Spawn explosion
                 explosion_events.send(ExplosionEvent(beetle_transform.clone()));
                 // Spawn mushroom
-                spawn_mushroom_ew.send(SpawnMushroomEvent(beetle_transform.clone()));
+                spawn_mushroom_ew.send(SpawnMushroomEvent(beetle_transform.clone(), Color::rgb(1.0, 1.0, 1.0)));
                 commands.entity(projectile_entity).despawn();
                 commands.entity(beetle_entity).despawn();
 

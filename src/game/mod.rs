@@ -69,6 +69,7 @@ impl Plugin for GamePlugin {
                             update_segment_parents,
                             update_positions,
                             segment_movement,
+                            confine_segment_movement,
                             change_direction,
                             head_gets_poisoned,
                             collide_with_shroom,

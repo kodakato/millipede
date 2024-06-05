@@ -58,7 +58,12 @@ pub fn spawn_spider(
     time: Res<Time>,
     spider_query: Query<(), With<Spider>>,
     game_vars: Res<GameVariables>,
+    level: Res<Level>,
 ) {
+
+    if level.0 < 2 {
+        return;
+    }
     // Only run if no current spider
     if !spider_query.is_empty() {
         return;

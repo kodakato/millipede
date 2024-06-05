@@ -94,7 +94,7 @@ pub fn beetle_spawn_shroom(
         let x = beetle_transform.translation.x;
         let y = beetle_transform.translation.y;
 
-        spawn_mushroom_ew.send(SpawnMushroomEvent(Transform::from_xyz(x, y, 0.0)));
-        audio.play(audio_handles.spawn.clone()).with_volume(0.6);
+        spawn_mushroom_ew.send(SpawnMushroomEvent(Transform::from_xyz(x, y, 0.0), MUSHROOM_FRESH_COLOR));
+        audio.play(audio_handles.spawn.clone()).with_volume(SPAWN_VOLUME);
     }
 }
