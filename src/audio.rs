@@ -203,10 +203,7 @@ pub fn set_volume(
     }
 
     let falling_handle = &instances.falling.0;
-    if !beetle_query.is_empty() {
-        if app_state.get() != &AppState::InGame {
-            return;
-        }
+    if !beetle_query.is_empty() && app_state.get() == &AppState::InGame{
         if instances.falling.1 != FALLING_VOLUME {
             if let Some(instance) = audio_instances.get_mut(falling_handle) {
                 instance.seek_to(0.0); // Restart
