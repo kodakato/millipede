@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use crate::game::assets::AnimationIndices;
 
 /// App Controls
 pub const MENU_KEY: KeyCode = KeyCode::Escape;
@@ -34,6 +35,7 @@ pub const SPAWN_MARGIN: f32 = 20.0;
 pub const MUSHROOM_HEALTH: i8 = 3;
 pub const MUSHROOM_POISON_COLOR: Color = Color::rgb(0.2, 0.3, 1.0);
 pub const MUSHROOM_FRESH_COLOR: Color = Color::rgb(1.0, 0.1, 0.7);
+pub const MUSHROOM_ANIMATION_INDICES: AnimationIndices = AnimationIndices{first: 1, last: 4};
 
 /// Millipede
 pub const MILLIPEDE_STARTING_LENGTH: usize = 9;

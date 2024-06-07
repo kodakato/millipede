@@ -19,13 +19,16 @@ pub fn spawn_shroom(
     mut shroom_amount: ResMut<ShroomAmount>,
 ) {
     for event in spawn_event.read() {
-        let shroom_texture = &game_assets.shroom_texture;
 
         commands.spawn((
             Mushroom::Normal,
             Health(MUSHROOM_HEALTH),
-            SpriteBundle {
-                texture: shroom_texture.clone(),
+            SpriteSheetBundle{
+                texture: game_assets.shroom_texture.clone(),
+                atlas: TextureAtlas{
+                    layout: game_assets.shroom_layout.clone(),
+                    index: MUSHROOM_ANIMATION_INDICES.first,
+                },
                 transform: event.0,
                 sprite: Sprite{
                     color: event.1,
@@ -33,6 +36,15 @@ pub fn spawn_shroom(
                 },
                 ..default()
             },
+          //  SpriteBundle {
+          //      texture: shroom_texture.clone(),
+          //      transform: event.0,
+          //      sprite: Sprite{
+          //          color: event.1,
+          //          ..default()
+          //      },
+          //      ..default()
+          //  },
             Name::from("Mushroom"),
         ));
 
@@ -93,5 +105,18 @@ pub fn update_shroom_color(
             mushroom_sprite.color = MUSHROOM_POISON_COLOR;
             mushroom_transform.translation.z = 0.5;
         }
+    }
+}
+
+pub fn update_shroom_sprite(
+    mut shroom_q: Query<(&mut Health, &mut TextureAtlas), With<Mushroom>>,
+    ) {
+    for (health, mut atlas) in shroom_q.iter_mut() {
+       match health.0 {
+           3 => atlas.index = 0,
+           2 => atlas.index = 1,
+           1 => atlas.index = 2,
+           _ => return,
+       }
     }
 }

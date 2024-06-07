@@ -79,6 +79,7 @@ impl Plugin for GamePlugin {
                             collide_with_head,
                             update_shroom_color,
                             update_head_color,
+                            update_shroom_sprite,
                         )
                             .chain(),
                         (
