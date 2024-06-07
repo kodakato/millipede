@@ -1,5 +1,5 @@
 use crate::{constants::*, AppState, GameState, game::beetle::Beetle};
-use bevy::{prelude::*, utils::Duration, window::PrimaryWindow};
+use bevy::{prelude::*, utils::Duration};
 use bevy_kira_audio::prelude::*;
 
 use crate::game::{millipede::Segment, scorpion::Scorpion, spider::Spider};

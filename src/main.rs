@@ -1,4 +1,4 @@
-use bevy::{app::AppExit, prelude::*};
+use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
 
 mod audio;

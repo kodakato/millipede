@@ -1,7 +1,5 @@
 use super::*;
-use crate::audio::AudioHandles;
 use bevy::utils::HashMap;
-use bevy_kira_audio::Audio;
 use rand::Rng;
 
 pub enum HeadState{
@@ -277,7 +275,6 @@ pub fn segment_hits_player(
     player_q: Query<(Entity, &Transform), With<Player>>,
     segment_q: Query<&Transform, With<Segment>>,
     mut next_player_state: ResMut<NextState<PlayerState>>,
-    game_assets: Res<GameAssets>,
     mut down_timer: ResMut<DownTimer>,
     mut lives: ResMut<Lives>,
     mut explosion_events: EventWriter<ExplosionEvent>,
@@ -294,7 +291,6 @@ pub fn segment_hits_player(
                     player_transform,
                     player_entity,
                     &mut next_player_state,
-                    &game_assets,
                     &mut commands,
                     &mut down_timer,
                     &mut lives,
@@ -383,7 +379,7 @@ pub fn collide_with_head(mut segment_query: Query<(Entity, &mut Transform, &mut 
     // Apply direction changes
     for entity in changes {
         if let Ok((_, mut transform, mut segment)) = segment_query.get_mut(entity) {
-            if let Segment::Head { direction, head_state} = &mut *segment {
+            if let Segment::Head { direction, head_state: _} = &mut *segment {
                 direction.x = -direction.x;
                 // Bounce backwards slightly
                 transform.translation.x += direction.x * PUSH_BACK_AMOUNT;

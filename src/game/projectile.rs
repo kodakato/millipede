@@ -150,7 +150,7 @@ pub fn projectile_hits_segment(
 
                 // Add to score
                 match segment {
-                    Segment::Head { direction: _ , head_state} => {
+                    Segment::Head { direction: _ , head_state: _} => {
                         score.0 += HEAD_REWARD;
                     }
                     Segment::Body { parent: _ } => {

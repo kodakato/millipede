@@ -4,7 +4,7 @@ use crate::{
 };
 
 use super::*;
-use bevy::{app::AppExit, prelude::*};
+use bevy::app::AppExit;
 
 #[derive(Component)]
 pub struct MainMenu;
@@ -27,8 +27,8 @@ pub enum ButtonType {
 }
 
 // Main Menu
-pub fn spawn_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
-    build_main_menu(&mut commands, &asset_server);
+pub fn spawn_main_menu(mut commands: Commands, ) {
+    build_main_menu(&mut commands);
 }
 
 pub fn despawn_main_menu(mut commands: Commands, main_menu_query: Query<Entity, With<MainMenu>>) {
@@ -37,7 +37,7 @@ pub fn despawn_main_menu(mut commands: Commands, main_menu_query: Query<Entity, 
     }
 }
 
-pub fn build_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>) {
+pub fn build_main_menu(commands: &mut Commands, ) {
     // Define the main menu parent node with MainMenu marker struct
     let main_menu_node = (
         NodeBundle {

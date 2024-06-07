@@ -35,8 +35,6 @@ pub fn spawn_beetle(
     window_q: Query<&Window, With<PrimaryWindow>>,
     game_assets: Res<GameAssets>,
     beetle_q: Query<&Beetle>,
-    audio: Res<Audio>,
-    audio_handles: Res<AudioHandles>,
 ) {
     // Check if under the threshold
     if shroom_amount.0 > MUSHROOM_MIN_AMOUNT {

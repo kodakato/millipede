@@ -3,7 +3,6 @@ use crate::game::assets::AnimationIndices;
 
 /// App Controls
 pub const MENU_KEY: KeyCode = KeyCode::Escape;
-pub const QUIT_KEY: KeyCode = KeyCode::KeyQ;
 
 /// Player Controls
 pub const SHOOT_KEY: KeyCode = KeyCode::Space;
@@ -54,7 +53,6 @@ pub const MILLIPEDE_HEAD_COLOR_POISONED: Color = Color::rgb(0.3, 0.1, 1.0);
 
 // Explosions
 pub const EXPLOSION_DURATION: f32 = 0.1;
-pub const EXPLOSION_SIZE: f32 = 22.0;
 
 // Beetle
 pub const BEETLE_SPEED: f32 = 500.0;
@@ -101,4 +99,3 @@ pub const SPIDER_VOLUME: f64 = 0.4;
 pub const SCORPION_VOLUME: f64 = 0.4;
 pub const FALLING_VOLUME: f64 = 0.3;
 pub const SPAWN_VOLUME: f64 = 0.4;
-pub const MASTER_VOLUME: f64 = 1.0;

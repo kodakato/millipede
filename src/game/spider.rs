@@ -1,5 +1,3 @@
-use crate::audio::AudioHandles;
-use bevy_kira_audio::Audio;
 
 use super::*;
 use rand::Rng;
@@ -266,7 +264,6 @@ pub fn despawn_spider(
 pub fn spider_hits_player(
     spider_query: Query<&Transform, With<Spider>>,
     player_query: Query<(Entity, &Transform), With<Player>>,
-    game_assets: Res<GameAssets>,
     mut next_player_state: ResMut<NextState<PlayerState>>,
     mut commands: Commands,
     mut down_timer: ResMut<DownTimer>,
@@ -288,7 +285,6 @@ pub fn spider_hits_player(
                 &player_transform,
                 player_entity,
                 &mut next_player_state,
-                &game_assets,
                 &mut commands,
                 &mut down_timer,
                 &mut lives,

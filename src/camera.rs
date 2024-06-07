@@ -1,4 +1,4 @@
-use bevy::{prelude::*, render::camera::ScalingMode, window::PrimaryWindow};
+use bevy::{prelude::*, window::PrimaryWindow};
 
 #[derive(Component)]
 pub struct GameCamera;

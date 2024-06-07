@@ -1,6 +1,4 @@
 use super::*;
-use crate::audio::AudioHandles;
-use bevy_kira_audio::Audio;
 
 // Components
 #[derive(Component)]
@@ -34,8 +32,7 @@ impl Player {
         player_transform: &Transform,
         player_entity: Entity,
         next_player_state: &mut ResMut<NextState<PlayerState>>,
-        game_assets: &Res<GameAssets>,
-        mut commands: &mut Commands,
+        commands: &mut Commands,
         down_timer: &mut ResMut<DownTimer>,
         lives: &mut ResMut<Lives>,
         explosion_events: &mut EventWriter<ExplosionEvent>,
