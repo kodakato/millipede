@@ -102,6 +102,8 @@ pub fn restart_level_from_death(
     game_assets: Res<GameAssets>,
     segment_query: Query<Entity, With<Segment>>,
     spider_query: Query<Entity, With<Spider>>,
+    scorpion_query: Query<Entity, With<Scorpion>>,
+    projectile_query: Query<Entity, With<PlayerProjectile>>,
     spider_timer: ResMut<SpiderTimer>,
     mut segment_spawner_timer: ResMut<SegmentSpawnerTimer>,
 ) {
@@ -122,6 +124,15 @@ pub fn restart_level_from_death(
         Spider::despawn(spider_entity, &mut commands, spider_timer)
     }
 
+    // Despawn scorpion
+    if let Ok(scorpion_entity) = scorpion_query.get_single() {
+        Scorpion::despawn(scorpion_entity, &mut commands);
+    }
+
+    // Despawn projectile
+    if let Ok(projectile_entity) = projectile_query.get_single() {
+        commands.entity(projectile_entity).despawn()
+    }
     // Pause and reset the segment spawner timer
     segment_spawner_timer.0.pause();
     segment_spawner_timer.0.reset();

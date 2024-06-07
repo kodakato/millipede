@@ -63,6 +63,7 @@ impl Plugin for GamePlugin {
                             move_beetle,
                             beetle_spawn_shroom,
                             despawn_beetle,
+                            score_event,
                         )
                             .chain(),
                         (
@@ -101,7 +102,7 @@ impl Plugin for GamePlugin {
                 )
                     .run_if(in_state(GameState::Running))
                     .run_if(in_state(PlayerState::Alive)),
-                ((restart_level_from_death).chain()).run_if(in_state(PlayerState::Dead)),
+                ((restart_level_from_death, heal_shrooms)).run_if(in_state(PlayerState::Dead)),
                 ((
                     update_level_ui,
                     update_lives_ui,
@@ -136,6 +137,7 @@ impl Plugin for GamePlugin {
         .add_event::<DespawnSegment>()
         .add_event::<ExplosionEvent>()
         .add_event::<SpawnMushroomEvent>()
+        .add_event::<FloatingScoreEvent>()
         .init_state::<LevelState>()
         .init_state::<PlayerState>();
     }

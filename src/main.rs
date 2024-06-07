@@ -55,10 +55,7 @@ fn main() {
         .add_systems(OnExit(AppState::MainMenu), ui::despawn_main_menu)
         .add_systems(OnEnter(AppState::InGame), ui::build_game_ui)
         .insert_resource(ui::SelectedButton(ui::ButtonType::Play))
-        .add_systems(
-            Startup,
-            (audio::prepare_audio).chain(),
-        )
+        .add_systems(Startup, (audio::prepare_audio).chain())
         .add_systems(Update, (audio::set_volume, audio::sync_audio))
         .run();
 }

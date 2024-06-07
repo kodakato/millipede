@@ -2,15 +2,21 @@ use super::*;
 use bevy::utils::HashMap;
 use rand::Rng;
 
-pub enum HeadState{
+#[derive(PartialEq, Clone, Copy)]
+pub enum HeadState {
     Healthy,
     Poisoned,
 }
 
 #[derive(Component)]
 pub enum Segment {
-    Head { direction: Vec3, head_state: HeadState },
-    Body { parent: Option<Entity> },
+    Head {
+        direction: Vec3,
+        head_state: HeadState,
+    },
+    Body {
+        parent: Option<Entity>,
+    },
 }
 
 #[derive(Event)]
@@ -95,26 +101,27 @@ pub fn update_positions(
     }
 }
 
-pub fn update_head_color(
-    mut segment_query: Query<(&Segment, &mut Sprite)>
-) {
+pub fn update_head_color(mut segment_query: Query<(&Segment, &mut Sprite)>) {
     for (segment, mut sprite) in segment_query.iter_mut() {
         match segment {
-            Segment::Head { direction: _, head_state} => {
+            Segment::Head {
+                direction: _,
+                head_state,
+            } => {
                 let color: Color;
                 match head_state {
                     HeadState::Healthy => {
                         color = MILLIPEDE_HEAD_COLOR;
-                    },
+                    }
                     HeadState::Poisoned => {
                         color = MILLIPEDE_HEAD_COLOR_POISONED;
                     }
                 }
-               if sprite.color !=  color {
+                if sprite.color != color {
                     sprite.color = color;
-               }
-            },
-            _ => continue
+                }
+            }
+            _ => continue,
         }
     }
 }
@@ -150,14 +157,16 @@ pub fn segment_movement(
                     }
                 }
             }
-            Segment::Head { direction, head_state } => {
+            Segment::Head {
+                direction,
+                head_state,
+            } => {
                 match head_state {
                     HeadState::Healthy => {
                         // Move in its direction
                         transform.translation.x +=
                             direction.x * time.delta_seconds() * game_vars.millipede_speed;
-
-                    },
+                    }
                     HeadState::Poisoned => {
                         // Move down
                         transform.translation.y -= time.delta_seconds() * game_vars.millipede_speed;
@@ -176,7 +185,11 @@ pub fn change_direction(
     let window = window_query.get_single().unwrap();
     let segment_radius = SEGMENT_SIZE / 2.0;
     for (mut segment, mut transform) in head_query.iter_mut() {
-        if let Segment::Head { ref mut direction, head_state: _ } = *segment {
+        if let Segment::Head {
+            ref mut direction,
+            head_state: _,
+        } = *segment
+        {
             // Check if hit bottom boundary
             if transform.translation.y < 5.0 + segment_radius {
                 // Set direction to up
@@ -207,19 +220,19 @@ pub fn change_direction(
 pub fn confine_segment_movement(
     mut head_query: Query<&mut Transform, With<Segment>>,
     window_query: Query<&Window, With<PrimaryWindow>>,
-    ) {
+) {
     let window = window_query.get_single().unwrap();
     for mut transform in head_query.iter_mut() {
         if transform.translation.y < 0.0 {
             transform.translation.y = 0.0;
         }
-        if transform.translation.y > window.height(){
+        if transform.translation.y > window.height() {
             transform.translation.y = window.height();
         }
-        if transform.translation.x <  0.0 {
+        if transform.translation.x < 0.0 {
             transform.translation.x = 0.0;
         }
-        if transform.translation.x > window.width(){
+        if transform.translation.x > window.width() {
             transform.translation.x = window.width();
         }
     }
@@ -252,7 +265,14 @@ pub fn collide_with_shroom(
     let shroom_radius = MUSHROOM_SIZE / 3.0;
     let segment_radius = SEGMENT_SIZE / 3.0;
     for (mut segment_transform, mut segment) in segment_query.iter_mut() {
-        if let Segment::Head{ ref mut direction, head_state: _ } = *segment {
+        if let Segment::Head {
+            ref mut direction,
+            head_state,
+        } = *segment
+        {
+            if head_state == HeadState::Poisoned {
+                return;
+            }
             for shroom_transform in shroom_query.iter() {
                 let distance = shroom_transform
                     .translation
@@ -347,7 +367,11 @@ pub fn collide_with_head(mut segment_query: Query<(Entity, &mut Transform, &mut 
 
     // Collect entities and their positions if they are heads
     for (entity, transform, segment) in segment_query.iter_mut() {
-        if let Segment::Head { direction, head_state: _} = &*segment {
+        if let Segment::Head {
+            direction,
+            head_state: _,
+        } = &*segment
+        {
             heads.push((entity, transform.translation, *direction));
         }
     }
@@ -379,10 +403,15 @@ pub fn collide_with_head(mut segment_query: Query<(Entity, &mut Transform, &mut 
     // Apply direction changes
     for entity in changes {
         if let Ok((_, mut transform, mut segment)) = segment_query.get_mut(entity) {
-            if let Segment::Head { direction, head_state: _} = &mut *segment {
+            if let Segment::Head {
+                direction,
+                head_state: _,
+            } = &mut *segment
+            {
                 direction.x = -direction.x;
                 // Bounce backwards slightly
-                transform.translation.x += direction.x * PUSH_BACK_AMOUNT;
+                let pushback = rand::thread_rng().gen_range(0..10);
+                transform.translation.x += direction.x * PUSH_BACK_AMOUNT + (pushback as f32);
 
                 // Randomly decide to drop
                 // It needs to randomly drop in order to remove the chance that it gets caught in a
@@ -405,17 +434,22 @@ pub fn head_gets_poisoned(
     let shroom_radius = MUSHROOM_SIZE / 3.0;
     let segment_radius = SEGMENT_SIZE / 3.0;
     for (mut segment, transform) in segment_query.iter_mut() {
-        match &mut *segment{
-            Segment::Head{ direction: _, head_state} => {
+        match &mut *segment {
+            Segment::Head {
+                direction: _,
+                head_state,
+            } => {
                 match *head_state {
                     HeadState::Healthy => {
                         // Check if touching shroom
                         for (mushroom, mushroom_transform) in mushroom_query.iter() {
                             if *mushroom != Mushroom::Poison {
                                 continue;
-                            } 
+                            }
 
-                            let distance = mushroom_transform.translation.distance(transform.translation);
+                            let distance = mushroom_transform
+                                .translation
+                                .distance(transform.translation);
                             if distance > shroom_radius + segment_radius {
                                 continue;
                             }
@@ -430,10 +464,8 @@ pub fn head_gets_poisoned(
                         }
                     }
                 }
-            },
-            _ => continue
+            }
+            _ => continue,
         }
     }
 }
-
-

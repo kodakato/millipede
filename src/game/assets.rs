@@ -28,7 +28,9 @@ impl FromWorld for GameAssets {
         let scorpion_texture = asset_server.load("textures/scorpion.png");
 
         // Define the layout
-        let mut texture_atlas_layouts = world.get_resource_mut::<Assets<TextureAtlasLayout>>().unwrap();
+        let mut texture_atlas_layouts = world
+            .get_resource_mut::<Assets<TextureAtlasLayout>>()
+            .unwrap();
         let layout = TextureAtlasLayout::from_grid(Vec2::new(16.0, 16.0), 4, 1, None, None);
         let shroom_layout = texture_atlas_layouts.add(layout);
 
@@ -47,10 +49,8 @@ impl FromWorld for GameAssets {
     }
 }
 
-
 #[derive(Component)]
 pub struct AnimationIndices {
     pub first: usize,
     pub last: usize,
 }
-

@@ -4,7 +4,7 @@ use crate::{
 };
 
 use super::*;
-use bevy::app::AppExit;
+use bevy::{app::AppExit, window::PrimaryWindow};
 
 #[derive(Component)]
 pub struct MainMenu;
@@ -27,7 +27,7 @@ pub enum ButtonType {
 }
 
 // Main Menu
-pub fn spawn_main_menu(mut commands: Commands, ) {
+pub fn spawn_main_menu(mut commands: Commands) {
     build_main_menu(&mut commands);
 }
 
@@ -37,7 +37,7 @@ pub fn despawn_main_menu(mut commands: Commands, main_menu_query: Query<Entity, 
     }
 }
 
-pub fn build_main_menu(commands: &mut Commands, ) {
+pub fn build_main_menu(commands: &mut Commands) {
     // Define the main menu parent node with MainMenu marker struct
     let main_menu_node = (
         NodeBundle {
@@ -582,4 +582,79 @@ pub fn build_game_over_ui(commands: &mut Commands, score: &Res<Score>, level: &R
                         });
                 });
         });
+}
+
+// When a player kills a non millipede entity, display a score
+#[derive(Event)]
+pub struct FloatingScoreEvent(pub Transform, pub u32);
+
+#[derive(Component)]
+pub struct FloatingScore(pub Timer);
+
+pub fn score_event(
+    mut score_er: EventReader<FloatingScoreEvent>,
+    mut score_q: Query<(Entity, &mut FloatingScore)>,
+    mut commands: Commands,
+    time: Res<Time>,
+    window_q: Query<&Window, With<PrimaryWindow>>,
+) {
+    // Tick existing, and despawn
+    for (entity, mut score) in score_q.iter_mut() {
+        score.0.tick(time.delta());
+        if score.0.finished() {
+            // Despawn the score
+            commands.entity(entity).despawn_recursive();
+        }
+    }
+
+    if score_er.is_empty() {
+        return;
+    }
+
+    let window = window_q.get_single().unwrap();
+
+    // Create scores
+    for event in score_er.read() {
+        let mut x = 0.0;
+        let mut y = 0.0;
+        if event.0.translation.x > window.width() - 21.0 {
+            x -= 16.0;
+        }
+        if event.0.translation.x < 21.0 {
+            x += 13.0;
+        }
+
+        if event.0.translation.y > window.height() - 20.0 {
+            y -= 20.0;
+        }
+        if event.0.translation.y < 10.0 {
+            y += 10.0;
+        }
+        // Spawn the score
+        commands
+            .spawn((
+                FloatingScore(Timer::from_seconds(SCORE_TIMER_SECONDS, TimerMode::Once)),
+                NodeBundle {
+                    style: Style {
+                        position_type: PositionType::Absolute,
+                        left: Val::Px(event.0.translation.x - 10.0 + x),
+                        bottom: Val::Px(event.0.translation.y + 5.0 + y),
+                        ..default()
+                    },
+                    ..default()
+                },
+            ))
+            .with_children(|parent| {
+                parent.spawn(TextBundle {
+                    text: Text::from_section(
+                        format!("{}", event.1),
+                        TextStyle {
+                            font_size: 13.0 + 0.005 * (event.1 as f32), // Change font size based on score amount
+                            ..default()
+                        },
+                    ),
+                    ..default()
+                });
+            });
+    }
 }

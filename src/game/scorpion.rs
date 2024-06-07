@@ -49,7 +49,7 @@ pub fn spawn_scorpion(
     scorpion_query: Query<(), With<Scorpion>>,
 ) {
     // Only run if above a certain level
-    if level.0 < 3 {
+    if level.0 < 0 {
         return;
     }
 

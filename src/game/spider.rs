@@ -1,4 +1,3 @@
-
 use super::*;
 use rand::Rng;
 
@@ -58,8 +57,7 @@ pub fn spawn_spider(
     game_vars: Res<GameVariables>,
     level: Res<Level>,
 ) {
-
-    if level.0 < 2 {
+    if level.0 < 0 {
         return;
     }
     // Only run if no current spider

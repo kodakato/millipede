@@ -111,10 +111,6 @@ pub fn projectile_hits_segment(
     mut score: ResMut<Score>,
     mut explosion_events: EventWriter<ExplosionEvent>,
     mut spawn_mushroom_ew: EventWriter<SpawnMushroomEvent>,
-
-
-
-
 ) {
     if let Ok((projectile_entity, projectile_transform)) = projectile_query.get_single() {
         for (segment_entity, segment_transform, segment) in segment_query.iter() {
@@ -126,7 +122,11 @@ pub fn projectile_hits_segment(
                 .distance(segment_transform.translation);
             if distance < projectile_radius + segment_radius {
                 // Pass in the direction if its a head
-                if let Segment::Head { direction, head_state: _ } = segment {
+                if let Segment::Head {
+                    direction,
+                    head_state: _,
+                } = segment
+                {
                     event_writer.send(DespawnSegment {
                         entity: segment_entity,
                         direction: Some(*direction),
@@ -137,20 +137,25 @@ pub fn projectile_hits_segment(
                         direction: None,
                     });
                 }
-                
+
                 // Spawn explosion
                 explosion_events.send(ExplosionEvent(segment_transform.clone()));
-                
+
                 // Spawn mushroom
-                spawn_mushroom_ew.send(SpawnMushroomEvent(segment_transform.clone(), Color::rgb(1.0, 1.0, 1.0)));
-                
+                spawn_mushroom_ew.send(SpawnMushroomEvent(
+                    segment_transform.clone(),
+                    Color::rgb(1.0, 1.0, 1.0),
+                ));
 
                 commands.entity(projectile_entity).despawn();
                 commands.entity(segment_entity).despawn();
 
                 // Add to score
                 match segment {
-                    Segment::Head { direction: _ , head_state: _} => {
+                    Segment::Head {
+                        direction: _,
+                        head_state: _,
+                    } => {
                         score.0 += HEAD_REWARD;
                     }
                     Segment::Body { parent: _ } => {
@@ -171,6 +176,7 @@ pub fn projectile_hits_beetle(
     mut score: ResMut<Score>,
     mut explosion_events: EventWriter<ExplosionEvent>,
     mut spawn_mushroom_ew: EventWriter<SpawnMushroomEvent>,
+    mut score_event: EventWriter<FloatingScoreEvent>,
 ) {
     if let Ok((projectile_entity, projectile_transform)) = projectile_query.get_single() {
         for (beetle_entity, beetle_transform) in beetle_query.iter() {
@@ -184,7 +190,13 @@ pub fn projectile_hits_beetle(
                 // Spawn explosion
                 explosion_events.send(ExplosionEvent(beetle_transform.clone()));
                 // Spawn mushroom
-                spawn_mushroom_ew.send(SpawnMushroomEvent(beetle_transform.clone(), Color::rgb(1.0, 1.0, 1.0)));
+                spawn_mushroom_ew.send(SpawnMushroomEvent(
+                    beetle_transform.clone(),
+                    Color::rgb(1.0, 1.0, 1.0),
+                ));
+                // Send scoreUI event
+                score_event.send(FloatingScoreEvent(beetle_transform.clone(), BEETLE_REWARD));
+
                 commands.entity(projectile_entity).despawn();
                 commands.entity(beetle_entity).despawn();
 
@@ -204,6 +216,7 @@ pub fn projectile_hits_spider(
     mut score: ResMut<Score>,
     spider_timer: ResMut<SpiderTimer>,
     mut explosion_events: EventWriter<ExplosionEvent>,
+    mut score_event: EventWriter<FloatingScoreEvent>,
 ) {
     if let Ok((projectile_entity, projectile_transform)) = projectile_query.get_single() {
         for (spider_entity, spider_transform) in spider_query.iter() {
@@ -216,6 +229,8 @@ pub fn projectile_hits_spider(
             if distance < projectile_radius + segment_radius {
                 // Spawn explosion
                 explosion_events.send(ExplosionEvent(spider_transform.clone()));
+                // Send scoreUI event
+                score_event.send(FloatingScoreEvent(spider_transform.clone(), SPIDER_REWARD));
 
                 commands.entity(projectile_entity).despawn();
 
@@ -236,6 +251,7 @@ pub fn projectile_hits_scorpion(
     projectile_query: Query<(Entity, &Transform), With<PlayerProjectile>>,
     mut score: ResMut<Score>,
     mut explosion_events: EventWriter<ExplosionEvent>,
+    mut score_event: EventWriter<FloatingScoreEvent>,
 ) {
     if let (
         Ok((projectile_entity, projectile_transform)),
@@ -255,6 +271,11 @@ pub fn projectile_hits_scorpion(
 
         // Spawn explosion
         explosion_events.send(ExplosionEvent(scorpion_transform.clone()));
+        // Send scoreUI event
+        score_event.send(FloatingScoreEvent(
+            scorpion_transform.clone(),
+            SCORPION_REWARD,
+        ));
 
         //Despawn projectile
         commands.entity(projectile_entity).despawn();

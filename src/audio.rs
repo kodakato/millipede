@@ -1,4 +1,8 @@
-use crate::{constants::*, AppState, GameState, game::beetle::Beetle};
+use crate::{
+    constants::*,
+    game::{beetle::Beetle, player::Player},
+    AppState, GameState,
+};
 use bevy::{prelude::*, utils::Duration};
 use bevy_kira_audio::prelude::*;
 
@@ -47,8 +51,11 @@ pub fn prepare_audio(mut commands: Commands, audio: Res<Audio>, asset_server: Re
         .with_volume(0.0)
         .handle();
 
-
-    let falling_handle = audio.play(asset_server.load("sounds/falling.ogg")).looped().with_volume(0.0).handle();
+    let falling_handle = audio
+        .play(asset_server.load("sounds/falling.ogg"))
+        .looped()
+        .with_volume(0.0)
+        .handle();
 
     let background_beat = (background_beat_handle.clone(), 1.0);
     let millipede = (millipede_handle.clone(), 1.0);
@@ -81,7 +88,6 @@ pub fn prepare_audio(mut commands: Commands, audio: Res<Audio>, asset_server: Re
 #[derive(Resource)]
 pub struct BeetleAudioInstance(pub Handle<AudioInstance>);
 
-
 pub fn set_volume(
     mut audio_instances: ResMut<Assets<AudioInstance>>,
     mut instances: ResMut<Instances>,
@@ -91,8 +97,8 @@ pub fn set_volume(
     app_state: Res<State<AppState>>,
     game_state: Res<State<GameState>>,
     beetle_query: Query<(), With<Beetle>>,
+    player_q: Query<(), With<Player>>,
 ) {
-
     let millipede_handle = &instances.millipede.0;
     // Millipede
     if !millipede_query.is_empty() && app_state.get() == &AppState::InGame {
@@ -137,7 +143,7 @@ pub fn set_volume(
 
     let scorpion_handle = &instances.scorpion.0;
     // Scorpion
-    if !scorpion_query.is_empty() && app_state.get() == &AppState::InGame{
+    if !scorpion_query.is_empty() && app_state.get() == &AppState::InGame {
         if instances.scorpion.1 != SCORPION_VOLUME && app_state.get() == &AppState::InGame {
             if let Some(instance) = audio_instances.get_mut(scorpion_handle) {
                 instance.set_volume(SCORPION_VOLUME, AudioTween::default());
@@ -171,7 +177,7 @@ pub fn set_volume(
     }
 
     let falling_handle = &instances.falling.0;
-    if !beetle_query.is_empty() && app_state.get() == &AppState::InGame{
+    if !beetle_query.is_empty() && app_state.get() == &AppState::InGame && !player_q.is_empty() {
         if instances.falling.1 != FALLING_VOLUME {
             if let Some(instance) = audio_instances.get_mut(falling_handle) {
                 instance.seek_to(0.0); // Restart
@@ -189,7 +195,6 @@ pub fn set_volume(
             }
         }
     }
-
 }
 
 pub fn sync_audio(

@@ -2,9 +2,9 @@
 // if the current amount of shrooms goes below the threshold
 
 use super::*;
-use rand::*;
-use bevy_kira_audio::{Audio, AudioControl};
 use crate::audio::AudioHandles;
+use bevy_kira_audio::{Audio, AudioControl};
+use rand::*;
 
 #[derive(Component)]
 pub struct Beetle;
@@ -52,7 +52,6 @@ pub fn spawn_beetle(
     let y = window.height();
 
     Beetle::spawn(&Transform::from_xyz(x, y, 0.0), &mut commands, &game_assets);
-    
 }
 
 pub fn despawn_beetle(mut commands: Commands, beetle_q: Query<(Entity, &Transform), With<Beetle>>) {
@@ -75,7 +74,6 @@ pub fn beetle_spawn_shroom(
     mut spawn_mushroom_ew: EventWriter<SpawnMushroomEvent>,
     audio: Res<Audio>,
     audio_handles: Res<AudioHandles>,
-
 ) {
     if let Ok(beetle_transform) = beetle_q.get_single() {
         // Check if below boundary
@@ -92,7 +90,12 @@ pub fn beetle_spawn_shroom(
         let x = beetle_transform.translation.x;
         let y = beetle_transform.translation.y;
 
-        spawn_mushroom_ew.send(SpawnMushroomEvent(Transform::from_xyz(x, y, 0.0), MUSHROOM_FRESH_COLOR));
-        audio.play(audio_handles.spawn.clone()).with_volume(SPAWN_VOLUME);
+        spawn_mushroom_ew.send(SpawnMushroomEvent(
+            Transform::from_xyz(x, y, 0.0),
+            MUSHROOM_FRESH_COLOR,
+        ));
+        audio
+            .play(audio_handles.spawn.clone())
+            .with_volume(SPAWN_VOLUME);
     }
 }

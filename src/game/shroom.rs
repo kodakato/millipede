@@ -24,14 +24,14 @@ pub fn spawn_shroom(
         commands.spawn((
             Mushroom::Normal,
             Health(MUSHROOM_HEALTH),
-            SpriteSheetBundle{
+            SpriteSheetBundle {
                 texture: game_assets.shroom_texture.clone(),
-                atlas: TextureAtlas{
+                atlas: TextureAtlas {
                     layout: game_assets.shroom_layout.clone(),
                     index: MUSHROOM_ANIMATION_INDICES.first,
                 },
                 transform: event.0,
-                sprite: Sprite{
+                sprite: Sprite {
                     color: event.1,
                     flip_x: flip,
                     ..default()
@@ -46,7 +46,6 @@ pub fn spawn_shroom(
     }
 }
 
-
 #[derive(Resource)]
 pub struct ShroomAmount(pub u8);
 
@@ -59,7 +58,10 @@ pub fn spawn_shroom_field(
     for _ in 0..MUSHROOM_MAX_AMOUNT {
         let x = rand::thread_rng().gen_range(0.0 + SPAWN_MARGIN..window.width() - SPAWN_MARGIN);
         let y = rand::thread_rng().gen_range(TOP_BOUND..window.height() - TOP_UI_HEIGHT);
-        spawn_mushroom.send(SpawnMushroomEvent(Transform::from_xyz(x,y,0.0), Color::rgb(1.0, 1.0, 1.0)));
+        spawn_mushroom.send(SpawnMushroomEvent(
+            Transform::from_xyz(x, y, 0.0),
+            Color::rgb(1.0, 1.0, 1.0),
+        ));
     }
 }
 
@@ -84,13 +86,12 @@ pub fn despawn_shroom_field(mut commands: Commands, mushroom_query: Query<Entity
     }
 }
 
-
 pub fn update_shroom_color(
     mut shroom_q: Query<(&Mushroom, &mut Sprite, &mut Transform), With<Mushroom>>,
     beetle_q: Query<(), With<Beetle>>,
 ) {
     for (mushroom, mut mushroom_sprite, mut mushroom_transform) in shroom_q.iter_mut() {
-        if mushroom_sprite.color == MUSHROOM_FRESH_COLOR && beetle_q.is_empty(){
+        if mushroom_sprite.color == MUSHROOM_FRESH_COLOR && beetle_q.is_empty() {
             mushroom_sprite.color = Color::rgb(1.0, 1.0, 1.0);
         }
         if *mushroom == Mushroom::Poison && mushroom_sprite.color == Color::rgb(1.0, 1.0, 1.0) {
@@ -101,17 +102,23 @@ pub fn update_shroom_color(
     }
 }
 
-pub fn update_shroom_sprite(
-    mut shroom_q: Query<(&mut Health, &mut TextureAtlas), With<Mushroom>>,
-    ) {
+pub fn update_shroom_sprite(mut shroom_q: Query<(&mut Health, &mut TextureAtlas), With<Mushroom>>) {
     for (health, mut atlas) in shroom_q.iter_mut() {
-       match health.0 {
-           3 => atlas.index = 0,
-           2 => {
-               atlas.index = 1
-           },
-           1 => atlas.index = 2,
-           _ => return,
-       }
+        match health.0 {
+            3 => atlas.index = 0,
+            2 => atlas.index = 1,
+            1 => atlas.index = 2,
+            _ => return,
+        }
+    }
+}
+
+pub fn heal_shrooms(mut shroom_q: Query<(&mut Health, &mut Sprite), With<Mushroom>>) {
+    for (mut health, mut sprite) in shroom_q.iter_mut() {
+        if health.0 != MUSHROOM_HEALTH {
+            sprite.color = MUSHROOM_FRESH_COLOR;
+
+            health.0 = MUSHROOM_HEALTH;
+        }
     }
 }
