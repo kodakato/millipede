@@ -207,7 +207,7 @@ pub fn change_direction(
 }
 
 pub fn confine_segment_movement(
-    mut head_query: Query<(&mut Transform), With<Segment>>,
+    mut head_query: Query<&mut Transform, With<Segment>>,
     window_query: Query<&Window, With<PrimaryWindow>>,
     ) {
     let window = window_query.get_single().unwrap();
@@ -260,14 +260,12 @@ pub fn collide_with_shroom(
                     .translation
                     .distance(segment_transform.translation);
                 if distance < shroom_radius + segment_radius {
-                    // Move down
-                    segment_transform.translation.y += DROP_AMOUNT * direction.y;
-
                     // Reverse direction
                     direction.x = -direction.x;
-
                     // Bounce backwards slightly
                     segment_transform.translation.x += direction.x * PUSH_BACK_AMOUNT;
+                    // Move down
+                    segment_transform.translation.y += DROP_AMOUNT * direction.y;
                 }
             }
         }
