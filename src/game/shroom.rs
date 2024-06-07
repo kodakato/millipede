@@ -19,7 +19,8 @@ pub fn spawn_shroom(
     mut shroom_amount: ResMut<ShroomAmount>,
 ) {
     for event in spawn_event.read() {
-
+        // Randomly flip sprite
+        let flip = rand::thread_rng().gen_bool(0.5);
         commands.spawn((
             Mushroom::Normal,
             Health(MUSHROOM_HEALTH),
@@ -32,19 +33,11 @@ pub fn spawn_shroom(
                 transform: event.0,
                 sprite: Sprite{
                     color: event.1,
+                    flip_x: flip,
                     ..default()
                 },
                 ..default()
             },
-          //  SpriteBundle {
-          //      texture: shroom_texture.clone(),
-          //      transform: event.0,
-          //      sprite: Sprite{
-          //          color: event.1,
-          //          ..default()
-          //      },
-          //      ..default()
-          //  },
             Name::from("Mushroom"),
         ));
 
@@ -114,7 +107,9 @@ pub fn update_shroom_sprite(
     for (health, mut atlas) in shroom_q.iter_mut() {
        match health.0 {
            3 => atlas.index = 0,
-           2 => atlas.index = 1,
+           2 => {
+               atlas.index = 1
+           },
            1 => atlas.index = 2,
            _ => return,
        }
