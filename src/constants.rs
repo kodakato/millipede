@@ -101,3 +101,4 @@ pub const SPIDER_VOLUME: f64 = 0.4;
 pub const SCORPION_VOLUME: f64 = 0.4;
 pub const FALLING_VOLUME: f64 = 0.3;
 pub const SPAWN_VOLUME: f64 = 0.4;
+pub const MASTER_VOLUME: f64 = 1.0;

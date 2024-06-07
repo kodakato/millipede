@@ -29,22 +29,26 @@ pub fn prepare_audio(mut commands: Commands, audio: Res<Audio>, asset_server: Re
     let millipede_handle = audio
         .play(asset_server.load("sounds/millipede.ogg"))
         .looped()
+        .with_volume(0.0)
         .handle();
     let spider_handle = audio
         .play(asset_server.load("sounds/spider.ogg"))
         .looped()
+        .with_volume(0.0)
         .handle();
     let scorpion_handle = audio
         .play(asset_server.load("sounds/scorpion.ogg"))
         .looped()
+        .with_volume(0.0)
         .handle();
     let highhat_handle = audio
         .play(asset_server.load("sounds/highhat.ogg"))
         .looped()
+        .with_volume(0.0)
         .handle();
 
 
-    let falling_handle = audio.play(asset_server.load("sounds/falling.ogg")).looped().handle();
+    let falling_handle = audio.play(asset_server.load("sounds/falling.ogg")).looped().with_volume(0.0).handle();
 
     let background_beat = (background_beat_handle.clone(), 1.0);
     let millipede = (millipede_handle.clone(), 1.0);
@@ -77,43 +81,6 @@ pub fn prepare_audio(mut commands: Commands, audio: Res<Audio>, asset_server: Re
 #[derive(Resource)]
 pub struct BeetleAudioInstance(pub Handle<AudioInstance>);
 
-pub fn initialize_volume(
-    mut audio_instances: ResMut<Assets<AudioInstance>>,
-    mut instances: ResMut<Instances>,
-) {
-    let millipede_handle = &instances.millipede.0;
-    // Millipede
-    if let Some(instance) = audio_instances.get_mut(millipede_handle) {
-        instance.set_volume(0.0, AudioTween::default());
-        instances.millipede.1 = 0.0;
-    }
-
-    let spider_handle = &instances.spider.0;
-    // Spider
-    if let Some(instance) = audio_instances.get_mut(spider_handle) {
-        instance.set_volume(0.0, AudioTween::default());
-        instances.spider.1 = 0.0;
-    }
-
-    let scorpion_handle = &instances.scorpion.0;
-    // Scorpion
-    if let Some(instance) = audio_instances.get_mut(scorpion_handle) {
-        instance.set_volume(0.0, AudioTween::default());
-        instances.scorpion.1 = 0.0;
-    }
-
-    let highhat_handle = &instances.highhat.0;
-    if let Some(instance) = audio_instances.get_mut(highhat_handle) {
-        instance.set_volume(0.0, AudioTween::default());
-        instances.highhat.1 = 0.0;
-    }
-
-    let falling_handle = &instances.falling.0;
-    if let Some(instance) = audio_instances.get_mut(falling_handle) {
-        instance.set_volume(0.0, AudioTween::default());
-        instances.falling.1 = 0.0;
-    }
-}
 
 pub fn set_volume(
     mut audio_instances: ResMut<Assets<AudioInstance>>,
@@ -125,6 +92,7 @@ pub fn set_volume(
     game_state: Res<State<GameState>>,
     beetle_query: Query<(), With<Beetle>>,
 ) {
+
     let millipede_handle = &instances.millipede.0;
     // Millipede
     if !millipede_query.is_empty() && app_state.get() == &AppState::InGame {

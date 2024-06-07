@@ -57,7 +57,7 @@ fn main() {
         .insert_resource(ui::SelectedButton(ui::ButtonType::Play))
         .add_systems(
             Startup,
-            (audio::prepare_audio, audio::initialize_volume).chain(),
+            (audio::prepare_audio).chain(),
         )
         .add_systems(Update, (audio::set_volume, audio::sync_audio))
         .run();
