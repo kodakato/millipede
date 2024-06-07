@@ -20,7 +20,7 @@ pub const PLAYER_SIZE: f32 = 16.0;
 pub const PROJECTILE_SPEED: f32 = 1300.0;
 pub const PROJECTILE_ACCELERATION: f32 = 1.0;
 pub const PROJECTILE_SIZE: f32 = 10.0;
-pub const STARTING_LIVES: u8 = 1;
+pub const STARTING_LIVES: u8 = 3;
 
 // Map
 pub const TOP_BOUND: f32 = 100.0;
@@ -33,7 +33,7 @@ pub const MUSHROOM_MAX_AMOUNT: u8 = 100; // 100
 pub const MUSHROOM_MIN_AMOUNT: u8 = 70; // 70
 pub const SPAWN_MARGIN: f32 = 20.0;
 pub const MUSHROOM_HEALTH: i8 = 3;
-pub const MUSHROOM_POISON_COLOR: Color = Color::rgb(0.2, 0.3, 1.0);
+pub const MUSHROOM_POISON_COLOR: Color = Color::rgb(0.2, 0.5, 1.0);
 pub const MUSHROOM_FRESH_COLOR: Color = Color::rgb(1.0, 0.1, 0.7);
 pub const MUSHROOM_ANIMATION_INDICES: AnimationIndices = AnimationIndices{first: 1, last: 4};
 
