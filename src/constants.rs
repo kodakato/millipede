@@ -81,7 +81,7 @@ pub const MUSHROOM_REWARD: u32 = 1;
 pub const SEGMENT_REWARD: u32 = 10;
 pub const HEAD_REWARD: u32 = 100;
 pub const BEETLE_REWARD: u32 = 50;
-pub const SPIDER_REWARD: u32 = 500;
+pub const SPIDER_REWARD: u32 = 300;
 pub const SCORPION_REWARD: u32 = 1000;
 
 // UI

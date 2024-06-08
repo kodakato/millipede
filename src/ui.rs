@@ -618,7 +618,7 @@ pub fn score_event(
         let mut x = 0.0;
         let mut y = 0.0;
         if event.0.translation.x > window.width() - 21.0 {
-            x -= 16.0;
+            x -= 20.0;
         }
         if event.0.translation.x < 21.0 {
             x += 13.0;

@@ -227,17 +227,19 @@ pub fn projectile_hits_spider(
                 .translation
                 .distance(spider_transform.translation);
             if distance < projectile_radius + segment_radius {
+                let calculated_score = (spider_transform.translation.y * 0.8) as u32 + SPIDER_REWARD;
+        
                 // Spawn explosion
                 explosion_events.send(ExplosionEvent(spider_transform.clone()));
                 // Send scoreUI event
-                score_event.send(FloatingScoreEvent(spider_transform.clone(), SPIDER_REWARD));
+                score_event.send(FloatingScoreEvent(spider_transform.clone(), calculated_score));
 
                 commands.entity(projectile_entity).despawn();
 
                 Spider::despawn(spider_entity, &mut commands, spider_timer);
 
                 // Add to score
-                score.0 += SPIDER_REWARD;
+                score.0 += calculated_score;
 
                 return;
             }
