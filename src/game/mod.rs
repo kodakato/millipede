@@ -81,6 +81,7 @@ impl Plugin for GamePlugin {
                             update_shroom_color,
                             update_head_color,
                             update_shroom_sprite,
+                            animate_explosion,
                         )
                             .chain(),
                         (

@@ -10,6 +10,7 @@ pub struct GameAssets {
     pub shroom_layout: Handle<TextureAtlasLayout>,
     pub spider_texture: Handle<Image>,
     pub explosion_texture: Handle<Image>,
+    pub explosion_layout: Handle<TextureAtlasLayout>,
     pub scorpion_texture: Handle<Image>,
 }
 
@@ -24,7 +25,7 @@ impl FromWorld for GameAssets {
         let projectile_texture = asset_server.load("textures/stinger.png");
         let shroom_texture = asset_server.load("textures/shrooms.png");
         let spider_texture = asset_server.load("textures/spider.png");
-        let explosion_texture = asset_server.load("textures/explosion.png");
+        let explosion_texture = asset_server.load("textures/explosions.png");
         let scorpion_texture = asset_server.load("textures/scorpion.png");
 
         // Define the layout
@@ -33,6 +34,10 @@ impl FromWorld for GameAssets {
             .unwrap();
         let layout = TextureAtlasLayout::from_grid(Vec2::new(16.0, 16.0), 4, 1, None, None);
         let shroom_layout = texture_atlas_layouts.add(layout);
+
+        // Explosion
+        let layout = TextureAtlasLayout::from_grid(Vec2::new(16.0, 16.0), 3, 1, None, None);
+        let explosion_layout = texture_atlas_layouts.add(layout);
 
         // Construct the GameAssets instance
         GameAssets {
@@ -44,6 +49,7 @@ impl FromWorld for GameAssets {
             shroom_layout,
             spider_texture,
             explosion_texture,
+            explosion_layout,
             scorpion_texture,
         }
     }

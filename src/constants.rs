@@ -34,7 +34,6 @@ pub const SPAWN_MARGIN: f32 = 20.0;
 pub const MUSHROOM_HEALTH: i8 = 3;
 pub const MUSHROOM_POISON_COLOR: Color = Color::rgb(0.2, 0.5, 1.0);
 pub const MUSHROOM_FRESH_COLOR: Color = Color::rgb(1.0, 0.1, 0.7);
-pub const MUSHROOM_ANIMATION_INDICES: AnimationIndices = AnimationIndices { first: 1, last: 4 };
 
 /// Millipede
 pub const MILLIPEDE_STARTING_LENGTH: usize = 9;
@@ -52,7 +51,7 @@ pub const MILLIPEDE_HEAD_COLOR: Color = Color::rgb(1.0, 0.4, 0.6);
 pub const MILLIPEDE_HEAD_COLOR_POISONED: Color = Color::rgb(0.3, 0.1, 1.0);
 
 // Explosions
-pub const EXPLOSION_DURATION: f32 = 0.1;
+pub const EXPLOSION_DURATION: f32 = 0.3;
 
 // Beetle
 pub const BEETLE_SPEED: f32 = 500.0;
@@ -100,3 +99,7 @@ pub const SPIDER_VOLUME: f64 = 0.4;
 pub const SCORPION_VOLUME: f64 = 0.4;
 pub const FALLING_VOLUME: f64 = 0.3;
 pub const SPAWN_VOLUME: f64 = 0.4;
+
+// Animation
+pub const MUSHROOM_ANIMATION_INDICES: AnimationIndices = AnimationIndices { first: 1, last: 4 };
+pub const EXPLOSION_ANIMATION_INDICES: AnimationIndices = AnimationIndices { first: 1, last: 3 };
