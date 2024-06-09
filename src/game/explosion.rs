@@ -26,7 +26,7 @@ pub fn spawn_explosion(
             )),
             SpriteSheetBundle {
                 texture: explosion_texture.clone(),
-                transform: Transform::from_xyz(event.0.translation.x, event.0.translation.y, 0.5),
+                transform: Transform::from_xyz(event.0.translation.x, event.0.translation.y, 0.5).with_scale(Vec3::new(EXPLOSION_SIZE, EXPLOSION_SIZE, 0.0)),
                 atlas: TextureAtlas {
                     layout: game_assets.explosion_layout.clone(),
                     index: EXPLOSION_ANIMATION_INDICES.first,
