@@ -98,12 +98,19 @@ impl Plugin for GamePlugin {
                         (spawn_scorpion, move_scorpion, despawn_scorpion).chain(),
                     )
                         .in_set(GameplaySet::Enemies),
-                    ((check_if_change_level,)).run_if(in_state(LevelState::Unchanging)),
-                    ((start_new_level).chain()).run_if(in_state(LevelState::Changing)),
-                )
+                                    )
                     .run_if(in_state(GameState::Running))
                     .run_if(in_state(PlayerState::Alive)),
-                ((restart_level_from_death, heal_shrooms)).run_if(in_state(PlayerState::Dead)),
+                (
+                    restart_level_from_death,
+                ).run_if(in_state(PlayerState::Dead)).run_if(in_state(LevelState::Unchanging)),
+                (
+                    (start_new_level).chain().run_if(in_state(LevelState::Changing)),
+                    (check_if_change_level).run_if(in_state(LevelState::Unchanging)),
+                ),
+                (
+                    heal_shrooms,
+                ).run_if(in_state(PlayerState::Dead)),
                 ((
                     update_level_ui,
                     update_lives_ui,
@@ -164,8 +171,8 @@ pub enum LevelState {
 #[derive(States, Debug, Clone, Eq, PartialEq, Hash, Default)]
 pub enum PlayerState {
     #[default]
-    Alive,
     Dead,
+    Alive,
 }
 
 #[derive(Resource)]

@@ -1,4 +1,5 @@
 use super::*;
+use bevy::utils::Duration;
 
 #[derive(Resource)]
 pub struct Level(pub u32);
@@ -15,6 +16,7 @@ pub fn check_if_change_level(
     if !segment_query.is_empty() {
         return;
     }
+
 
     // Start the down timer
     down_timer.0.reset();
@@ -33,12 +35,15 @@ pub fn start_new_level(
     mut level: ResMut<Level>,
     mut game_vars: ResMut<GameVariables>,
     mut segment_spawner_timer: ResMut<SegmentSpawnerTimer>,
+    mut next_player_state: ResMut<NextState<PlayerState>>,
+    player_q: Query<(), With<Player>>,
 ) {
     // Wait until the downtime is over
     timer.0.tick(time.delta());
     if !timer.0.just_finished() {
         return;
     }
+
     let window = window_query.get_single().unwrap();
 
     let x = window.width() / 2.0;
@@ -88,6 +93,13 @@ pub fn start_new_level(
 
     // Reset to the unchanging level state
     next_level_state.set(LevelState::Unchanging);
+
+    // Restart from death if player is dead
+    if player_q.is_empty() {
+        next_player_state.set(PlayerState::Dead);
+        timer.0.reset();
+        timer.0.set_elapsed(Duration::from_secs_f32(DOWNTIMER - 0.01));
+    }
 }
 
 pub fn restart_level_from_death(
