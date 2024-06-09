@@ -81,7 +81,6 @@ impl Plugin for GamePlugin {
                             update_shroom_color,
                             update_head_color,
                             update_shroom_sprite,
-                            animate_explosion,
                         )
                             .chain(),
                         (
@@ -118,6 +117,9 @@ impl Plugin for GamePlugin {
                     spawn_explosion,
                     despawn_explosions,
                 )),
+                (
+                    animate_explosion,
+                )
             )
                 .run_if(in_state(AppState::InGame)),
         )

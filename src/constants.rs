@@ -51,8 +51,8 @@ pub const MILLIPEDE_HEAD_COLOR: Color = Color::rgb(1.0, 0.4, 0.6);
 pub const MILLIPEDE_HEAD_COLOR_POISONED: Color = Color::rgb(0.3, 0.1, 1.0);
 
 // Explosions
-pub const EXPLOSION_DURATION: f32 = 0.3;
-pub const EXPLOSION_SIZE: f32 = 1.3;
+pub const EXPLOSION_DURATION: f32 = 0.35;
+pub const EXPLOSION_SIZE: f32 = 1.4;
 
 // Beetle
 pub const BEETLE_SPEED: f32 = 500.0;
