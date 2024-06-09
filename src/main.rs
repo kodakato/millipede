@@ -57,44 +57,7 @@ fn main() {
         .insert_resource(ui::SelectedButton(ui::ButtonType::Play))
         .add_systems(Startup, (audio::prepare_audio).chain())
         .add_systems(Update, (audio::set_volume, audio::sync_audio))
-        .add_systems(Update, kill_player.run_if(in_state(crate::game::PlayerState::Alive)))
         .run();
-}
-
-fn toggle_pause(
-    state: Res<State<GameState>>,
-    mut next_state: ResMut<NextState<GameState>>,
-    input: Res<ButtonInput<KeyCode>>,
-) {
-    if input.just_pressed(constants::MENU_KEY) {
-        match state.get() {
-            GameState::Running => next_state.set(GameState::Paused),
-            GameState::Paused => next_state.set(GameState::Running),
-        }
-    }
-}
-
-fn kill_player(
-    mut next_state: ResMut<NextState<crate::game::PlayerState>>,
-    input: Res<ButtonInput<KeyCode>>,
-    player_q: Query<Entity, With<crate::game::player::Player>>,
-    mut commands: Commands,
-    mut down_timer: ResMut<crate::game::level::DownTimer>,
-    mut lives: ResMut<crate::game::player::Lives>,
-    mut event: EventWriter<crate::game::explosion::ExplosionEvent>,
-) {
-    if input.just_pressed(KeyCode::KeyK) {
-        let entity = player_q.get_single().unwrap();
-            crate::game::player::Player::kill(
-                &Transform::from_xyz(100.0, 100.0, 0.0),
-                entity,
-                &mut next_state,
-                &mut commands,
-                &mut down_timer,
-                &mut lives,
-                &mut event,
-            )
-    }
 }
 
 
