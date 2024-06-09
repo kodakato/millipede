@@ -49,7 +49,6 @@ fn main() {
             OnEnter(AppState::GameOver),
             ui::set_default_button_selection,
         )
-        .add_systems(Update, (toggle_pause).run_if(in_state(AppState::InGame)))
         .add_systems(Startup, (camera::spawn_game_camera).chain())
         .add_systems(OnEnter(AppState::MainMenu), ui::spawn_main_menu)
         .add_systems(OnExit(AppState::MainMenu), ui::despawn_main_menu)
