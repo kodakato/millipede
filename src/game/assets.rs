@@ -4,6 +4,7 @@ use super::*;
 pub struct GameAssets {
     pub player_texture: Handle<Image>,
     pub segment_texture: Handle<Image>,
+    pub segment_layout: Handle<TextureAtlasLayout>,
     pub beetle_texture: Handle<Image>,
     pub projectile_texture: Handle<Image>,
     pub shroom_texture: Handle<Image>,
@@ -21,7 +22,7 @@ impl FromWorld for GameAssets {
 
         // Load the textures
         let player_texture = asset_server.load("textures/snake.png");
-        let segment_texture = asset_server.load("textures/millipede.png");
+        let segment_texture = asset_server.load("textures/segments.png");
         let beetle_texture = asset_server.load("textures/beetle.png");
         let projectile_texture = asset_server.load("textures/stinger.png");
         let shroom_texture = asset_server.load("textures/shrooms.png");
@@ -44,10 +45,15 @@ impl FromWorld for GameAssets {
         let layout = TextureAtlasLayout::from_grid(Vec2::new(16.0, 16.0), 3, 1, None, None);
         let spider_layout = texture_atlas_layouts.add(layout);
 
+        // Segments
+        let layout = TextureAtlasLayout::from_grid(Vec2::new(16.0, 16.0), 3, 1, None, None);
+        let segment_layout= texture_atlas_layouts.add(layout);
+
         // Construct the GameAssets instance
         GameAssets {
             player_texture,
             segment_texture,
+            segment_layout,
             beetle_texture,
             projectile_texture,
             shroom_texture,
@@ -66,3 +72,21 @@ pub struct AnimationIndices {
     pub first: usize,
     pub last: usize,
 }
+
+#[derive(Component)]
+pub struct Animation {
+    pub frames: usize, 
+    pub current_frame: usize,
+    pub timer: Timer,
+}
+
+impl Animation {
+    pub fn new(frames: usize, frame_duration: f32) -> Self {
+        Animation {
+            frames,
+            current_frame: 0,
+            timer: Timer::from_seconds(frame_duration, TimerMode::Once),
+        }
+    }
+}
+

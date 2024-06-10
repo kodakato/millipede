@@ -50,6 +50,7 @@ pub const SEGMENT_SPAWN_TIMER_DURATION: f32 = 9.0;
 pub const SEGMENT_DROP_RATE: f64 = 0.01;
 pub const MILLIPEDE_HEAD_COLOR: Color = Color::rgb(1.0, 0.4, 0.6);
 pub const MILLIPEDE_HEAD_COLOR_POISONED: Color = Color::rgb(0.3, 0.1, 1.0);
+pub const SEGMENT_ANIMATION_SPEED: f32 = 0.05;
 
 // Explosions
 pub const EXPLOSION_DURATION: f32 = 0.35;

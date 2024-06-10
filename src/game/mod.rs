@@ -82,6 +82,7 @@ impl Plugin for GamePlugin {
                             update_head_color,
                             update_shroom_sprite,
                             animate_spider,
+                            animate_segments,
                         )
                             .chain(),
                         (

@@ -52,9 +52,13 @@ impl Millipede {
         let mut parent_entity: Option<Entity> = Some(
             commands
                 .spawn((
-                    SpriteBundle {
+                    SpriteSheetBundle {
                         texture: millipede_texture.clone(),
                         transform: *starting_transform,
+                        atlas: TextureAtlas {
+                            layout: game_assets.segment_layout.clone(),
+                            index: 0,
+                        },
                         ..default()
                     },
                     Name::from("MillipedeSegment"),
@@ -62,6 +66,7 @@ impl Millipede {
                         direction: Vec3::new(1.0, -1.0, 0.0),
                         head_state: HeadState::Healthy,
                     },
+                    Animation::new(3, SEGMENT_ANIMATION_SPEED),
                 ))
                 .id(),
         );
@@ -69,15 +74,20 @@ impl Millipede {
         for _ in 1..length {
             let entity: Entity = commands
                 .spawn((
-                    SpriteBundle {
+                    SpriteSheetBundle {
                         texture: millipede_texture.clone(),
-                        transform: *starting_transform,
+                        transform: Transform::from_xyz(starting_transform.translation.x, starting_transform.translation.y + 10.0, 0.0),
+                        atlas: TextureAtlas {
+                            layout: game_assets.segment_layout.clone(),
+                            index: 0,
+                        },
                         ..default()
                     },
                     Name::from("MillipedeSegment"),
                     Segment::Body {
                         parent: parent_entity,
                     },
+                    Animation::new(3, SEGMENT_ANIMATION_SPEED),
                 ))
                 .id();
             parent_entity = Some(entity);
@@ -130,23 +140,25 @@ pub fn update_head_color(mut segment_query: Query<(&Segment, &mut Sprite)>) {
 // children segments to know the position of their parents
 pub fn segment_movement(
     segment_positions: Res<SegmentPositions>,
-    mut query: Query<(&Segment, &mut Transform)>,
+    mut query: Query<(&Segment, &mut Transform, &mut Animation)>,
     game_vars: Res<GameVariables>,
     time: Res<Time>,
 ) {
-    for (segment, mut transform) in query.iter_mut() {
+    for (segment, mut transform, mut animation) in query.iter_mut() {
         match segment {
             Segment::Body { parent } => {
                 if let Some(parent_entity) = parent {
                     if let Some(&parent_position) = segment_positions.0.get(parent_entity) {
                         let distance_to_parent = transform.translation.distance(parent_position);
                         if distance_to_parent > SEGMENT_SPACING {
+                            let previous = transform.translation;
                             let direction_to_parent =
                                 (parent_position - transform.translation).normalize();
                             transform.translation += direction_to_parent
                                 * game_vars.millipede_speed
                                 * 3.0
                                 * time.delta_seconds();
+                            
 
                             // Ensure that the segment doesn't move too close to its parent
                             if transform.translation.distance(parent_position) < SEGMENT_SPACING {
@@ -158,6 +170,11 @@ pub fn segment_movement(
                             let angle = direction_to_parent.y.atan2(direction_to_parent.x);
                             transform.rotation =
                                 Quat::from_rotation_z(angle + std::f32::consts::FRAC_PI_2);
+ 
+                            // Animate if moved
+                            if transform.translation.distance(previous) > 0.0 {
+                                animation.timer.tick(time.delta());
+                            }
                         }
                     }
                 }
@@ -496,6 +513,30 @@ pub fn head_gets_poisoned(
                 }
             }
             _ => continue,
+        }
+    }
+}
+
+pub fn animate_segments(
+    time: Res<Time>,
+    mut segment_q: Query<(&mut TextureAtlas, &Segment, &mut Animation, &mut Sprite)>,
+    ) {
+    for (mut atlas, segment, mut animation, mut sprite) in segment_q.iter_mut() {
+        match segment {
+            Segment::Head { direction: _, head_state: _ } => {
+                animation.timer.tick(time.delta());
+            },
+            _ => {}
+        }
+        if animation.timer.finished() {
+            // Flip sprite if roll over
+            if (animation.current_frame + 1) % animation.frames == 0 {
+                sprite.flip_x = !sprite.flip_x;
+            }
+            animation.current_frame = (animation.current_frame + 1) % animation.frames;
+            atlas.index = animation.current_frame;
+
+            animation.timer.reset();
         }
     }
 }
