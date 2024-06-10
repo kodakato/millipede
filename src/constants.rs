@@ -107,3 +107,4 @@ pub const SPAWN_VOLUME: f64 = 0.4;
 pub const MUSHROOM_ANIMATION_INDICES: AnimationIndices = AnimationIndices { first: 1, last: 4 };
 pub const EXPLOSION_ANIMATION_INDICES: AnimationIndices = AnimationIndices { first: 1, last: 3 };
 pub const SPIDER_ANIMATION_INDICES: AnimationIndices = AnimationIndices { first: 0, last: 2 };
+pub const SCORPION_ANIMATION_TIME: f32 = 0.07;

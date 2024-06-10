@@ -22,11 +22,16 @@ impl Scorpion {
 
         commands.spawn((
             Scorpion { direction },
-            SpriteBundle {
+            SpriteSheetBundle{
                 texture: scorpion_texture.clone(),
                 transform: *starting_transform,
+                atlas: TextureAtlas{
+                    layout: game_assets.scorpion_layout.clone(),
+                    index: 0,
+                },
                 ..default()
             },
+            Animation::new(2, SCORPION_ANIMATION_TIME),
             Name::from("Scorpion"),
         ));
     }
@@ -133,6 +138,25 @@ pub fn convert_to_poison_shroom(
                 }
                 *mushroom = Mushroom::Poison;
             }
+        }
+    }
+}
+
+pub fn animate_scorpion(
+    mut scorpion_q: Query<(&mut TextureAtlas, &mut Animation, &mut Sprite), With<Scorpion>>,
+    time: Res<Time>,
+    ) {
+    if let Ok((mut atlas, mut animation, mut sprite)) = scorpion_q.get_single_mut() {
+        animation.timer.tick(time.delta());
+        if animation.timer.finished() {
+            // Flip sprite if roll over
+            if (animation.current_frame + 1) % animation.frames == 0 {
+                sprite.flip_x = !sprite.flip_x;
+            }
+            animation.current_frame = (animation.current_frame + 1) % animation.frames;
+            atlas.index = animation.current_frame;
+
+            animation.timer.reset();
         }
     }
 }

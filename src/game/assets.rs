@@ -14,6 +14,7 @@ pub struct GameAssets {
     pub explosion_texture: Handle<Image>,
     pub explosion_layout: Handle<TextureAtlasLayout>,
     pub scorpion_texture: Handle<Image>,
+    pub scorpion_layout: Handle<TextureAtlasLayout>,
 }
 
 impl FromWorld for GameAssets {
@@ -28,7 +29,7 @@ impl FromWorld for GameAssets {
         let shroom_texture = asset_server.load("textures/shrooms.png");
         let spider_texture = asset_server.load("textures/spider.png");
         let explosion_texture = asset_server.load("textures/explosions.png");
-        let scorpion_texture = asset_server.load("textures/scorpion.png");
+        let scorpion_texture = asset_server.load("textures/scorpions.png");
 
         // Define the layout
         let mut texture_atlas_layouts = world
@@ -47,7 +48,11 @@ impl FromWorld for GameAssets {
 
         // Segments
         let layout = TextureAtlasLayout::from_grid(Vec2::new(16.0, 16.0), 3, 1, None, None);
-        let segment_layout= texture_atlas_layouts.add(layout);
+        let segment_layout = texture_atlas_layouts.add(layout);
+
+        // Scorpion
+        let layout = TextureAtlasLayout::from_grid(Vec2::new(16.0, 16.0), 2, 1, None, None);
+        let scorpion_layout = texture_atlas_layouts.add(layout);
 
         // Construct the GameAssets instance
         GameAssets {
@@ -63,6 +68,7 @@ impl FromWorld for GameAssets {
             explosion_texture,
             explosion_layout,
             scorpion_texture,
+            scorpion_layout,
         }
     }
 }
@@ -75,7 +81,7 @@ pub struct AnimationIndices {
 
 #[derive(Component)]
 pub struct Animation {
-    pub frames: usize, 
+    pub frames: usize,
     pub current_frame: usize,
     pub timer: Timer,
 }
@@ -89,4 +95,3 @@ impl Animation {
         }
     }
 }
-

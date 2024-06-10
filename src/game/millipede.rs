@@ -76,7 +76,11 @@ impl Millipede {
                 .spawn((
                     SpriteSheetBundle {
                         texture: millipede_texture.clone(),
-                        transform: Transform::from_xyz(starting_transform.translation.x, starting_transform.translation.y + 10.0, 0.0),
+                        transform: Transform::from_xyz(
+                            starting_transform.translation.x,
+                            starting_transform.translation.y + 10.0,
+                            0.0,
+                        ),
                         atlas: TextureAtlas {
                             layout: game_assets.segment_layout.clone(),
                             index: 0,
@@ -158,7 +162,6 @@ pub fn segment_movement(
                                 * game_vars.millipede_speed
                                 * 3.0
                                 * time.delta_seconds();
-                            
 
                             // Ensure that the segment doesn't move too close to its parent
                             if transform.translation.distance(parent_position) < SEGMENT_SPACING {
@@ -170,9 +173,9 @@ pub fn segment_movement(
                             let angle = direction_to_parent.y.atan2(direction_to_parent.x);
                             transform.rotation =
                                 Quat::from_rotation_z(angle + std::f32::consts::FRAC_PI_2);
- 
+
                             // Animate if moved
-                            if transform.translation.distance(previous) > 0.0 {
+                            if transform.translation.distance(previous) > 1.0 {
                                 animation.timer.tick(time.delta());
                             }
                         }
@@ -520,12 +523,15 @@ pub fn head_gets_poisoned(
 pub fn animate_segments(
     time: Res<Time>,
     mut segment_q: Query<(&mut TextureAtlas, &Segment, &mut Animation, &mut Sprite)>,
-    ) {
+) {
     for (mut atlas, segment, mut animation, mut sprite) in segment_q.iter_mut() {
         match segment {
-            Segment::Head { direction: _, head_state: _ } => {
+            Segment::Head {
+                direction: _,
+                head_state: _,
+            } => {
                 animation.timer.tick(time.delta());
-            },
+            }
             _ => {}
         }
         if animation.timer.finished() {
