@@ -14,10 +14,11 @@ impl Plugin for DebugPlugin {
             if inspector_enabled {
                 app.add_plugins(WorldInspectorPlugin::new());
             }
-            app
-                .add_systems(Update, kill_player.run_if(in_state(crate::game::PlayerState::Alive)))
-                .add_systems(Update, toggle_pause.run_if(in_state(AppState::InGame)));
-
+            app.add_systems(
+                Update,
+                kill_player.run_if(in_state(crate::game::PlayerState::Alive)),
+            )
+            .add_systems(Update, toggle_pause.run_if(in_state(AppState::InGame)));
         }
     }
 }
@@ -46,16 +47,14 @@ fn kill_player(
 ) {
     if input.just_released(KeyCode::KeyK) {
         let entity = player_q.get_single().unwrap();
-            crate::game::player::Player::kill(
-                &Transform::from_xyz(100.0, 100.0, 0.0),
-                entity,
-                &mut next_state,
-                &mut commands,
-                &mut down_timer,
-                &mut lives,
-                &mut event,
-            )
+        crate::game::player::Player::kill(
+            &Transform::from_xyz(100.0, 100.0, 0.0),
+            entity,
+            &mut next_state,
+            &mut commands,
+            &mut down_timer,
+            &mut lives,
+            &mut event,
+        )
     }
 }
-
-

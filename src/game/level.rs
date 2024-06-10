@@ -7,6 +7,9 @@ pub struct Level(pub u32);
 #[derive(Resource)]
 pub struct DownTimer(pub Timer);
 
+#[derive(Resource)]
+pub struct GameOverTimer(pub Timer);
+
 pub fn check_if_change_level(
     segment_query: Query<(), With<Segment>>,
     mut next_level_state: ResMut<NextState<LevelState>>,
@@ -16,7 +19,6 @@ pub fn check_if_change_level(
     if !segment_query.is_empty() {
         return;
     }
-
 
     // Start the down timer
     down_timer.0.reset();
@@ -98,7 +100,9 @@ pub fn start_new_level(
     if player_q.is_empty() {
         next_player_state.set(PlayerState::Dead);
         timer.0.reset();
-        timer.0.set_elapsed(Duration::from_secs_f32(DOWNTIMER - 0.01));
+        timer
+            .0
+            .set_elapsed(Duration::from_secs_f32(DOWNTIMER - 0.01));
     }
 }
 
@@ -118,8 +122,11 @@ pub fn restart_level_from_death(
     projectile_query: Query<Entity, With<PlayerProjectile>>,
     spider_timer: ResMut<SpiderTimer>,
     mut segment_spawner_timer: ResMut<SegmentSpawnerTimer>,
+    mut game_over_timer: ResMut<GameOverTimer>,
 ) {
     if lives.0 == 0 {
+        game_over_timer.0.reset();
+        game_over_timer.0.unpause();
         next_app_state.set(AppState::GameOver);
     }
 

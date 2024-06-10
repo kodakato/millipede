@@ -9,6 +9,7 @@ pub struct GameAssets {
     pub shroom_texture: Handle<Image>,
     pub shroom_layout: Handle<TextureAtlasLayout>,
     pub spider_texture: Handle<Image>,
+    pub spider_layout: Handle<TextureAtlasLayout>,
     pub explosion_texture: Handle<Image>,
     pub explosion_layout: Handle<TextureAtlasLayout>,
     pub scorpion_texture: Handle<Image>,
@@ -39,6 +40,10 @@ impl FromWorld for GameAssets {
         let layout = TextureAtlasLayout::from_grid(Vec2::new(16.0, 16.0), 3, 1, None, None);
         let explosion_layout = texture_atlas_layouts.add(layout);
 
+        // Spider
+        let layout = TextureAtlasLayout::from_grid(Vec2::new(16.0, 16.0), 3, 1, None, None);
+        let spider_layout = texture_atlas_layouts.add(layout);
+
         // Construct the GameAssets instance
         GameAssets {
             player_texture,
@@ -48,6 +53,7 @@ impl FromWorld for GameAssets {
             shroom_texture,
             shroom_layout,
             spider_texture,
+            spider_layout,
             explosion_texture,
             explosion_layout,
             scorpion_texture,

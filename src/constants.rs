@@ -25,6 +25,7 @@ pub const STARTING_LIVES: u8 = 3;
 pub const TOP_BOUND: f32 = 100.0;
 pub const DOWNTIMER: f32 = 2.0;
 pub const PLAYER_SPAWN_Y: f32 = 20.0;
+pub const GAMEOVER_TIMER: f32 = 1.0;
 
 /// Mushrooms
 pub const MUSHROOM_SIZE: f32 = 11.0;
@@ -52,7 +53,7 @@ pub const MILLIPEDE_HEAD_COLOR_POISONED: Color = Color::rgb(0.3, 0.1, 1.0);
 
 // Explosions
 pub const EXPLOSION_DURATION: f32 = 0.35;
-pub const EXPLOSION_SIZE: f32 = 1.4;
+pub const EXPLOSION_SIZE: f32 = 1.5;
 
 // Beetle
 pub const BEETLE_SPEED: f32 = 500.0;
@@ -104,3 +105,4 @@ pub const SPAWN_VOLUME: f64 = 0.4;
 // Animation
 pub const MUSHROOM_ANIMATION_INDICES: AnimationIndices = AnimationIndices { first: 1, last: 4 };
 pub const EXPLOSION_ANIMATION_INDICES: AnimationIndices = AnimationIndices { first: 1, last: 3 };
+pub const SPIDER_ANIMATION_INDICES: AnimationIndices = AnimationIndices { first: 0, last: 2 };

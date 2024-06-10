@@ -27,9 +27,13 @@ impl Spider {
         let spider_texture = &game_assets.spider_texture;
 
         commands.spawn((
-            SpriteBundle {
+            SpriteSheetBundle {
                 texture: spider_texture.clone(),
                 transform: *location_transform,
+                atlas: TextureAtlas {
+                    layout: game_assets.spider_layout.clone(),
+                    index: SPIDER_ANIMATION_INDICES.first,
+                },
                 ..default()
             },
             Spider(SpiderState::Centering),
@@ -41,6 +45,28 @@ impl Spider {
         commands.entity(entity).despawn();
 
         spider_timer.0.reset();
+    }
+}
+pub fn animate_spider(mut spider_q: Query<(&Spider, &mut TextureAtlas, &mut Sprite)>) {
+    if let Ok((spider, mut atlas, mut sprite)) = spider_q.get_single_mut() {
+        match spider.0 {
+            SpiderState::Attacking => {
+                atlas.index = 2;
+            }
+            _ => {
+                let change = rand::thread_rng().gen_bool(0.1);
+                if !change {
+                    return;
+                }
+
+                if atlas.index == 0 {
+                    sprite.flip_x = !sprite.flip_x;
+                    atlas.index = 1;
+                } else {
+                    atlas.index = 0;
+                }
+            }
+        }
     }
 }
 

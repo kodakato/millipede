@@ -153,6 +153,11 @@ pub fn segment_movement(
                                 transform.translation =
                                     parent_position - direction_to_parent * SEGMENT_SPACING;
                             }
+
+                            // Set the rotation to face the parent segment
+                            let angle = direction_to_parent.y.atan2(direction_to_parent.x);
+                            transform.rotation =
+                                Quat::from_rotation_z(angle + std::f32::consts::FRAC_PI_2);
                         }
                     }
                 }
@@ -166,10 +171,35 @@ pub fn segment_movement(
                         // Move in its direction
                         transform.translation.x +=
                             direction.x * time.delta_seconds() * game_vars.millipede_speed;
+
+                        // Point the head in the direction it's heading
+                        let target_angle = if direction.x > 0.0 {
+                            -1.55 // Right
+                        } else if direction.x < 0.0 {
+                            1.55 // Left
+                        } else if direction.y < 0.0 {
+                            -std::f32::consts::FRAC_PI_2 // Down
+                        } else {
+                            transform.rotation.to_euler(EulerRot::XYZ).2 // Maintain current rotation
+                        };
+
+                        let current_angle = transform.rotation.to_euler(EulerRot::XYZ).2;
+                        let angle_diff = target_angle - current_angle;
+                        let adjusted_angle =
+                            current_angle + angle_diff * time.delta_seconds() * 100.0;
+                        transform.rotation = Quat::from_rotation_z(adjusted_angle);
                     }
                     HeadState::Poisoned => {
                         // Move down
                         transform.translation.y -= time.delta_seconds() * game_vars.millipede_speed;
+
+                        // Point the head downwards
+                        let target_angle = -3.1;
+                        let current_angle = transform.rotation.to_euler(EulerRot::XYZ).2;
+                        let angle_diff = target_angle - current_angle;
+                        let adjusted_angle =
+                            current_angle + angle_diff * time.delta_seconds() * 100.0;
+                        transform.rotation = Quat::from_rotation_z(adjusted_angle);
                     }
                 }
             }

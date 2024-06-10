@@ -1,6 +1,11 @@
 use crate::{
     constants::*,
-    game::{assets::*, level::Level, player::Lives, Score},
+    game::{
+        assets::*,
+        level::{GameOverTimer, Level},
+        player::Lives,
+        Score,
+    },
 };
 
 use super::*;
@@ -367,7 +372,10 @@ pub fn handle_button_actions(
     selected_button: Res<SelectedButton>,
     mut app_exit_events: EventWriter<AppExit>,
     mut next_app_state: ResMut<NextState<AppState>>,
+    mut game_over_timer: ResMut<GameOverTimer>,
+    time: Res<Time>,
 ) {
+    game_over_timer.0.tick(time.delta());
     if keyboard_input.just_pressed(SHOOT_KEY) {
         match selected_button.0 {
             ButtonType::Play => {
@@ -382,6 +390,10 @@ pub fn handle_button_actions(
                 next_app_state.set(AppState::MainMenu);
             }
             ButtonType::Restart => {
+                // Give the player some leeway to avoid unintended restarts
+                if !game_over_timer.0.finished() {
+                    return;
+                }
                 next_app_state.set(AppState::InGame);
             }
         }

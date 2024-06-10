@@ -26,7 +26,8 @@ pub fn spawn_explosion(
             )),
             SpriteSheetBundle {
                 texture: explosion_texture.clone(),
-                transform: Transform::from_xyz(event.0.translation.x, event.0.translation.y, 0.5).with_scale(Vec3::new(EXPLOSION_SIZE, EXPLOSION_SIZE, 0.0)),
+                transform: Transform::from_xyz(event.0.translation.x, event.0.translation.y, 0.5)
+                    .with_scale(Vec3::new(EXPLOSION_SIZE, EXPLOSION_SIZE, 0.0)),
                 atlas: TextureAtlas {
                     layout: game_assets.explosion_layout.clone(),
                     index: EXPLOSION_ANIMATION_INDICES.first,
@@ -58,7 +59,6 @@ pub fn animate_explosion(mut explosion_query: Query<(&mut TextureAtlas, &Explosi
     for (mut atlas, explosion) in explosion_query.iter_mut() {
         let elapsed = explosion.0.elapsed().as_secs_f32();
         let frame = ((elapsed / EXPLOSION_DURATION) * 3 as f32) as usize;
-        let reversed_frame = 2 - frame; // Reverse the frame index
-        atlas.index = reversed_frame;
+        atlas.index = frame;
     }
 }

@@ -81,6 +81,7 @@ impl Plugin for GamePlugin {
                             update_shroom_color,
                             update_head_color,
                             update_shroom_sprite,
+                            animate_spider,
                         )
                             .chain(),
                         (
@@ -97,19 +98,19 @@ impl Plugin for GamePlugin {
                         (spawn_scorpion, move_scorpion, despawn_scorpion).chain(),
                     )
                         .in_set(GameplaySet::Enemies),
-                                    )
+                )
                     .run_if(in_state(GameState::Running))
                     .run_if(in_state(PlayerState::Alive)),
+                (restart_level_from_death,)
+                    .run_if(in_state(PlayerState::Dead))
+                    .run_if(in_state(LevelState::Unchanging)),
                 (
-                    restart_level_from_death,
-                ).run_if(in_state(PlayerState::Dead)).run_if(in_state(LevelState::Unchanging)),
-                (
-                    (start_new_level).chain().run_if(in_state(LevelState::Changing)),
+                    (start_new_level)
+                        .chain()
+                        .run_if(in_state(LevelState::Changing)),
                     (check_if_change_level).run_if(in_state(LevelState::Unchanging)),
                 ),
-                (
-                    heal_shrooms,
-                ).run_if(in_state(PlayerState::Dead)),
+                (heal_shrooms,).run_if(in_state(PlayerState::Dead)),
                 ((
                     update_level_ui,
                     update_lives_ui,
@@ -117,9 +118,7 @@ impl Plugin for GamePlugin {
                     spawn_explosion,
                     despawn_explosions,
                 )),
-                (
-                    animate_explosion,
-                )
+                (animate_explosion,),
             )
                 .run_if(in_state(AppState::InGame)),
         )
@@ -129,6 +128,10 @@ impl Plugin for GamePlugin {
         .insert_resource(Score(0))
         .insert_resource(Level(0))
         .insert_resource(DownTimer(Timer::from_seconds(DOWNTIMER, TimerMode::Once)))
+        .insert_resource(GameOverTimer(Timer::from_seconds(
+            GAMEOVER_TIMER,
+            TimerMode::Once,
+        )))
         .insert_resource(SpiderTimer(Timer::from_seconds(
             SPIDER_TIMER,
             TimerMode::Once,

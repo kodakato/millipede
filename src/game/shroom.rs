@@ -30,7 +30,7 @@ pub fn spawn_shroom(
                     layout: game_assets.shroom_layout.clone(),
                     index: MUSHROOM_ANIMATION_INDICES.first,
                 },
-                transform: event.0,
+                transform: Transform::from_xyz(event.0.translation.x, event.0.translation.y, 0.0),
                 sprite: Sprite {
                     color: event.1,
                     flip_x: flip,
