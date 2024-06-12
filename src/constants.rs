@@ -12,7 +12,7 @@ pub const UP: KeyCode = KeyCode::KeyW;
 pub const DOWN: KeyCode = KeyCode::KeyS;
 
 // Attributes
-pub const PLAYER_SPEED: f32 = 250.0;
+pub const PLAYER_SPEED: f32 = 275.0;
 pub const PLAYER_SIZE: f32 = 16.0;
 
 /// Projectile
@@ -72,7 +72,7 @@ pub const SPIDER_LEAVE_RATE: f64 = 0.8;
 pub const SPIDER_EAT_RATE: f64 = 0.05;
 
 // Scorpion
-pub const SCORPION_SPAWN_RATE: f64 = 1.0; //0.0005;
+pub const SCORPION_SPAWN_RATE: f64 = 0.0005;
 pub const SCORPION_SPAWN_HEIGHT: f32 = 100.0;
 pub const SCORPION_SPEED: f32 = 250.0;
 pub const SCORPION_SIZE: f32 = 16.0;
@@ -89,7 +89,7 @@ pub const SCORPION_REWARD: u32 = 1000;
 // UI
 pub const TEXT_COLOR: Color = Color::rgb(102.0 / 255.0, 255.0 / 255.0, 143.0 / 255.0);
 pub const TEXT_BACKGROUND: Color = Color::rgba(0.0 / 255.0, 51.0 / 255.0, 0.0 / 255.0, 1.0);
-pub const TEXT_SIZE: f32 = 20.0;
+pub const TEXT_SIZE: f32 = 15.0;
 pub const TOP_UI_HEIGHT: f32 = 24.0;
 pub const BUTTON_HOVER_COLOR: Color = Color::rgba(129.0 / 255.0, 161.0 / 255.0, 137.0 / 255.0, 0.2);
 pub const BUTTON_NORMAL_COLOR: Color = Color::rgba(0.0, 0.0, 0.0, 0.0);

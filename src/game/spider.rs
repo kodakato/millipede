@@ -83,7 +83,7 @@ pub fn spawn_spider(
     game_vars: Res<GameVariables>,
     level: Res<Level>,
 ) {
-    if level.0 < 0 {
+    if level.0 < 2 {
         return;
     }
     // Only run if no current spider

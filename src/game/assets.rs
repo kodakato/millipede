@@ -15,6 +15,7 @@ pub struct GameAssets {
     pub explosion_layout: Handle<TextureAtlasLayout>,
     pub scorpion_texture: Handle<Image>,
     pub scorpion_layout: Handle<TextureAtlasLayout>,
+    pub font: Handle<Font>,
 }
 
 impl FromWorld for GameAssets {
@@ -30,6 +31,7 @@ impl FromWorld for GameAssets {
         let spider_texture = asset_server.load("textures/spider.png");
         let explosion_texture = asset_server.load("textures/explosions.png");
         let scorpion_texture = asset_server.load("textures/scorpions.png");
+        let font = asset_server.load("fonts/font.ttf");
 
         // Define the layout
         let mut texture_atlas_layouts = world
@@ -69,6 +71,7 @@ impl FromWorld for GameAssets {
             explosion_layout,
             scorpion_texture,
             scorpion_layout,
+            font,
         }
     }
 }

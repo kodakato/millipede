@@ -217,8 +217,9 @@ pub fn build_game_ui(mut commands: Commands, game_assets: Res<GameAssets>) {
                             parent.spawn((
                                 TextBundle {
                                     text: Text::from_section(
-                                        "x 1",
+                                        "X 1",
                                         TextStyle {
+                                            font: game_assets.font.clone(),
                                             font_size: TEXT_SIZE,
                                             color: TEXT_COLOR,
                                             ..default()
@@ -247,6 +248,7 @@ pub fn build_game_ui(mut commands: Commands, game_assets: Res<GameAssets>) {
                                     text: Text::from_section(
                                         "0",
                                         TextStyle {
+                                            font: game_assets.font.clone(),
                                             font_size: TEXT_SIZE,
                                             color: TEXT_COLOR,
                                             ..default()
@@ -275,6 +277,7 @@ pub fn build_game_ui(mut commands: Commands, game_assets: Res<GameAssets>) {
                                     text: Text::from_section(
                                         "1",
                                         TextStyle {
+                                            font: game_assets.font.clone(),
                                             font_size: TEXT_SIZE,
                                             color: TEXT_COLOR,
                                             ..default()
@@ -403,8 +406,8 @@ pub fn handle_button_actions(
 #[derive(Component)]
 pub struct GameOverUI;
 
-pub fn spawn_game_over_ui(mut commands: Commands, score: Res<Score>, level: Res<Level>) {
-    build_game_over_ui(&mut commands, &score, &level);
+pub fn spawn_game_over_ui(mut commands: Commands, score: Res<Score>, level: Res<Level>, game_assets: Res<GameAssets>) {
+    build_game_over_ui(&mut commands, &score, &level, &game_assets);
 }
 
 pub fn despawn_game_over_ui(
@@ -416,7 +419,7 @@ pub fn despawn_game_over_ui(
     }
 }
 
-pub fn build_game_over_ui(commands: &mut Commands, score: &Res<Score>, level: &Res<Level>) {
+pub fn build_game_over_ui(commands: &mut Commands, score: &Res<Score>, level: &Res<Level>, game_assets: &Res<GameAssets>,) {
     // Create the root node for the game over screen
     commands
         .spawn((
@@ -463,7 +466,8 @@ pub fn build_game_over_ui(commands: &mut Commands, score: &Res<Score>, level: &R
                                 text: Text::from_section(
                                     "GAME OVER",
                                     TextStyle {
-                                        font_size: 60.0,
+                                        font: game_assets.font.clone(),
+                                        font_size: 40.0,
                                         color: Color::WHITE,
                                         ..default()
                                     },
@@ -498,7 +502,8 @@ pub fn build_game_over_ui(commands: &mut Commands, score: &Res<Score>, level: &R
                                 text: Text::from_section(
                                     format!("Level: {}", level.0),
                                     TextStyle {
-                                        font_size: 40.0,
+                                        font: game_assets.font.clone(),
+                                        font_size: 27.0,
                                         color: Color::WHITE,
                                         ..default()
                                     },
@@ -509,7 +514,8 @@ pub fn build_game_over_ui(commands: &mut Commands, score: &Res<Score>, level: &R
                                 text: Text::from_section(
                                     format!("{:07}", score.0),
                                     TextStyle {
-                                        font_size: 40.0,
+                                        font: game_assets.font.clone(),
+                                        font_size: 27.0,
                                         color: Color::WHITE,
                                         ..default()
                                     },
@@ -553,7 +559,8 @@ pub fn build_game_over_ui(commands: &mut Commands, score: &Res<Score>, level: &R
                                         text: Text::from_section(
                                             "Restart",
                                             TextStyle {
-                                                font_size: 40.0,
+                                                font: game_assets.font.clone(),
+                                                font_size: 20.0,
                                                 color: Color::GREEN,
                                                 ..default()
                                             },
@@ -583,7 +590,8 @@ pub fn build_game_over_ui(commands: &mut Commands, score: &Res<Score>, level: &R
                                         text: Text::from_section(
                                             "Main Menu",
                                             TextStyle {
-                                                font_size: 40.0,
+                                                font: game_assets.font.clone(),
+                                                font_size: 20.0,
                                                 color: Color::GREEN,
                                                 ..default()
                                             },
@@ -662,6 +670,7 @@ pub fn score_event(
                         format!("{}", event.1),
                         TextStyle {
                             font_size: 13.0 + 0.005 * (event.1 as f32), // Change font size based on score amount
+                            
                             ..default()
                         },
                     ),
