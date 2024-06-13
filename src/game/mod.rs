@@ -54,26 +54,25 @@ impl Plugin for GamePlugin {
                         despawn_projectile,
                         despawn_mushroom,
                     )
-                        .in_set(GameplaySet::Projectile)
-                        .chain(),
+                        .in_set(GameplaySet::Projectile),
                     (
                         (
-                            spawn_shroom,
-                            spawn_beetle,
+                            (spawn_shroom, spawn_beetle).chain(),
                             move_beetle,
                             beetle_spawn_shroom,
                             despawn_beetle,
-                        )
-                            .chain(),
+                        ),
                         (
-                            update_segment_parents,
-                            update_positions,
-                            segment_movement,
-                            confine_segment_movement,
+                            (
+                                update_segment_parents,
+                                update_positions,
+                                segment_movement,
+                                confine_segment_movement,
+                                segment_hits_player,
+                            ).chain(),
                             change_direction,
                             head_gets_poisoned,
                             collide_with_shroom,
-                            segment_hits_player,
                             start_segment_spawner_timer,
                             spawn_lone_head,
                             collide_with_head,
@@ -83,8 +82,7 @@ impl Plugin for GamePlugin {
                             animate_spider,
                             animate_segments,
                             animate_scorpion,
-                        )
-                            .chain(),
+                        ),
                         (
                             spawn_spider,
                             set_spider_direction,
@@ -94,9 +92,8 @@ impl Plugin for GamePlugin {
                             spider_hits_player,
                             spider_eats_shroom,
                             convert_to_poison_shroom,
-                        )
-                            .chain(),
-                        (spawn_scorpion, move_scorpion, despawn_scorpion).chain(),
+                        ),
+                        (spawn_scorpion, move_scorpion, despawn_scorpion),
                     )
                         .in_set(GameplaySet::Enemies),
                 )

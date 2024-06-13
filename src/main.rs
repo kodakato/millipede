@@ -1,6 +1,6 @@
 use bevy::prelude::*;
-use bevy_kira_audio::prelude::*;
 use bevy_embedded_assets::{EmbeddedAssetPlugin, PluginMode};
+use bevy_kira_audio::prelude::*;
 
 mod audio;
 mod camera;
@@ -23,7 +23,7 @@ fn main() {
     App::new()
         .init_state::<AppState>()
         .init_state::<GameState>()
-        .add_plugins(EmbeddedAssetPlugin{
+        .add_plugins(EmbeddedAssetPlugin {
             mode: PluginMode::ReplaceDefault,
         })
         .add_plugins(
@@ -61,7 +61,7 @@ fn main() {
         .add_systems(OnEnter(AppState::InGame), ui::build_game_ui)
         .insert_resource(ui::SelectedButton(ui::ButtonType::Play))
         .add_systems(Startup, (audio::prepare_audio).chain())
-        .add_systems(Update, (audio::set_volume, audio::sync_audio))
+        .add_systems(Update, (audio::set_volume, audio::sync_audio).after(audio::prepare_audio))
         .run();
 }
 
