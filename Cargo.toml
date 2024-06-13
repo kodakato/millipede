@@ -27,11 +27,13 @@ bevy = { version = "0.13.1", default-features = false, features = [
     "tonemapping_luts",
     "default_font",
     "webgl2",
-    "dynamic_linking"
    ] }
 #bevy = "0.13.1"
 bevy-inspector-egui = "0.23.4"
 bevy_kira_audio = "0.19.0"
 bevy_ui = "0.13.2"
 rand = "0.8.5"
-bevy_dylib = "0.13"
+bevy_embedded_assets = "0.10.2"
+wasm-bindgen = "0.2"
+wasm-bindgen-futures = "0.4"
+

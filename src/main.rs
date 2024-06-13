@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
+use bevy_embedded_assets::{EmbeddedAssetPlugin, PluginMode};
 
 mod audio;
 mod camera;
@@ -22,6 +23,9 @@ fn main() {
     App::new()
         .init_state::<AppState>()
         .init_state::<GameState>()
+        .add_plugins(EmbeddedAssetPlugin{
+            mode: PluginMode::ReplaceDefault,
+        })
         .add_plugins(
             DefaultPlugins
                 .set(ImagePlugin::default_nearest())
