@@ -63,7 +63,6 @@ impl Plugin for GamePlugin {
                             move_beetle,
                             beetle_spawn_shroom,
                             despawn_beetle,
-                            score_event,
                         )
                             .chain(),
                         (
@@ -124,6 +123,7 @@ impl Plugin for GamePlugin {
             )
                 .run_if(in_state(AppState::InGame)),
         )
+        .add_systems(Update, score_event)
         .insert_resource(SegmentPositions(HashMap::new()))
         .insert_resource(ShroomAmount(0))
         .insert_resource(Lives(STARTING_LIVES))

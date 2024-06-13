@@ -36,6 +36,8 @@ fn main() {
                 ui::handle_button_actions,
                 ui::handle_button_navigation,
                 ui::update_button_colors,
+                ui::change_score_text_color,
+                ui::change_title_text_color,
             )
                 .run_if(in_menu),
         )

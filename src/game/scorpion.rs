@@ -22,10 +22,10 @@ impl Scorpion {
 
         commands.spawn((
             Scorpion { direction },
-            SpriteSheetBundle{
+            SpriteSheetBundle {
                 texture: scorpion_texture.clone(),
                 transform: *starting_transform,
-                atlas: TextureAtlas{
+                atlas: TextureAtlas {
                     layout: game_assets.scorpion_layout.clone(),
                     index: 0,
                 },
@@ -145,7 +145,7 @@ pub fn convert_to_poison_shroom(
 pub fn animate_scorpion(
     mut scorpion_q: Query<(&mut TextureAtlas, &mut Animation, &mut Sprite), With<Scorpion>>,
     time: Res<Time>,
-    ) {
+) {
     if let Ok((mut atlas, mut animation, mut sprite)) = scorpion_q.get_single_mut() {
         animation.timer.tick(time.delta());
         if animation.timer.finished() {

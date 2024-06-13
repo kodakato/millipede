@@ -31,9 +31,12 @@ pub enum ButtonType {
     MainMenu,
 }
 
+#[derive(Component)]
+pub struct TitleText;
+
 // Main Menu
-pub fn spawn_main_menu(mut commands: Commands) {
-    build_main_menu(&mut commands);
+pub fn spawn_main_menu(mut commands: Commands, game_assets: Res<GameAssets>) {
+    build_main_menu(&mut commands, &game_assets);
 }
 
 pub fn despawn_main_menu(mut commands: Commands, main_menu_query: Query<Entity, With<MainMenu>>) {
@@ -42,7 +45,7 @@ pub fn despawn_main_menu(mut commands: Commands, main_menu_query: Query<Entity, 
     }
 }
 
-pub fn build_main_menu(commands: &mut Commands) {
+pub fn build_main_menu(commands: &mut Commands, game_assets: &Res<GameAssets>) {
     // Define the main menu parent node with MainMenu marker struct
     let main_menu_node = (
         NodeBundle {
@@ -66,7 +69,7 @@ pub fn build_main_menu(commands: &mut Commands) {
     // Define the title node
     let title_node = NodeBundle {
         style: Style {
-            height: Val::Percent(20.0),
+            height: Val::Percent(80.0),
             width: Val::Percent(100.0),
             justify_content: JustifyContent::Center,
             align_items: AlignItems::Center,
@@ -78,27 +81,31 @@ pub fn build_main_menu(commands: &mut Commands) {
     let title_entity = commands
         .spawn(title_node)
         .with_children(|parent| {
-            parent.spawn(TextBundle {
-                text: Text {
-                    sections: vec![TextSection::new(
-                        "Millipede!",
-                        TextStyle {
-                            color: Color::GREEN.into(),
-                            font_size: 60.0,
-                            ..default()
-                        },
-                    )],
+            parent.spawn((
+                TextBundle {
+                    text: Text {
+                        sections: vec![TextSection::new(
+                            "Millipede!",
+                            TextStyle {
+                                color: Color::GREEN.into(),
+                                font_size: 30.0,
+                                font: game_assets.font.clone(),
+                                ..default()
+                            },
+                        )],
+                        ..default()
+                    },
                     ..default()
                 },
-                ..default()
-            });
+                TitleText,
+            ));
         })
         .id();
 
     // Define the button node
     let buttons_node = NodeBundle {
         style: Style {
-            height: Val::Percent(60.0),
+            height: Val::Percent(50.0),
             width: Val::Percent(100.0),
             flex_direction: FlexDirection::Column,
             align_items: AlignItems::Center,
@@ -119,7 +126,8 @@ pub fn build_main_menu(commands: &mut Commands) {
                             "Play",
                             TextStyle {
                                 color: Color::GREEN.into(),
-                                font_size: 40.0,
+                                font_size: 25.0,
+                                font: game_assets.font.clone(),
                                 ..default()
                             },
                         )],
@@ -138,7 +146,8 @@ pub fn build_main_menu(commands: &mut Commands) {
                             "Quit",
                             TextStyle {
                                 color: Color::GREEN.into(),
-                                font_size: 40.0,
+                                font_size: 20.0,
+                                font: game_assets.font.clone(),
                                 ..default()
                             },
                         )],
@@ -150,11 +159,42 @@ pub fn build_main_menu(commands: &mut Commands) {
             ));
         })
         .id();
+    let name_node = NodeBundle {
+        style: Style {
+            height: Val::Percent(10.0),
+            width: Val::Percent(100.0),
+            align_items: AlignItems::Center,
+            justify_content: JustifyContent::Center,
+            ..default()
+        },
+        ..default()
+    };
+
+    let name_entity = commands
+        .spawn(name_node)
+        .with_children(|parent| {
+            parent.spawn(TextBundle {
+                text: Text {
+                    sections: vec![TextSection::new(
+                        "kodakato.wtf",
+                        TextStyle {
+                            color: Color::GRAY.into(),
+                            font_size: 10.0,
+                            font: game_assets.font.clone(),
+                            ..default()
+                        },
+                    )],
+                    ..default()
+                },
+                ..default()
+            });
+        })
+        .id();
 
     // Set up parent-child relationships
     commands
         .entity(main_menu_entity)
-        .push_children(&[title_entity, buttons_entity]);
+        .push_children(&[title_entity, buttons_entity, name_entity]);
 }
 
 #[derive(Component)]
@@ -406,7 +446,12 @@ pub fn handle_button_actions(
 #[derive(Component)]
 pub struct GameOverUI;
 
-pub fn spawn_game_over_ui(mut commands: Commands, score: Res<Score>, level: Res<Level>, game_assets: Res<GameAssets>) {
+pub fn spawn_game_over_ui(
+    mut commands: Commands,
+    score: Res<Score>,
+    level: Res<Level>,
+    game_assets: Res<GameAssets>,
+) {
     build_game_over_ui(&mut commands, &score, &level, &game_assets);
 }
 
@@ -419,7 +464,15 @@ pub fn despawn_game_over_ui(
     }
 }
 
-pub fn build_game_over_ui(commands: &mut Commands, score: &Res<Score>, level: &Res<Level>, game_assets: &Res<GameAssets>,) {
+#[derive(Component)]
+pub struct ScoreText;
+
+pub fn build_game_over_ui(
+    commands: &mut Commands,
+    score: &Res<Score>,
+    level: &Res<Level>,
+    game_assets: &Res<GameAssets>,
+) {
     // Create the root node for the game over screen
     commands
         .spawn((
@@ -462,18 +515,18 @@ pub fn build_game_over_ui(commands: &mut Commands, score: &Res<Score>, level: &R
                             ..default()
                         })
                         .with_children(|parent| {
-                            parent.spawn(TextBundle {
+                            parent.spawn((TextBundle {
                                 text: Text::from_section(
                                     "GAME OVER",
                                     TextStyle {
                                         font: game_assets.font.clone(),
                                         font_size: 40.0,
-                                        color: Color::WHITE,
+                                        color: Color::RED,
                                         ..default()
                                     },
                                 ),
                                 ..default()
-                            });
+                            },));
                         });
 
                     // Add some spacing between the texts
@@ -510,18 +563,21 @@ pub fn build_game_over_ui(commands: &mut Commands, score: &Res<Score>, level: &R
                                 ),
                                 ..default()
                             });
-                            parent.spawn(TextBundle {
-                                text: Text::from_section(
-                                    format!("{:07}", score.0),
-                                    TextStyle {
-                                        font: game_assets.font.clone(),
-                                        font_size: 27.0,
-                                        color: Color::WHITE,
-                                        ..default()
-                                    },
-                                ),
-                                ..default()
-                            });
+                            parent.spawn((
+                                TextBundle {
+                                    text: Text::from_section(
+                                        format!("{:07}", score.0),
+                                        TextStyle {
+                                            font: game_assets.font.clone(),
+                                            font_size: 27.0,
+                                            color: Color::WHITE,
+                                            ..default()
+                                        },
+                                    ),
+                                    ..default()
+                                },
+                                ScoreText,
+                            ));
                         });
 
                     // Define the button node
@@ -670,12 +726,35 @@ pub fn score_event(
                         format!("{}", event.1),
                         TextStyle {
                             font_size: 13.0 + 0.005 * (event.1 as f32), // Change font size based on score amount
-                            
+
                             ..default()
                         },
                     ),
                     ..default()
                 });
             });
+    }
+}
+
+pub fn change_score_text_color(time: Res<Time>, mut query: Query<&mut Text, With<ScoreText>>) {
+    let elapsed = time.elapsed_seconds();
+    for mut text in query.iter_mut() {
+        let color = Color::rgb(
+            elapsed.sin().abs(),
+            elapsed.cos().abs(),
+            1.0 - elapsed.sin().abs(),
+        );
+        text.sections[0].style.color = color;
+    }
+}
+
+pub fn change_title_text_color(time: Res<Time>, mut query: Query<&mut Text, With<TitleText>>) {
+    let elapsed = time.elapsed_seconds();
+    let green_intensity = 0.9 + 0.1 * elapsed.sin(); // Cycles between 0.8 and 1.0
+    let yellow_intensity = 0.3 + 0.2 * elapsed.sin(); // Cycles between 0.6 and 0.8
+    let color = Color::rgb(yellow_intensity, green_intensity, 0.0); // Cycle between green and yellow-green
+
+    for mut text in query.iter_mut() {
+        text.sections[0].style.color = color;
     }
 }
